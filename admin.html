@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة التحكم - نظام شِفتك</title>
+    <title>لوحة التحكم الإدارية المتكاملة - نظام شِفتك</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -15,80 +15,109 @@
             --text-light: #f8fafc;
             --text-muted: #94a3b8;
             --color-primary: #38bdf8;
+            
+            --color-g1: #ef4444; 
+            --color-g2: #3b82f6; 
+            --color-g3: #10b981; 
+            --color-g4: #f59e0b; 
+            --color-g5: #a855f7; 
+            --color-g6: #ec4899; 
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
-        body {
-            font-family: 'Tajawal', sans-serif;
-            background: var(--bg-gradient);
-            color: var(--text-light);
-            min-height: 100vh;
-            padding: 30px 15px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        .container { width: 100%; max-width: 550px; }
+        body { font-family: 'Tajawal', sans-serif; background: var(--bg-gradient); color: var(--text-light); min-height: 100vh; padding: 30px 15px; display: flex; flex-direction: column; align-items: center; }
+        .container { width: 100%; max-width: 950px; }
         .header { text-align: center; margin-bottom: 30px; }
         .header h1 { font-size: 28px; font-weight: 900; color: var(--color-primary); margin-bottom: 6px; }
         .header p { font-size: 14px; color: var(--text-muted); }
 
-        .card {
-            background: var(--card-bg); border: 1px solid var(--card-border);
-            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-            border-radius: 24px; padding: 24px; margin-bottom: 25px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
-        }
-
-        .card h2 { font-size: 16px; margin-bottom: 18px; color: #cbd5e1; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 8px; }
+        .card { background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(20px); border-radius: 24px; padding: 24px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
+        .card h2 { font-size: 16px; margin-bottom: 18px; color: #cbd5e1; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
+        
         label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #cbd5e1; }
-
-        select, input[type="date"] {
-            width: 100%; padding: 14px 16px; background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 14px;
-            color: #fff; font-family: 'Tajawal', sans-serif; font-size: 15px; outline: none; margin-bottom: 18px;
-        }
-
+        select, input[type="date"], textarea { width: 100%; padding: 14px 16px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 14px; color: #fff; font-family: 'Tajawal', sans-serif; font-size: 15px; outline: none; margin-bottom: 15px; resize: vertical; }
+        
         .group-row { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 16px; border-radius: 14px; margin-bottom: 14px; }
-
-        .btn {
-            width: 100%; padding: 15px; background: linear-gradient(to left, #38bdf8, #818cf8);
-            border: none; border-radius: 14px; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer;
-        }
+        .btn { width: 100%; padding: 15px; background: linear-gradient(to left, #38bdf8, #818cf8); border: none; border-radius: 14px; color: #fff; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.3s; }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .btn-sec { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; margin-top: 10px; }
 
-        .alert { padding: 15px; border-radius: 14px; text-align: center; font-size: 14px; display: none; margin-bottom: 20px; line-height: 1.5; }
+        .alert { padding: 15px; border-radius: 14px; text-align: center; font-size: 14px; display: none; margin-bottom: 20px; }
         .alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #a7f3d0; }
-        .alert-danger { background: rgba(248, 113, 113, 0.15); border: 1px solid rgba(248, 113, 113, 0.3); color: #fca5a5; }
+
+        .live-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 10px; }
+        .live-box { padding: 15px; border-radius: 14px; text-align: center; border: 1px solid rgba(255,255,255,0.05); background: rgba(15, 23, 42, 0.4); }
+        .live-box h4 { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
+        .live-box .badge { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #fff; }
+        
+        .matrix-table-wrapper { overflow-x: auto; margin-top: 15px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1); }
+        table { width: 100%; border-collapse: collapse; text-align: center; font-size: 13px; }
+        th, td { padding: 12px 10px; border: 1px solid rgba(255,255,255,0.08); white-space: nowrap; }
+        th { background: rgba(15, 23, 42, 0.8); color: var(--color-primary); font-weight: 700; }
+        td { background: rgba(255,255,255,0.02); }
+        
+        .group-badge { display: inline-block; padding: 5px 12px; border-radius: 8px; font-size: 12px; color: #fff; font-weight: bold; width: 90%; text-align: center; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+        .g-g1 { background-color: var(--color-g1); }
+        .g-g2 { background-color: var(--color-g2); }
+        .g-g3 { background-color: var(--color-g3); }
+        .g-g4 { background-color: var(--color-g4); }
+        .g-g5 { background-color: var(--color-g5); }
+        .g-g6 { background-color: var(--color-g6); }
     </style>
 </head>
 <body>
 
 <div class="container">
     <div class="header">
-        <h1>لوحة التحكم</h1>
-        <p>إدخال وحفظ التواريخ المرجعية للمجموعات</p>
+        <h1>لوحة التحكم الشؤون الإدارية 🏢</h1>
+        <p>إدارة الورديات، جدولة القوة البشرية، وإصدار تقارير الحصر العام</p>
     </div>
 
-    <div class="alert alert-success" id="saveAlert">✅ تم حفظ الإعدادات وتحديث الجدول بنجاح!</div>
-    <div class="alert alert-danger" id="conflictAlert">⚠️ تعارض منع الحفظ!</div>
+    <div class="alert alert-success" id="saveAlert">✅ تم حفظ تحديثات النظام الإداري والمزامنة بنجاح!</div>
 
     <div class="card">
-        <h2>1. نوع النظام</h2>
+        <h2>📊 مراقبة المجموعات الفورية (اليوم الحالي)</h2>
+        <div class="live-grid" id="liveDashboardGrid">جاري الحساب الفوري...</div>
+    </div>
+
+    <div class="card">
+        <h2>⚙️ 1. نوع النظام والتواريخ المرجعية</h2>
+        <label for="systemType">نظام العمل النشط:</label>
         <select id="systemType" onchange="renderDynamicFields()">
             <option value="5">نظام 5 مجموعات (أول يوم صباح مستقل لكل مجموعة)</option>
             <option value="6">نظام 6 مجموعات (التوليد التلقائي بناءً على مجموعة A)</option>
         </select>
-    </div>
-
-    <div class="card">
-        <h2>2. ضبط التواريخ المرجعية</h2>
         <div id="dynamicInputsContainer"></div>
     </div>
 
-    <button class="btn" id="saveBtn" onclick="saveConfiguration()">حفظ وتثبيت الجدول 💾</button>
+    <div class="card">
+        <h2>📢 2. الملاحظات والتعاميم الإدارية اليومية</h2>
+        <label for="adminNotice">التعميم الحالي (سيظهر فوراً للموظفين في الشاشة الرئيسية):</label>
+        <textarea id="adminNotice" rows="3" placeholder="اكتب هنا أي ملاحظات أو توجيهات عامة للورديات..."></textarea>
+    </div>
+
+    <button class="btn" id="saveBtn" onclick="saveConfiguration()">حفظ وتثبيت النظام المطور 💾</button>
+
+    <div class="card" style="margin-top:25px;">
+        <h2>🗓️ 3. مصفوفة توزيع القوة المشغّلة للموقع (30 يوماً القادمة)</h2>
+        <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">جدول المداومة الفعلي: يوضح فقط المجموعات المكلّفة بالعمل، والمجموعات في فترة الراحة تُستثنى تلقائياً.</p>
+        <button class="btn btn-sec" onclick="printAdministrativeMatrix()">طباعة كشف التوزيع الإداري المفتوح 🖨️</button>
+        <div class="matrix-table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>اليوم</th>
+                        <th>التاريخ م</th>
+                        <th>التاريخ هـ (اليوم/الشهر)</th>
+                        <th>☀️ وردية الصباح</th>
+                        <th>🌆 وردية الظهر</th>
+                        <th>🌙 وردية الليل</th>
+                    </tr>
+                </thead>
+                <tbody id="matrixBody"></tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -96,147 +125,290 @@
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
+    let globalConfig = null;
+
     const definitions = {
         "5": [
-            { id: "g1", name: "المجموعة الأولى (Group 1)" },
-            { id: "g2", name: "المجموعة الثانية (Group 2)" },
-            { id: "g3", name: "المجموعة الثالثة (Group 3)" },
-            { id: "g4", name: "المجموعة الرابعة (Group 4)" },
-            { id: "g5", name: "المجموعة الخامسة (Group 5)" }
+            { id: "g1", name: "المجموعة الأولى" }, { id: "g2", name: "المجموعة الثانية" },
+            { id: "g3", name: "المجموعة الثالثة" }, { id: "g4", name: "المجموعة الرابعة" },
+            { id: "g5", name: "المجموعة الخامسة" }
         ],
         "6": [
-            { id: "g1", name: "مجموعة A" }, { id: "g2", name: "مجموعة B" },
-            { id: "g3", name: "مجموعة C" }, { id: "g4", name: "مجموعة D" },
-            { id: "g5", name: "مجموعة E" }, { id: "g6", name: "مجموعة F" }
+            { id: "g1", name: "مجموعة A" }, { id: "g2", name: "مجموعة B" }, { id: "g3", name: "مجموعة C" },
+            { id: "g4", name: "مجموعة D" }, { id: "g5", name: "مجموعة E" }, { id: "g6", name: "مجموعة F" }
         ]
     };
 
     const offsets6 = { "g1": 0, "g2": 4, "g3": 8, "g4": 12, "g5": 16, "g6": 20 };
-
     const cycle5 = [
-        { name: "☀️ صباح (أول يوم)", type: "morning" }, { name: "☀️ صباح (ثاني يوم)", type: "morning" },
-        { name: "🌆 ظهر (أول يوم)", type: "afternoon" }, { name: "🌆 ظهر (ثاني يوم)", type: "afternoon" },
-        { name: "🌙 ليل (أول يوم)", type: "evening" }, { name: "🌙 ليل (ثاني يوم)", type: "evening" },
-        { name: "🌿 راحة (أوف)", type: "off" }, { name: "🌿 راحة (أوف)", type: "off" },
-        { name: "🌿 راحة (أوف)", type: "off" }, { name: "🌿 راحة (أوف)", type: "off" }
+        { name: "☀️ صباح", type: "morning" }, { name: "☀️ صباح", type: "morning" },
+        { name: "🌆 ظهر", type: "afternoon" }, { name: "🌆 ظهر", type: "afternoon" },
+        { name: "🌙 ليل", type: "evening" }, { name: "🌙 ليل", type: "evening" },
+        { name: "🌿 راحة", type: "off" }, { name: "🌿 راحة", type: "off" },
+        { name: "🌿 راحة", type: "off" }, { name: "🌿 راحة", type: "off" }
     ];
 
     function renderDynamicFields() {
         const systemType = document.getElementById('systemType').value;
         const container = document.getElementById('dynamicInputsContainer');
         container.innerHTML = '';
-        hideAlerts();
+        document.getElementById('saveAlert').style.display = 'none';
 
+        const activeGroups = definitions[systemType];
+        
         if (systemType === "5") {
-            definitions["5"].forEach(g => {
-                const div = document.createElement('div');
-                div.className = 'group-row';
-                div.innerHTML = `<label for="date_${g.id}">تاريخ أول صباح لـ ${g.name}:</label><input type="date" id="date_${g.id}" required>`;
+            activeGroups.forEach(g => {
+                let savedRoster = (globalConfig && globalConfig.groupsData && globalConfig.groupsData[g.id]?.roster) ? globalConfig.groupsData[g.id].roster : '';
+                const div = document.createElement('div'); div.className = 'group-row';
+                div.innerHTML = `
+                    <label for="date_${g.id}">تاريخ أول صباح لـ ${g.name}:</label>
+                    <input type="date" id="date_${g.id}" required>
+                    <label for="roster_${g.id}">أسماء منسوبي المجموعة (مفصولة بفاصلة):</label>
+                    <textarea id="roster_${g.id}" rows="1" placeholder="مثال: فهد، محمد...">${savedRoster}</textarea>
+                `;
                 container.appendChild(div);
             });
         } else {
-            const firstGroup = definitions["6"][0];
-            const div = document.createElement('div');
-            div.className = 'group-row';
-            div.innerHTML = `<label for="date_${firstGroup.id}">تاريخ أول صباح لـ ${firstGroup.name}:</label><input type="date" id="date_${firstGroup.id}" required>`;
+            const firstGroup = activeGroups[0];
+            let savedRosterA = (globalConfig && globalConfig.groupsData && globalConfig.groupsData["g1"]?.roster) ? globalConfig.groupsData["g1"].roster : '';
+            const div = document.createElement('div'); div.className = 'group-row';
+            div.innerHTML = `
+                <label for="date_${firstGroup.id}">تاريخ أول صباح لـ ${firstGroup.name}:</label>
+                <input type="date" id="date_${firstGroup.id}" required>
+                <label for="roster_${firstGroup.id}">أسماء منسوبي مجموعة A:</label>
+                <textarea id="roster_${firstGroup.id}" rows="1">${savedRosterA}</textarea>
+            `;
             container.appendChild(div);
+
+            for(let i=1; i<activeGroups.length; i++) {
+                let g = activeGroups[i];
+                let savedRoster = (globalConfig && globalConfig.groupsData && globalConfig.groupsData[g.id]?.roster) ? globalConfig.groupsData[g.id].roster : '';
+                const subDiv = document.createElement('div'); subDiv.className = 'group-row';
+                subDiv.innerHTML = `
+                    <label>أسماء منسوبي ${g.name} (التوليد زمني تلقائي):</label>
+                    <textarea id="roster_${g.id}" rows="1" placeholder="مثال: صالح، أحمد...">${savedRoster}</textarea>
+                `;
+                container.appendChild(subDiv);
+            }
         }
         container.querySelectorAll('input[type="date"]').forEach(input => { if(!input.value) input.valueAsDate = new Date(); });
-    }
-
-    function hideAlerts() {
-        document.getElementById('saveAlert').style.display = 'none';
-        document.getElementById('conflictAlert').style.display = 'none';
-    }
-
-    function validateConflicts(generatedGroups) {
-        const simulationDays = 100; const today = new Date();
-        for (let i = 0; i < simulationDays; i++) {
-            let checkDate = new Date(today); checkDate.setDate(today.getDate() + i);
-            let dateStr = checkDate.toISOString().split('T')[0];
-            let dailyLog = { morning: [], afternoon: [], evening: [] };
-
-            for (let group of generatedGroups) {
-                let baseDate = new Date(group.baseDate);
-                let diffDays = Math.floor((checkDate - baseDate) / (1000 * 60 * 60 * 24));
-                if (diffDays >= 0) {
-                    let currentShift = cycle5[diffDays % 10];
-                    if (currentShift.type !== 'off') dailyLog[currentShift.type].push(group.name);
-                }
-            }
-            if (dailyLog.morning.length > 1) return { hasConflict: true, date: dateStr, shift: "الصباح ☀️", groups: dailyLog.morning };
-            if (dailyLog.afternoon.length > 1) return { hasConflict: true, date: dateStr, shift: "الظهر 🌆", groups: dailyLog.afternoon };
-            if (dailyLog.evening.length > 1) return { hasConflict: true, date: dateStr, shift: "الليل 🌙", groups: dailyLog.evening };
-        }
-        return { hasConflict: false };
     }
 
     function fetchCurrentConfig() {
         database.ref('shift_system_config').once('value').then((snapshot) => {
             const val = snapshot.val();
             if(val) {
+                globalConfig = val;
                 document.getElementById('systemType').value = val.systemType;
+                if(val.notice) document.getElementById('adminNotice').value = val.notice;
                 renderDynamicFields();
                 if(val.systemType === "5") {
                     val.groups.forEach(g => {
-                        const el = document.getElementById(`date_${g.id}`);
-                        if(el) el.value = g.baseDate;
+                        const el = document.getElementById(`date_${g.id}`); if(el) el.value = g.baseDate;
                     });
                 } else {
-                    const el = document.getElementById(`date_g1`);
-                    if(el) el.value = val.groups[0].baseDate;
+                    const el = document.getElementById(`date_g1`); if(el) el.value = val.groups[0].baseDate;
                 }
+                calculateLiveDashboardAndMatrix();
+            } else {
+                renderDynamicFields();
             }
         });
     }
 
+    function getShiftInfoRaw(baseDateStr, targetDateObj, cycle) {
+        const baseDate = new Date(baseDateStr);
+        let dayDiff = Math.floor((targetDateObj.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24));
+        let index = dayDiff % cycle.length;
+        if (index < 0) index += cycle.length;
+        return cycle[index];
+    }
+
+    function calculateLiveDashboardAndMatrix() {
+        if(!globalConfig) return;
+        const grid = document.getElementById('liveDashboardGrid');
+        grid.innerHTML = '';
+        const today = new Date(); today.setHours(0,0,0,0);
+
+        globalConfig.groups.forEach(g => {
+            let shift = getShiftInfoRaw(g.baseDate, today, globalConfig.cycle);
+            let badgeStyle = 'background-color: #64748b';
+            if(shift.type === 'morning') badgeStyle = 'background-color: #f59e0b';
+            if(shift.type === 'afternoon') badgeStyle = 'background-color: #38bdf8';
+            if(shift.type === 'evening') badgeStyle = 'background-color: #a855f7';
+            if(shift.type === 'off') badgeStyle = 'background-color: #10b981';
+
+            let box = document.createElement('div'); box.className = 'live-box';
+            box.innerHTML = `<h4>${g.name}</h4><span class="badge" style="${badgeStyle}">${shift.name}</span>`;
+            grid.appendChild(box);
+        });
+
+        const body = document.getElementById('matrixBody');
+        body.innerHTML = '';
+        let loopDate = new Date(); loopDate.setHours(0,0,0,0);
+
+        const dayNames = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+
+        for (let d = 0; d < 30; d++) {
+            let tr = document.createElement('tr');
+            
+            // جلب اسم اليوم والتاريخ الهجري (اليوم والشهر فقط)
+            let dayName = dayNames[loopDate.getDay()];
+            let hijriDayMonth = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { day: 'numeric', month: 'long' }).format(loopDate);
+            
+            tr.innerHTML = `
+                <td><strong>${dayName}</strong></td>
+                <td>${loopDate.getDate()}/${loopDate.getMonth()+1}</td>
+                <td style="color: #cbd5e1;">${hijriDayMonth}</td>
+            `;
+            
+            let morningGroups = [];
+            let afternoonGroups = [];
+            let eveningGroups = [];
+
+            globalConfig.groups.forEach(g => {
+                let shift = getShiftInfoRaw(g.baseDate, loopDate, globalConfig.cycle);
+                let badge = `<span class="group-badge g-${g.id}">${g.name}</span>`;
+                
+                if(shift.type === 'morning') morningGroups.push(badge);
+                else if(shift.type === 'afternoon') afternoonGroups.push(badge);
+                else if(shift.type === 'evening') eveningGroups.push(badge);
+            });
+
+            tr.innerHTML += `<td>${morningGroups.join(' ') || '-'}</td>`;
+            tr.innerHTML += `<td>${afternoonGroups.join(' ') || '-'}</td>`;
+            tr.innerHTML += `<td>${eveningGroups.join(' ') || '-'}</td>`;
+            
+            body.appendChild(tr);
+            loopDate.setDate(loopDate.getDate() + 1);
+        }
+    }
+
     function saveConfiguration() {
-        hideAlerts();
         const systemType = document.getElementById('systemType').value;
+        const noticeVal = document.getElementById('adminNotice').value;
         const generatedGroups = [];
+        const groupsDataMapping = {};
         let cycle = [];
         const saveBtn = document.getElementById('saveBtn');
+        const activeDefs = definitions[systemType];
 
         if (systemType === "5") {
-            for (let g of definitions["5"]) {
+            for (let g of activeDefs) {
                 const dateVal = document.getElementById(`date_${g.id}`).value;
+                const rosterVal = document.getElementById(`roster_${g.id}`).value;
                 if (!dateVal) { alert(`الرجاء تحديد التاريخ لـ ${g.name}`); return; }
                 generatedGroups.push({ id: g.id, name: g.name, baseDate: dateVal });
-            }
-            const conflictCheck = validateConflicts(generatedGroups);
-            if (conflictCheck.hasConflict) {
-                const dangerBox = document.getElementById('conflictAlert');
-                dangerBox.innerHTML = `⚠️ <strong>تعارض منع الحفظ!</strong> تداخل في وردية (${conflictCheck.shift}) بتاريخ ${conflictCheck.date} بين مجموعات: [ ${conflictCheck.groups.join(' و ')} ]`;
-                dangerBox.style.display = 'block'; return;
+                groupsDataMapping[g.id] = { roster: rosterVal };
             }
             cycle = cycle5;
         } else {
             const firstInput = document.getElementById(`date_g1`).value;
             if (!firstInput) { alert("الرجاء تحديد تاريخ مجموعة A"); return; }
             const baseDateObj = new Date(firstInput);
-            definitions["6"].forEach(g => {
+
+            activeDefs.forEach(g => {
                 let tempDate = new Date(baseDateObj); tempDate.setDate(tempDate.getDate() + offsets6[g.id]);
+                let rosterVal = document.getElementById(`roster_${g.id}`).value;
                 generatedGroups.push({ id: g.id, name: g.name, baseDate: tempDate.toISOString().split('T')[0] });
+                groupsDataMapping[g.id] = { roster: rosterVal };
             });
+
             const shiftsOrder = [{ name: "☀️ صباح", type: "morning" }, { name: "🌿 راحة", type: "off" }, { name: "🌆 ظهر", type: "afternoon" }, { name: "🌿 راحة", type: "off" }, { name: "🌙 ليل", type: "evening" }, { name: "🌿 راحة", type: "off" }];
             shiftsOrder.forEach(s => { for (let i = 1; i <= 4; i++) cycle.push({ name: `${s.name} - يوم ${i}`, type: s.type }); });
         }
 
-        saveBtn.disabled = true;
-        saveBtn.innerText = "جاري حفظ الإعدادات... ⏳";
+        saveBtn.disabled = true; saveBtn.innerText = "جاري الحفظ والمزامنة... ⏳";
 
-        database.ref('shift_system_config').set({ systemType, cycle, groups: generatedGroups })
+        database.ref('shift_system_config').set({ systemType, cycle, groups: generatedGroups, groupsData: groupsDataMapping, notice: noticeVal })
         .then(() => {
             document.getElementById('saveAlert').style.display = 'block';
-            saveBtn.disabled = false; saveBtn.innerText = "حفظ وتثبيت الجدول 💾";
+            saveBtn.disabled = false; saveBtn.innerText = "حفظ وتثبيت النظام المطور 💾";
+            fetchCurrentConfig();
             window.scrollTo({ top: 0, behavior: 'smooth' });
-        }).catch(err => {
-            alert("فشل الحفظ! تأكد من اتصالات الشبكة");
-            saveBtn.disabled = false; saveBtn.innerText = "حفظ وتثبيت الجدول 💾";
-        });
+        }).catch(() => { saveBtn.disabled = false; });
     }
 
-    window.onload = () => { renderDynamicFields(); fetchCurrentConfig(); };
+    function printAdministrativeMatrix() {
+        if(!globalConfig) return;
+        let printWindow = window.open('', '_blank');
+        let loopDate = new Date(); loopDate.setHours(0,0,0,0);
+        
+        const dayNames = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+        let rowsHtml = '';
+        
+        for (let i = 0; i < 30; i++) {
+            let dayName = dayNames[loopDate.getDay()];
+            let hijriStr = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { day: 'numeric', month: 'long' }).format(loopDate);
+            
+            let mG = [], aG = [], eG = [];
+            globalConfig.groups.forEach(g => {
+                let shift = getShiftInfoRaw(g.baseDate, loopDate, globalConfig.cycle);
+                let badge = `<span class="p-badge g-${g.id}">${g.name}</span>`;
+                if(shift.type === 'morning') mG.push(badge);
+                else if(shift.type === 'afternoon') aG.push(badge);
+                else if(shift.type === 'evening') eG.push(badge);
+            });
+
+            rowsHtml += `<tr>
+                <td><strong>${dayName}</strong></td>
+                <td>${loopDate.getDate()}/${loopDate.getMonth()+1}/${loopDate.getFullYear()} م</td>
+                <td>${hijriStr}</td>
+                <td>${mG.join(' ') || '-'}</td>
+                <td>${aG.join(' ') || '-'}</td>
+                <td>${eG.join(' ') || '-'}</td>
+            </tr>`;
+            loopDate.setDate(loopDate.getDate() + 1);
+        }
+
+        printWindow.document.write(`
+            <!DOCTYPE html>
+            <html lang="ar" dir="rtl">
+            <head>
+                <meta charset="UTF-8"><title>كشف مناوبات الشؤون الإدارية</title>
+                <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+                <style>
+                    body { font-family: 'Tajawal', sans-serif; padding: 25px; color: #1e293b; background: #fff; }
+                    h1 { text-align: center; font-size: 20px; margin-bottom: 5px; }
+                    p { text-align: center; font-size: 13px; color: #64748b; margin-bottom: 20px; }
+                    table { width: 100%; border-collapse: collapse; text-align: center; }
+                    th, td { border: 1px solid #cbd5e1; padding: 10px 6px; font-size: 12px; white-space: nowrap; }
+                    th { background-color: #f8fafc; font-weight: bold; }
+                    .p-badge { display: inline-block; padding: 4px 10px; border-radius: 6px; color: #fff; font-size: 11px; font-weight: bold; margin: 2px; }
+                    .g-g1 { background-color: #ef4444; }
+                    .g-g2 { background-color: #3b82f6; }
+                    .g-g3 { background-color: #10b981; }
+                    .g-g4 { background-color: #f59e0b; }
+                    .g-g5 { background-color: #a855f7; }
+                    .g-g6 { background-color: #ec4899; }
+                    button { padding: 8px 16px; background: #0f172a; color:#fff; border:none; border-radius:6px; cursor:pointer; font-family:'Tajawal'; font-weight:bold; margin-bottom:15px; }
+                    @media print { button { display:none; } }
+                </style>
+            </head>
+            <body>
+                <button onclick="window.print()">طباعة الكشف أو الحفظ كـ PDF 🖨️</button>
+                <h1>مصفوفة توزيع فترات العمل اليومية للمجموعات</h1>
+                <p>كشف حصر الورديات الفعلي الصادر عن إدارة الشؤون الإدارية (المجموعات المداومة فقط)</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>اليوم</th>
+                            <th>التاريخ الميلادي</th>
+                            <th>التاريخ الهجري (اليوم/الشهر)</th>
+                            <th>☀️ وردية الصباح</th>
+                            <th>🌆 وردية الظهر</th>
+                            <th>🌙 وردية الليل</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rowsHtml}</tbody>
+                </table>
+            </body>
+            </html>
+        `);
+        printWindow.document.close();
+    }
+
+    window.onload = fetchCurrentConfig;
 </script>
 </body>
 </html>
