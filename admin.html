@@ -26,7 +26,13 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Tajawal', sans-serif; background: var(--bg-gradient); color: var(--text-light); min-height: 100vh; padding: 30px 15px; display: flex; flex-direction: column; align-items: center; }
-        .container { width: 100%; max-width: 950px; }
+        .container { width: 100%; max-width: 950px; position: relative; }
+        
+        /* شريط علوي لزر القائمة الرئيسية */
+        .top-bar { display: flex; justify-content: flex-start; margin-bottom: 20px; }
+        .btn-nav { display: inline-flex; align-items: center; gap: 8px; padding: 10px 18px; background: rgba(255, 255, 255, 0.07); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: var(--text-light); font-size: 14px; font-weight: 700; text-decoration: none; transition: all 0.3s; }
+        .btn-nav:hover { background: rgba(255, 255, 255, 0.15); border-color: var(--color-primary); color: var(--color-primary); }
+
         .header { text-align: center; margin-bottom: 30px; }
         .header h1 { font-size: 28px; font-weight: 900; color: var(--color-primary); margin-bottom: 6px; }
         .header p { font-size: 14px; color: var(--text-muted); }
@@ -34,6 +40,12 @@
         .card { background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(20px); border-radius: 24px; padding: 24px; margin-bottom: 25px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
         .card h2 { font-size: 16px; margin-bottom: 18px; color: #cbd5e1; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 8px; display: flex; align-items: center; gap: 8px; }
         
+        .tabs-container { display: flex; gap: 10px; margin-bottom: 15px; background: rgba(15, 23, 42, 0.4); padding: 6px; border-radius: 14px; border: 1px solid rgba(255,255,255,0.05); }
+        .tab-btn { flex: 1; padding: 12px; background: transparent; border: none; color: var(--text-muted); font-family: 'Tajawal', sans-serif; font-weight: 700; font-size: 14px; cursor: pointer; border-radius: 10px; transition: all 0.3s; }
+        .tab-btn.active { background: linear-gradient(to left, #38bdf8, #818cf8); color: #fff; box-shadow: 0 4px 15px rgba(56, 189, 248, 0.2); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #cbd5e1; }
         select, input[type="date"], textarea { width: 100%; padding: 14px 16px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 14px; color: #fff; font-family: 'Tajawal', sans-serif; font-size: 15px; outline: none; margin-bottom: 15px; resize: vertical; }
         
@@ -45,7 +57,7 @@
         .alert { padding: 15px; border-radius: 14px; text-align: center; font-size: 14px; display: none; margin-bottom: 20px; }
         .alert-success { background: rgba(16, 185, 129, 0.15); border: 1px solid rgba(16, 185, 129, 0.3); color: #a7f3d0; }
 
-        .live-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-top: 10px; }
+        .live-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
         .live-box { padding: 15px; border-radius: 14px; text-align: center; border: 1px solid rgba(255,255,255,0.05); background: rgba(15, 23, 42, 0.4); }
         .live-box h4 { font-size: 13px; color: var(--text-muted); margin-bottom: 6px; }
         .live-box .badge { display: inline-block; padding: 4px 10px; border-radius: 8px; font-size: 12px; font-weight: 700; color: #fff; }
@@ -63,11 +75,20 @@
         .g-g4 { background-color: var(--color-g4); }
         .g-g5 { background-color: var(--color-g5); }
         .g-g6 { background-color: var(--color-g6); }
+
+        /* حقوق المطور */
+        .footer { text-align: center; margin-top: 40px; padding: 20px 0; border-top: 1px solid rgba(255, 255, 255, 0.05); font-size: 13px; color: var(--text-muted); }
+        .footer span { color: var(--color-primary); font-weight: 700; }
     </style>
 </head>
 <body>
 
 <div class="container">
+    <!-- الشريط العلوي مع زر العودة للرئيسية -->
+    <div class="top-bar">
+        <a href="index.html" class="btn-nav">🖥️ الشاشة الرئيسية</a>
+    </div>
+
     <div class="header">
         <h1>لوحة التحكم الشؤون الإدارية 🏢</h1>
         <p>إدارة الورديات، جدولة القوة البشرية، وإصدار تقارير الحصر العام</p>
@@ -75,11 +96,25 @@
 
     <div class="alert alert-success" id="saveAlert">✅ تم حفظ تحديثات النظام الإداري والمزامنة بنجاح!</div>
 
+    <!-- شاشة مراقبة المجموعات الفورية الذكية -->
     <div class="card">
-        <h2>📊 مراقبة المجموعات الفورية (اليوم الحالي)</h2>
-        <div class="live-grid" id="liveDashboardGrid">جاري الحساب الفوري...</div>
+        <h2>📊 مراقبة وراديات المجموعات الفورية</h2>
+        
+        <div class="tabs-container">
+            <button class="tab-btn active" onclick="switchTab('todayTab', this)">📅 وردية اليوم</button>
+            <button class="tab-btn" onclick="switchTab('tomorrowTab', this)">⏳ وردية غداً (المستلم القادم)</button>
+        </div>
+
+        <div id="todayTab" class="tab-content active">
+            <div class="live-grid" id="liveDashboardGridToday">جاري الحساب الفوري...</div>
+        </div>
+        
+        <div id="tomorrowTab" class="tab-content">
+            <div class="live-grid" id="liveDashboardGridTomorrow">جاري الحساب الفوري لغدٍ...</div>
+        </div>
     </div>
 
+    <!-- إعدادات النظام والتواريخ المرجعية -->
     <div class="card">
         <h2>⚙️ 1. نوع النظام والتواريخ المرجعية</h2>
         <label for="systemType">نظام العمل النشط:</label>
@@ -90,6 +125,7 @@
         <div id="dynamicInputsContainer"></div>
     </div>
 
+    <!-- التعاميم الإدارية والملاحظات اليومية -->
     <div class="card">
         <h2>📢 2. الملاحظات والتعاميم الإدارية اليومية</h2>
         <label for="adminNotice">التعميم الحالي (سيظهر فوراً للموظفين في الشاشة الرئيسية):</label>
@@ -98,6 +134,7 @@
 
     <button class="btn" id="saveBtn" onclick="saveConfiguration()">حفظ وتثبيت النظام المطور 💾</button>
 
+    <!-- مصفوفة التوزيع (30 يوماً) -->
     <div class="card" style="margin-top:25px;">
         <h2>🗓️ 3. مصفوفة توزيع القوة المشغّلة للموقع (30 يوماً القادمة)</h2>
         <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">جدول المداومة الفعلي: يوضح فقط المجموعات المكلّفة بالعمل، والمجموعات في فترة الراحة تُستثنى تلقائياً.</p>
@@ -117,6 +154,11 @@
                 <tbody id="matrixBody"></tbody>
             </table>
         </div>
+    </div>
+
+    <!-- حقوق المطور في ذيل الصفحة -->
+    <div class="footer">
+        جميع الحقوق محفوظة لقسم الشؤون الإدارية &copy; 2026 | تم التطوير وتصميم النظام بواسطة <span>أبو مرزوق</span> 🚀
     </div>
 </div>
 
@@ -144,9 +186,16 @@
         { name: "☀️ صباح", type: "morning" }, { name: "☀️ صباح", type: "morning" },
         { name: "🌆 ظهر", type: "afternoon" }, { name: "🌆 ظهر", type: "afternoon" },
         { name: "🌙 ليل", type: "evening" }, { name: "🌙 ليل", type: "evening" },
-        { name: "🌿 راحة", type: "off" }, { name: "🌿 راحة", type: "off" },
-        { name: "🌿 راحة", type: "off" }, { name: "🌿 راحة", type: "off" }
+        { name: "🌿 راحة أولى", type: "off" }, { name: "🌿 راحة ثانية", type: "off" },
+        { name: "🌿 راحة ثالثة", type: "off" }, { name: "🌿 راحة رابعة", type: "off" }
     ];
+
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+    }
 
     function renderDynamicFields() {
         const systemType = document.getElementById('systemType').value;
@@ -224,14 +273,12 @@
         return cycle[index];
     }
 
-    function calculateLiveDashboardAndMatrix() {
-        if(!globalConfig) return;
-        const grid = document.getElementById('liveDashboardGrid');
+    function buildLiveDashboard(targetDate, gridId) {
+        const grid = document.getElementById(gridId);
         grid.innerHTML = '';
-        const today = new Date(); today.setHours(0,0,0,0);
-
+        
         globalConfig.groups.forEach(g => {
-            let shift = getShiftInfoRaw(g.baseDate, today, globalConfig.cycle);
+            let shift = getShiftInfoRaw(g.baseDate, targetDate, globalConfig.cycle);
             let badgeStyle = 'background-color: #64748b';
             if(shift.type === 'morning') badgeStyle = 'background-color: #f59e0b';
             if(shift.type === 'afternoon') badgeStyle = 'background-color: #38bdf8';
@@ -242,6 +289,16 @@
             box.innerHTML = `<h4>${g.name}</h4><span class="badge" style="${badgeStyle}">${shift.name}</span>`;
             grid.appendChild(box);
         });
+    }
+
+    function calculateLiveDashboardAndMatrix() {
+        if(!globalConfig) return;
+        
+        const today = new Date(); today.setHours(0,0,0,0);
+        const tomorrow = new Date(); tomorrow.setDate(today.getDate() + 1); tomorrow.setHours(0,0,0,0);
+
+        buildLiveDashboard(today, 'liveDashboardGridToday');
+        buildLiveDashboard(tomorrow, 'liveDashboardGridTomorrow');
 
         const body = document.getElementById('matrixBody');
         body.innerHTML = '';
@@ -251,8 +308,6 @@
 
         for (let d = 0; d < 30; d++) {
             let tr = document.createElement('tr');
-            
-            // جلب اسم اليوم والتاريخ الهجري (اليوم والشهر فقط)
             let dayName = dayNames[loopDate.getDay()];
             let hijriDayMonth = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { day: 'numeric', month: 'long' }).format(loopDate);
             
@@ -314,8 +369,28 @@
                 groupsDataMapping[g.id] = { roster: rosterVal };
             });
 
-            const shiftsOrder = [{ name: "☀️ صباح", type: "morning" }, { name: "🌿 راحة", type: "off" }, { name: "🌆 ظهر", type: "afternoon" }, { name: "🌿 راحة", type: "off" }, { name: "🌙 ليل", type: "evening" }, { name: "🌿 راحة", type: "off" }];
-            shiftsOrder.forEach(s => { for (let i = 1; i <= 4; i++) cycle.push({ name: `${s.name} - يوم ${i}`, type: s.type }); });
+            const shiftsOrder = [
+                { name: "☀️ صباح", type: "morning" }, 
+                { name: "🌿 راحة", type: "off" }, 
+                { name: "🌆 ظهر", type: "afternoon" }, 
+                { name: "🌿 راحة", type: "off" }, 
+                { name: "🌙 ليل", type: "evening" }, 
+                { name: "🌿 راحة", type: "off" }
+            ];
+            
+            shiftsOrder.forEach(s => { 
+                for (let i = 1; i <= 4; i++) {
+                    let finalName = s.name;
+                    if(s.type === 'off') {
+                        if(s.name === "🌿 راحة" && cycle.filter(c=>c.name.includes("راحة")).length < 4) finalName = `🌿 راحة أولى - يوم ${i}`;
+                        else if(s.name === "🌿 راحة" && cycle.filter(c=>c.name.includes("راحة")).length < 8) finalName = `🌿 راحة ثانية - يوم ${i}`;
+                        else finalName = `🌿 راحة ثالثة - يوم ${i}`;
+                    } else {
+                        finalName = `${s.name} - يوم ${i}`;
+                    }
+                    cycle.push({ name: finalName, type: s.type }); 
+                }
+            });
         }
 
         saveBtn.disabled = true; saveBtn.innerText = "جاري الحفظ والمزامنة... ⏳";
