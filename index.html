@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شِفتك - جدول الورديات الذكي المطور</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            
+            /* ألوان الفترات والورديات */
+            --color-morning: #f59e0b;
+            --color-afternoon: #38bdf8;
+            --color-evening: #a855f7;
+            --color-off: #10b981;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 30px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* -------------------------- */
+        /* ✨ ستايل الشاشة الترحيبية (Splash Screen) ✨ */
+        /* -------------------------- */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #0f172a;
+            background-image: var(--bg-gradient);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .splash-logo {
+            font-size: 42px;
+            font-weight: 900;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            animation: pulse 2s infinite ease-in-out;
+        }
+
+        .splash-subtitle {
+            font-size: 15px;
+            color: var(--text-muted);
+            margin-bottom: 35px;
+            letter-spacing: 0.5px;
+        }
+
+        .progress-container {
+            width: 200px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(to left, #38bdf8, #818cf8);
+            border-radius: 10px;
+            transition: width 0.1s linear;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.9; }
+            50% { transform: scale(1.03); opacity: 1; }
+        }
+
+        .splash-screen.fade-out {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(1.05);
+        }
+
+        /* -------------------------- */
+        /* ستايل التطبيق الرئيسي */
+        /* -------------------------- */
+        .container {
+            width: 100%;
+            max-width: 520px;
+            opacity: 0;
+            transform: translateY(15px);
+            transition: all 0.6s ease 0.4s;
+        }
+
+        body.app-ready .container {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 32px;
+            font-weight: 900;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        /* كرت المدخلات */
+        .selector-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+            padding-right: 4px;
+        }
+
+        select, input[type="date"] {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            color: #fff;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+            margin-bottom: 18px;
+        }
+
+        select:focus, input[type="date"]:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+
+        /* النص الهجري التابع لحقل البحث */
+        .search-hijri-output {
+            font-size: 13px;
+            color: #38bdf8;
+            margin-top: -12px;
+            margin-bottom: 18px;
+            padding-right: 4px;
+            font-weight: 500;
+        }
+
+        /* كرت النتيجة الأساسي ليوم البحث */
+        .status-card {
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid var(--card-border);
+            border-radius: 28px;
+            padding: 35px 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 20px 45px rgba(0,0,0,0.3);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-bottom: 25px;
+        }
+
+        .status-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; height: 6px;
+            background: var(--text-muted);
+        }
+
+        .status-card.morning::before { background: var(--color-morning); }
+        .status-card.afternoon::before { background: var(--color-afternoon); }
+        .status-card.evening::before { background: var(--color-evening); }
+        .status-card.off::before { background: var(--color-off); }
+
+        .group-title {
+            font-size: 15px;
+            color: var(--text-muted);
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+
+        .shift-main-name {
+            font-size: 34px;
+            font-weight: 900;
+            margin-bottom: 8px;
+        }
+
+        /* وضع ترحيبي عند عدم الاختيار */
+        .status-card.prompt-mode .shift-main-name {
+            font-size: 22px;
+            color: #cbd5e1;
+            font-weight: 700;
+        }
+
+        .morning .shift-main-name { color: var(--color-morning); }
+        .afternoon .shift-main-name { color: var(--color-afternoon); }
+        .evening .shift-main-name { color: var(--color-evening); }
+        .off .shift-main-name { color: var(--color-off); }
+
+        .day-counter-badge {
+            display: inline-block;
+            padding: 6px 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .main-card-hijri {
+            font-size: 13px;
+            color: #cbd5e1;
+            opacity: 0.85;
+            margin-top: 4px;
+        }
+
+        /* قسم الأيام الأربعة المتتالية */
+        .future-timeline-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #94a3b8;
+            margin-bottom: 12px;
+            padding-right: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .timeline-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .timeline-card {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 18px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+            padding-right: 20px;
+        }
+
+        .timeline-card::before {
+            content: '';
+            position: absolute;
+            top: 15%; right: 0; bottom: 15%; width: 4px;
+            border-radius: 4px 0 0 4px;
+            background: #64748b;
+        }
+
+        .timeline-card.morning::before { background: var(--color-morning); }
+        .timeline-card.afternoon::before { background: var(--color-afternoon); }
+        .timeline-card.evening::before { background: var(--color-evening); }
+        .timeline-card.off::before { background: var(--color-off); }
+
+        .t-date {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+        }
+
+        .t-hijri {
+            font-size: 11px;
+            color: #38bdf8;
+            margin-bottom: 6px;
+            font-weight: 500;
+        }
+
+        .t-name {
+            font-size: 16px;
+            font-weight: 900;
+            margin-bottom: 4px;
+        }
+        
+        .morning .t-name { color: var(--color-morning); }
+        .afternoon .t-name { color: var(--color-afternoon); }
+        .evening .t-name { color: var(--color-evening); }
+        .off .t-name { color: var(--color-off); }
+
+        .t-detail {
+            font-size: 12px;
+            color: #e2e8f0;
+        }
+
+        /* بطاقة معلومات وإصدار البرنامج المتناسقة */
+        .app-info-card {
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .app-info-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 6px;
+        }
+
+        .app-info-desc {
+            font-size: 12px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .app-meta-grid {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            padding-top: 12px;
+            font-size: 11px;
+            color: #cbd5e1;
+        }
+
+        .meta-item strong {
+            color: #818cf8;
+        }
+
+        .no-config-alert {
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.25);
+            color: #fca5a5;
+            padding: 18px;
+            border-radius: 18px;
+            text-align: center;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<!-- عنصر الشاشة الترحيبية -->
+<div class="splash-screen" id="splashScreen">
+    <div class="splash-logo">شِفتك</div>
+    <div class="splash-subtitle">نظام جدولة الورديات الذكي التناوبي</div>
+    <div class="progress-container">
+        <div class="progress-bar" id="progressBar"></div>
+    </div>
+</div>
+
+<div class="container">
+    <div class="header">
+        <h1>نظام شِفتك الذكي</h1>
+        <p>متابعة واستعلام فترات العمل وأيام الراحة بكل دقة</p>
+    </div>
+
+    <div id="noConfigContainer" style="display: none;" class="no-config-alert">
+        ⚠️ لم يتم ضبط أو توليد أي جدولة للمجموعات حتى الآن! <br>
+        يرجى الدخول إلى لوحة التحكم (Admin) لتحديد نظام التتابع وتثبيته أولاً.
+    </div>
+
+    <div id="mainAppContainer">
+        <!-- كرت الاختيارات والبحث -->
+        <div class="selector-card">
+            <label for="groupSelect">اختر مجموعتك للتتبع:</label>
+            <select id="groupSelect" onchange="calculateCurrentShift()"></select>
+
+            <label for="dateSelect">تاريخ البحث والاستعلام:</label>
+            <input type="date" id="dateSelect" onchange="calculateCurrentShift()">
+            
+            <!-- هنا الإضافة: حقل لعرض التاريخ الهجري المقابل الفوري عند الاختيار -->
+            <div class="search-hijri-output" id="searchHijriOutput" style="display: none;"></div>
+        </div>
+
+        <!-- بطاقة نتيجة اليوم الرئيسي -->
+        <div class="status-card prompt-mode" id="statusCard">
+            <div class="group-title" id="displayGroupName">النظام جاهز</div>
+            <div class="shift-main-name" id="displayShiftName">📌 الرجاء اختيار مجموعتك أولاً لاستعراض الجدول</div>
+            <div class="day-counter-badge" id="displayDayDetail">بانتظار الاختيار</div>
+            <!-- هنا الإضافة: التاريخ الهجري والميلادي في البطاقة الرئيسية -->
+            <div class="main-card-hijri" id="displayMainHijri"></div>
+        </div>
+
+        <!-- قسم الأيام الأربعة المتتالية -->
+        <div class="future-timeline-section" id="timelineSection" style="display: none;">
+            <div class="section-title">
+                🗓️ جدول الأيام الأربعة المتتالية التالية لهذا اليوم:
+            </div>
+            <div class="timeline-grid" id="timelineGrid"></div>
+        </div>
+
+        <!-- بطاقة معلومات وإصدار البرنامج -->
+        <div class="app-info-card">
+            <div class="app-info-title">عن نظام شِفتك الذكي</div>
+            <div class="app-info-desc">
+                تطبيق تنظيمي متطور مصمم خصيصاً لحساب وإدارة جداول فترات الدوام والورديات التناوبية للمجموعات والأفراد، مع محرك مرن يعتمد على الهندسة العكسية لحساب التتابع والتنبؤ بالأيام والراحات المستقبلية تلقائياً وبأثر رجعي دون فجوات زمنية.
+            </div>
+            <div class="app-meta-grid">
+                <div class="meta-item">النسخة: <strong>v2.0.0 (مطور)</strong></div>
+                <div class="meta-item">المطور: <strong>لوحة تحكم مطور البرمجيات</strong></div>
+                <div class="meta-item">الحقوق: <strong>محفوظة © 2026</strong></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let systemConfig = null;
+
+    // دالة تحويل برمجية سريعة للتاريخ الهجري الرسمي (أم القرى)
+    function formatToHijri(dateObj) {
+        try {
+            return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric'
+            }).format(dateObj) + " هـ";
+        } catch (e) {
+            return "";
+        }
+    }
+
+    // دالة جلب اسم اليوم بالعربي
+    function getArabicWeekday(dateObj) {
+        return new Intl.DateTimeFormat('ar-EG', { weekday: 'long' }).format(dateObj);
+    }
+
+    function runSplashScreen() {
+        const progressBar = document.getElementById('progressBar');
+        const splashScreen = document.getElementById('splashScreen');
+        let width = 0;
+        
+        const interval = setInterval(() => {
+            if (width >= 100) {
+                clearInterval(interval);
+                splashScreen.classList.add('fade-out');
+                document.body.classList.add('app-ready');
+            } else {
+                width += 2;
+                progressBar.style.width = width + '%';
+            }
+        }, 30);
+    }
+
+    function loadConfig() {
+        const stored = localStorage.getItem('shift_system_config');
+        if (!stored) {
+            document.getElementById('noConfigContainer').style.display = 'block';
+            document.getElementById('mainAppContainer').style.display = 'none';
+            document.getElementById('splashScreen').style.display = 'none';
+            document.body.classList.add('app-ready');
+            return;
+        }
+        
+        systemConfig = JSON.parse(stored);
+        document.getElementById('noConfigContainer').style.none = 'none';
+        document.getElementById('mainAppContainer').style.display = 'block';
+
+        const select = document.getElementById('groupSelect');
+        select.innerHTML = '';
+        
+        let placeholderOpt = document.createElement('option');
+        placeholderOpt.value = "";
+        placeholderOpt.innerText = "-- اختر مجموعتك من هنا --";
+        select.appendChild(placeholderOpt);
+
+        systemConfig.groups.forEach(group => {
+            let opt = document.createElement('option');
+            opt.value = group.id;
+            opt.innerText = group.name;
+            select.appendChild(opt);
+        });
+
+        document.getElementById('dateSelect').valueAsDate = new Date();
+        
+        runSplashScreen();
+    }
+
+    function calculateCurrentShift() {
+        if (!systemConfig) return;
+
+        const groupId = document.getElementById('groupSelect').value;
+        const targetDateStr = document.getElementById('dateSelect').value;
+        
+        const hijriOutputDiv = document.getElementById('searchHijriOutput');
+
+        if (!targetDateStr) {
+            hijriOutputDiv.style.display = 'none';
+        } else {
+            const tempDate = new Date(targetDateStr);
+            hijriOutputDiv.innerText = `الموافق هجرياً: ${getArabicWeekday(tempDate)}، ${formatToHijri(tempDate)}`;
+            hijriOutputDiv.style.display = 'block';
+        }
+
+        if (!groupId || !targetDateStr) {
+            document.getElementById('displayGroupName').innerText = "النظام جاهز";
+            document.getElementById('displayShiftName').innerText = "📌 الرجاء اختيار مجموعتك أولاً لاستعراض الجدول";
+            document.getElementById('displayDayDetail').innerText = "بانتظار الاختيار";
+            document.getElementById('displayMainHijri').innerText = "";
+            
+            const card = document.getElementById('statusCard');
+            card.className = "status-card prompt-mode";
+            document.getElementById('timelineSection').style.display = 'none';
+            return;
+        }
+
+        const groupData = systemConfig.groups.find(g => g.id === groupId);
+        if (!groupData) return;
+
+        document.getElementById('timelineSection').style.display = 'block';
+
+        const mainResult = getShiftInfoForDate(groupData.baseDate, targetDateStr);
+        const mainDateObj = new Date(targetDateStr);
+        
+        document.getElementById('displayGroupName').innerText = groupData.name;
+        document.getElementById('displayShiftName').innerText = mainResult.shift.name;
+        document.getElementById('displayDayDetail').innerText = mainResult.dayDetail;
+        
+        // عرض التاريخ المزدوج المدمج في البطاقة الرئيسية
+        document.getElementById('displayMainHijri').innerText = `${getArabicWeekday(mainDateObj)} | ${mainDateObj.getDate()}/${mainDateObj.getMonth() + 1} م - الموافق ${formatToHijri(mainDateObj)}`;
+
+        const card = document.getElementById('statusCard');
+        card.className = "status-card " + mainResult.shift.type;
+
+        const timelineGrid = document.getElementById('timelineGrid');
+        timelineGrid.innerHTML = ''; 
+
+        let currentLoopDate = new Date(targetDateStr);
+
+        for (let i = 1; i <= 4; i++) {
+            currentLoopDate.setDate(currentLoopDate.getDate() + 1);
+            const loopDateStr = currentLoopDate.toISOString().split('T')[0];
+            
+            const loopResult = getShiftInfoForDate(groupData.baseDate, loopDateStr);
+            const dateObj = new Date(loopDateStr);
+            const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()} م`;
+            const loopHijriStr = formatToHijri(dateObj);
+
+            const tCard = document.createElement('div');
+            tCard.className = `timeline-card ${loopResult.shift.type}`;
+            tCard.innerHTML = `
+                <div>
+                    <div class="t-date">📅 ${getArabicWeekday(dateObj)} (${formattedDate})</div>
+                    <div class="t-hijri">🌙 ${loopHijriStr}</div>
+                    <div class="t-name">${loopResult.shift.name}</div>
+                </div>
+                <div class="t-detail">${loopResult.dayDetail}</div>
+            `;
+            timelineGrid.appendChild(tCard);
+        }
+    }
+
+    function getShiftInfoForDate(baseDateStr, targetDateStr) {
+        const baseDate = new Date(baseDateStr);
+        const targetDate = new Date(targetDateStr);
+
+        const timeDiff = targetDate.getTime() - baseDate.getTime();
+        let dayDiff = Math.floor(timeDiff / (1000 * 60 * 60 * 24));
+
+        const cycleLength = systemConfig.cycle.length;
+
+        let index = dayDiff % cycleLength;
+        if (index < 0) {
+            index += cycleLength;
+        }
+
+        const shift = systemConfig.cycle[index];
+        let dayDetail = "";
+
+        if (cycleLength === 10) {
+            if (index === 0 || index === 1) {
+                dayDetail = index === 0 ? "☀️ اليوم الأول" : "☀️ اليوم الثاني";
+            } else if (index === 2 || index === 3) {
+                dayDetail = index === 2 ? "🌆 اليوم الأول" : "🌆 اليوم الثاني";
+            } else if (index === 4 || index === 5) {
+                dayDetail = index === 4 ? "🌙 اليوم الأول" : "🌙 اليوم الثاني";
+            } else {
+                const offDayNum = (index - 6) + 1;
+                dayDetail = `🌿 اليوم الـ ${getArabicOrdinal(offDayNum)}`;
+            }
+        } else {
+            let relativeDay = (index % 4) + 1;
+            if (index >= 0 && index <= 3) {
+                dayDetail = `☀️ اليوم الـ ${getArabicOrdinal(relativeDay)}`;
+            } else if (index >= 4 && index <= 7) {
+                dayDetail = `🌿 اليوم الـ ${getArabicOrdinal(relativeDay)} (بعد الصباح)`;
+            } else if (index >= 8 && index <= 11) {
+                dayDetail = `🌆 اليوم الـ ${getArabicOrdinal(relativeDay)}`;
+            } else if (index >= 12 && index <= 15) {
+                dayDetail = `🌿 اليوم الـ ${getArabicOrdinal(relativeDay)} (بعد الظهر)`;
+            } else if (index >= 16 && index <= 19) {
+                dayDetail = `🌙 اليوم الـ ${getArabicOrdinal(relativeDay)}`;
+            } else if (index >= 20 && index <= 23) {
+                dayDetail = `🌿 اليوم الـ ${getArabicOrdinal(relativeDay)} (بعد الليل)`;
+            }
+        }
+
+        return { shift, dayDetail };
+    }
+
+    function getArabicOrdinal(num) {
+        const ordinals = { 1: "الأول", 2: "الثاني", 3: "الثالث", 4: "الرابع" };
+        return ordinals[num] || num;
+    }
+
+    window.onload = loadConfig;
+</script>
+</body>
+</html>
