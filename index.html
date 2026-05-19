@@ -9,40 +9,90 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            --card-bg: rgba(255, 255, 255, 0.05);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --text-light: #f8fafc;
-            --text-muted: #94a3b8;
-            --color-morning: #f59e0b;
-            --color-afternoon: #38bdf8;
-            --color-evening: #a855f7;
-            --color-off: #10b981;
+            --bg-gradient: linear-gradient(135deg, #f0f4f8 0%, #e0e7ff 100%);
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --card-border: rgba(56, 189, 248, 0.2);
+            --text-light: #1e293b;
+            --text-muted: #64748b;
+            --color-morning: #ffb703;
+            --color-afternoon: #4ea8de;
+            --color-evening: #9d4edd;
+            --color-off: #52b788;
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --primary-blue: #0284c7; /* اللون الأزرق المميز للترويسة */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Tajawal', sans-serif; background: var(--bg-gradient); color: var(--text-light); min-height: 100vh; padding: 30px 15px; display: flex; flex-direction: column; align-items: center; }
+        body { font-family: 'Tajawal', sans-serif; background: var(--bg-gradient); color: var(--text-light); min-height: 100vh; padding-bottom: 30px; display: flex; flex-direction: column; align-items: center; }
         
-        .splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.6s ease; }
-        .splash-logo { font-size: 42px; font-weight: 900; background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; }
-        .progress-container { width: 200px; height: 4px; background: rgba(255, 255, 255, 0.08); border-radius: 10px; overflow: hidden; }
-        .progress-bar { height: 100%; width: 0%; background: linear-gradient(to left, #38bdf8, #818cf8); }
+        /* 👑 الترويسة العلوية الفخمة باللون الأزرق المميز والكتابة البيضاء */
+        .top-hero-banner {
+            width: 100%;
+            background: linear-gradient(135deg, #0284c7 0%, #1e40af 100%);
+            padding: 25px 15px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2);
+            border-bottom: 4px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 0;
+        }
+        .top-hero-banner h1 {
+            color: #ffffff;
+            font-size: 36px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+
+        /* 📢 شريط الترحيب والتحريك الذكي المتزن */
+        .welcome-ticker-container {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.9);
+            border-bottom: 1px solid rgba(2, 132, 199, 0.15);
+            padding: 10px 0;
+            overflow: hidden;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+        }
+        .welcome-ticker-text {
+            display: inline-block;
+            white-space: nowrap;
+            padding-right: 100%;
+            animation: marqueeSlide 22s linear infinite; /* سرعة متزنة ومريحة جداً للقراءة */
+            font-size: 14.5px;
+            font-weight: 700;
+            color: #1e3a8a;
+        }
+        @keyframes marqueeSlide {
+            0% { transform: translate3d(0, 0, 0); }
+            100% { transform: translate3d(100%, 0, 0); }
+        }
+
+        .splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f8fafc; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.6s ease; }
+        .splash-logo { font-size: 42px; font-weight: 900; background: linear-gradient(to right, #0284c7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; }
+        .progress-container { width: 200px; height: 4px; background: rgba(0, 0, 0, 0.05); border-radius: 10px; overflow: hidden; }
+        .progress-bar { height: 100%; width: 0%; background: linear-gradient(to left, #0284c7, #6366f1); }
         .splash-screen.fade-out { opacity: 0; pointer-events: none; }
 
-        .container { width: 100%; max-width: 520px; opacity: 0; transform: translateY(15px); transition: all 0.6s ease; }
+        .container { width: 100%; max-width: 520px; padding: 0 15px; opacity: 0; transform: translateY(15px); transition: all 0.6s ease; }
         body.app-ready .container { opacity: 1; transform: translateY(0); }
-        .header { text-align: center; margin-bottom: 30px; }
-        .header h1 { font-size: 32px; font-weight: 900; background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 6px; }
-        .header p { font-size: 14px; color: var(--text-muted); }
-        
-        .selector-card { background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(20px); border-radius: 24px; padding: 24px; margin-bottom: 25px; }
-        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #cbd5e1; }
-        select, input[type="date"] { width: 100%; padding: 14px 16px; background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 14px; color: #fff; font-family: 'Tajawal', sans-serif; font-size: 15px; outline: none; margin-bottom: 18px; }
-        
-        .search-hijri-output { font-size: 13px; color: #38bdf8; margin-top: -12px; margin-bottom: 18px; font-weight: 500; padding-right: 4px; }
 
-        .status-card { background: rgba(255, 255, 255, 0.07); border: 1px solid var(--card-border); border-radius: 28px; padding: 35px 20px; text-align: center; position: relative; overflow: hidden; margin-bottom: 25px; }
-        .status-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 6px; background: var(--text-muted); }
+        .admin-notice-card { background: rgba(224, 242, 254, 0.8); border: 2px dashed #0284c7; border-radius: 20px; padding: 18px; margin-bottom: 25px; display: none; backdrop-filter: blur(10px); animation: noticeGlow 2.5s infinite alternate; }
+        .admin-notice-card h3 { font-size: 14px; color: #0369a1; margin-bottom: 8px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+        .admin-notice-content { font-size: 13.5px; color: #1e293b; line-height: 1.6; white-space: pre-line; }
+        @keyframes noticeGlow {
+            0% { box-shadow: 0 0 5px rgba(2, 132, 199, 0.1); }
+            100% { box-shadow: 0 0 15px rgba(2, 132, 199, 0.25); }
+        }
+        
+        .selector-card { background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(20px); border-radius: 24px; padding: 24px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(148, 163, 184, 0.15); }
+        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #334155; }
+        select, input[type="date"] { width: 100%; padding: 14px 16px; background: var(--input-bg); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 14px; color: #0f172a; font-family: 'Tajawal', sans-serif; font-size: 15px; outline: none; margin-bottom: 18px; transition: border 0.3s; }
+        select:focus, input[type="date"]:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15); }
+        
+        .search-hijri-output { font-size: 13px; color: #0284c7; margin-top: -12px; margin-bottom: 18px; font-weight: 500; padding-right: 4px; }
+
+        .status-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 28px; padding: 35px 20px; text-align: center; position: relative; overflow: hidden; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(148, 163, 184, 0.15); }
+        .status-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: var(--text-muted); }
         .status-card.morning::before { background: var(--color-morning); }
         .status-card.afternoon::before { background: var(--color-afternoon); }
         .status-card.evening::before { background: var(--color-evening); }
@@ -50,41 +100,59 @@
 
         .group-title { font-size: 15px; color: var(--text-muted); font-weight: 500; margin-bottom: 10px; }
         .shift-main-name { font-size: 34px; font-weight: 900; margin-bottom: 8px; }
-        .status-card.prompt-mode .shift-main-name { font-size: 22px; color: #cbd5e1; }
-        .morning .shift-main-name { color: var(--color-morning); }
-        .afternoon .shift-main-name { color: var(--color-afternoon); }
-        .evening .shift-main-name { color: var(--color-evening); }
-        .off .shift-main-name { color: var(--color-off); }
+        .status-card.prompt-mode .shift-main-name { font-size: 22px; color: #475569; }
+        
+        .morning .shift-main-name { color: #d97706; }
+        .afternoon .shift-main-name { color: #0284c7; }
+        .evening .shift-main-name { color: #7b2cbf; }
+        .off .shift-main-name { color: #2d6a4f; }
 
-        .day-counter-badge { display: inline-block; padding: 6px 18px; background: rgba(255, 255, 255, 0.08); border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 10px; }
-        .main-card-hijri { font-size: 13px; color: #cbd5e1; opacity: 0.85; margin-top: 4px; }
+        .day-counter-badge { display: inline-block; padding: 6px 18px; background: rgba(0, 0, 0, 0.05); border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #334155; }
+        .main-card-hijri { font-size: 13px; color: #475569; opacity: 0.9; margin-top: 4px; }
 
         .future-timeline-section { margin-bottom: 30px; }
-        .section-title { font-size: 14px; font-weight: 700; color: #94a3b8; margin-bottom: 12px; }
-        .timeline-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .timeline-card { background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.06); border-radius: 18px; padding: 16px; display: flex; flex-direction: column; position: relative; padding-right: 20px; }
-        .timeline-card::before { content: ''; position: absolute; top: 15%; right: 0; bottom: 15%; width: 4px; border-radius: 4px 0 0 4px; background: #64748b; }
-        .timeline-card.morning::before { background: var(--color-morning); }
-        .timeline-card.afternoon::before { background: var(--color-afternoon); }
-        .timeline-card.evening::before { background: var(--color-evening); }
-        .timeline-card.off::before { background: var(--color-off); }
-
-        .t-date { font-size: 11px; color: var(--text-muted); margin-bottom: 4px; }
-        .t-hijri { font-size: 11px; color: #38bdf8; margin-bottom: 6px; font-weight: 500; }
-        .t-name { font-size: 16px; font-weight: 900; margin-bottom: 4px; }
-        .morning .t-name { color: var(--color-morning); }
-        .afternoon .t-name { color: var(--color-afternoon); }
-        .evening .t-name { color: var(--color-evening); }
-        .off .t-name { color: var(--color-off); }
-        .t-detail { font-size: 12px; color: #e2e8f0; }
-
-        .app-info-card { background: rgba(15, 23, 42, 0.4); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 20px; padding: 20px; text-align: center; }
-        .app-info-title { font-size: 14px; font-weight: 700; color: #38bdf8; margin-bottom: 6px; }
-        .app-info-desc { font-size: 12px; color: var(--text-muted); line-height: 1.6; margin-bottom: 12px; }
-        .app-meta-grid { display: flex; justify-content: center; gap: 20px; border-top: 1px solid rgba(255, 255, 255, 0.06); padding-top: 12px; font-size: 11px; color: #cbd5e1; }
-        .meta-item strong { color: #818cf8; }
+        .section-title { font-size: 14px; font-weight: 700; color: #475569; margin-bottom: 12px; }
         
-        .no-config-alert { background: rgba(239, 68, 68, 0.12); border: 1px solid rgba(239, 68, 68, 0.25); color: #fca5a5; padding: 18px; border-radius: 18px; text-align: center; }
+        .timeline-list { display: flex; flex-direction: column; gap: 10px; }
+        .timeline-row { 
+            background: var(--card-bg); 
+            border: 1px solid var(--card-border); 
+            border-radius: 16px; 
+            padding: 14px 18px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            position: relative; 
+            padding-right: 22px; 
+            box-shadow: 0 4px 10px rgba(148, 163, 184, 0.06); 
+        }
+        
+        .timeline-row::before { content: ''; position: absolute; top: 12%; right: 0; bottom: 12%; width: 5px; border-radius: 4px 0 0 4px; background: #94a3b8; }
+        .timeline-row.morning::before { background: var(--color-morning); }
+        .timeline-row.afternoon::before { background: var(--color-afternoon); }
+        .timeline-row.evening::before { background: var(--color-evening); }
+        .timeline-row.off::before { background: var(--color-off); }
+
+        .t-right-side { display: flex; flex-direction: column; gap: 2px; }
+        .t-date { font-size: 11.5px; color: var(--text-muted); }
+        .t-hijri { font-size: 11.5px; color: #0284c7; font-weight: 500; }
+        
+        .t-left-side { text-align: left; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+        .t-name { font-size: 15px; font-weight: 900; }
+        
+        .morning .t-name { color: #d97706; }
+        .afternoon .t-name { color: #0284c7; }
+        .evening .t-name { color: #7b2cbf; }
+        .off .t-name { color: #2d6a4f; }
+        .t-detail { font-size: 12px; color: #475569; font-weight: 500; }
+
+        .app-info-card { background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(2, 132, 199, 0.15); border-radius: 20px; padding: 20px; text-align: center; box-shadow: 0 4px 15px rgba(148, 163, 184, 0.05); }
+        .app-info-title { font-size: 14px; font-weight: 700; color: #0284c7; margin-bottom: 6px; }
+        .app-info-desc { font-size: 12px; color: #475569; line-height: 1.6; margin-bottom: 12px; }
+        .app-meta-grid { display: flex; justify-content: center; gap: 20px; border-top: 1px solid rgba(0, 0, 0, 0.06); padding-top: 12px; font-size: 11px; color: #475569; }
+        .meta-item strong { color: #4f46e5; }
+        
+        .no-config-alert { background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; padding: 18px; border-radius: 18px; text-align: center; }
     </style>
 </head>
 <body>
@@ -94,10 +162,22 @@
     <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
 </div>
 
+<!-- 👑 الترويسة الزرقاء المميزة في رأس الصفحة -->
+<div class="top-hero-banner">
+    <h1>نظام شِفتك</h1>
+</div>
+
+<!-- 📢 شريط الترحيب المتحرك المتزن والمختصر -->
+<div class="welcome-ticker-container">
+    <div class="welcome-ticker-text">
+        أهلاً بك في نظام شِفتك الذكي .. تطبيق متطور لمتابعة واستعلام فترات العمل وأيام الراحة بكل دقة وسهولة لجميع المجموعات والأفراد.
+    </div>
+</div>
+
 <div class="container">
-    <div class="header">
-        <h1>نظام شِفتك الذكي</h1>
-        <p>متابعة واستعلام فترات العمل وأيام الراحة بكل دقة</p>
+    <div class="admin-notice-card" id="adminNoticeCard">
+        <h3>📢 توجيهات وتعاميم الشؤون الإدارية:</h3>
+        <div class="admin-notice-content" id="adminNoticeContent"></div>
     </div>
 
     <div id="noConfigContainer" style="display: none;" class="no-config-alert">⚠️ جاري تحميل البيانات وإعداد الجدولة التناوبية...</div>
@@ -119,8 +199,8 @@
         </div>
 
         <div class="future-timeline-section" id="timelineSection" style="display: none;">
-            <div class="section-title">🗓️ جدول الأيام الأربعة المتتالية التالية لهذا اليوم:</div>
-            <div class="timeline-grid" id="timelineGrid"></div>
+            <div class="section-title">🗓️ جدول الأيام الخمسة المتتالية التالية لهذا اليوم:</div>
+            <div class="timeline-list" id="timelineList"></div>
         </div>
 
         <div class="app-info-card">
@@ -131,7 +211,7 @@
             <div class="app-meta-grid">
                 <div class="meta-item">النسخة: <strong>v2.1.0 (تحديث التاريخ الهجري)</strong></div>
                 <div class="meta-item">المطور: <strong>فهد مرزوق المخلفي</strong></div>
-                <div class="meta-item">الحقوق: <strong>محفوظة © 2026</strong></div>
+                <div class="meta-item">الحقوق: <strong>جميع محفوظة © 2026</strong></div>
             </div>
         </div>
     </div>
@@ -169,6 +249,15 @@
             systemConfig = data;
             document.getElementById('noConfigContainer').style.display = 'none';
             document.getElementById('mainAppContainer').style.display = 'block';
+
+            const noticeCard = document.getElementById('adminNoticeCard');
+            const noticeContent = document.getElementById('adminNoticeContent');
+            if(data.notice && data.notice.trim() !== "") {
+                noticeContent.innerText = data.notice;
+                noticeCard.style.display = 'block';
+            } else {
+                noticeCard.style.display = 'none';
+            }
 
             const select = document.getElementById('groupSelect');
             const savedValue = select.value;
@@ -221,20 +310,29 @@
         document.getElementById('displayMainHijri').innerText = `${getArabicWeekday(mainDateObj)} | ${mainDateObj.getDate()}/${mainDateObj.getMonth() + 1} م - الموافق ${formatToHijri(mainDateObj)}`;
         document.getElementById('statusCard').className = "status-card " + mainResult.shift.type;
 
-        const timelineGrid = document.getElementById('timelineGrid');
-        timelineGrid.innerHTML = '';
+        const timelineList = document.getElementById('timelineList');
+        timelineList.innerHTML = '';
         let currentLoopDate = new Date(targetDateStr);
 
-        for (let i = 1; i <= 4; i++) {
+        for (let i = 1; i <= 5; i++) {
             currentLoopDate.setDate(currentLoopDate.getDate() + 1);
             const loopDateStr = currentLoopDate.toISOString().split('T')[0];
             const loopResult = getShiftInfoForDate(groupData.baseDate, loopDateStr);
             const dateObj = new Date(loopDateStr);
 
-            const tCard = document.createElement('div');
-            tCard.className = `timeline-card ${loopResult.shift.type}`;
-            tCard.innerHTML = `<div><div class="t-date">📅 ${getArabicWeekday(dateObj)} (${dateObj.getMonth() + 1}/${dateObj.getDate()} م)</div><div class="t-hijri">🌙 ${formatToHijri(dateObj)}</div><div class="t-name">${loopResult.shift.name}</div></div><div class="t-detail">${loopResult.dayDetail}</div>`;
-            timelineGrid.appendChild(tCard);
+            const tRow = document.createElement('div');
+            tRow.className = `timeline-row ${loopResult.shift.type}`;
+            tRow.innerHTML = `
+                <div class="t-right-side">
+                    <div class="t-date">📅 ${getArabicWeekday(dateObj)} (${dateObj.getMonth() + 1}/${dateObj.getDate()} م)</div>
+                    <div class="t-hijri">🌙 ${formatToHijri(dateObj)}</div>
+                </div>
+                <div class="t-left-side">
+                    <div class="t-name">${loopResult.shift.name}</div>
+                    <div class="t-detail">${loopResult.dayDetail}</div>
+                </div>
+            `;
+            timelineList.appendChild(tRow);
         }
     }
 
