@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم - حماية النظام من التعارض</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --color-primary: #38bdf8;
+            --color-danger: #f87171;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-light);
+            min-height: 100vh;
+            padding: 30px 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 550px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--color-primary);
+            margin-bottom: 6px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 24px;
+            padding: 24px;
+            margin-bottom: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .card h2 {
+            font-size: 16px;
+            margin-bottom: 18px;
+            color: #cbd5e1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            padding-bottom: 8px;
+        }
+
+        label {
+            display: block;
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #cbd5e1;
+        }
+
+        select, input[type="date"] {
+            width: 100%;
+            padding: 14px 16px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px;
+            color: #fff;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s ease;
+            margin-bottom: 18px;
+        }
+
+        select:focus, input[type="date"]:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+        }
+
+        .group-row {
+            background: rgba(255,255,255,0.02);
+            border: 1px solid rgba(255,255,255,0.05);
+            padding: 16px;
+            border-radius: 14px;
+            margin-bottom: 14px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(to left, #38bdf8, #818cf8);
+            border: none;
+            border-radius: 14px;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .btn:hover { opacity: 0.9; }
+
+        .alert {
+            padding: 15px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 14px;
+            display: none;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: #a7f3d0;
+        }
+
+        .alert-danger {
+            background: rgba(248, 113, 113, 0.15);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+            color: #fca5a5;
+        }
+
+        .info-badge {
+            background: rgba(56, 189, 248, 0.08);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #94a3b8;
+            line-height: 1.6;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>لوحة تحكم نظام شِفتك</h1>
+        <p>إعداد التواريخ المستقلة مع الفحص الذكي والمنع التلقائي للتعارض</p>
+    </div>
+
+    <!-- صناديق التنبيهات والتحذير -->
+    <div class="alert alert-success" id="saveAlert">✅ تم حفظ وتثبيت إعدادات المجموعات وبناء محرك التتابع بنجاح!</div>
+    <div class="alert alert-danger" id="conflictAlert">⚠️ خطأ تعارض: لا يمكن الحفظ بسبب وجود تداخل في الورديات!</div>
+
+    <!-- كرت اختيار نظام التشغيل -->
+    <div class="card">
+        <h2>1. اختيار نوع نظام التشغيل</h2>
+        <label for="systemType">نظام المجموعات النشط:</label>
+        <select id="systemType" onchange="renderDynamicFields()">
+            <option value="5">نظام 5 مجموعات (أول يوم صباح مستقل لكل مجموعة)</option>
+            <option value="6">نظام 6 مجموعات (التوليد التلقائي بناءً على مجموعة A)</option>
+        </select>
+    </div>
+
+    <!-- كرت مدخلات التواريخ المرجعية الديناميكية -->
+    <div class="card">
+        <h2>2. ضبط التواريخ المرجعية للمجموعات</h2>
+        <div id="dynamicInputsContainer">
+            <!-- الحقول ستتولد هنا تلقائياً بناءً على اختيار النظام -->
+        </div>
+
+        <div class="info-badge" id="infoText"></div>
+    </div>
+
+    <button class="btn" onclick="saveConfiguration()">حفظ وتثبيت الجدولة بالكامل 💾</button>
+</div>
+
+<script>
+    const definitions = {
+        "5": [
+            { id: "g1", name: "المجموعة الأولى (Group 1)" },
+            { id: "g2", name: "المجموعة الثانية (Group 2)" },
+            { id: "g3", name: "المجموعة الثالثة (Group 3)" },
+            { id: "g4", name: "المجموعة الرابعة (Group 4)" },
+            { id: "g5", name: "المجموعة الخامسة (Group 5)" }
+        ],
+        "6": [
+            { id: "g1", name: "مجموعة A" },
+            { id: "g2", name: "مجموعة B" },
+            { id: "g3", name: "مجموعة C" },
+            { id: "g4", name: "مجموعة D" },
+            { id: "g5", name: "مجموعة E" },
+            { id: "g6", name: "مجموعة F" }
+        ]
+    };
+
+    const offsets6 = { "g1": 0, "g2": 4, "g3": 8, "g4": 12, "g5": 16, "g6": 20 };
+
+    // مصفوفات الدورة (Cycles) الأساسية اللازمة للفحص والمحاكاة برمجياً
+    const cycle5 = [
+        { name: "☀️ صباح (أول يوم)", type: "morning" },
+        { name: "☀️ صباح (ثاني يوم)", type: "morning" },
+        { name: "🌆 ظهر (أول يوم)", type: "afternoon" },
+        { name: "🌆 ظهر (ثاني يوم)", type: "afternoon" },
+        { name: "🌙 ليل (أول يوم)", type: "evening" },
+        { name: "🌙 ليل (ثاني يوم)", type: "evening" },
+        { name: "🌿 راحة (أوف)", type: "off" },
+        { name: "🌿 راحة (أوف)", type: "off" },
+        { name: "🌿 راحة (أوف)", type: "off" },
+        { name: "🌿 راحة (أوف)", type: "off" }
+    ];
+
+    function renderDynamicFields() {
+        const systemType = document.getElementById('systemType').value;
+        const container = document.getElementById('dynamicInputsContainer');
+        const info = document.getElementById('infoText');
+        
+        container.innerHTML = '';
+        hideAlerts();
+
+        if (systemType === "5") {
+            definitions["5"].forEach(g => {
+                const div = document.createElement('div');
+                div.className = 'group-row';
+                div.innerHTML = `
+                    <label for="date_${g.id}">تاريخ أول يوم (دوام صباح) لـ ${g.name}:</label>
+                    <input type="date" id="date_${g.id}" required>
+                `;
+                container.appendChild(div);
+            });
+            info.innerHTML = `📌 <strong>نظام الحماية نشط:</strong> يمكنك إدخال التواريخ بحرية، وسيقوم النظام بفحص الجدولة تلقائياً لمنع أي تداخل أو تعارض بين المجموعات في نفس شفت العمل قبل الحفظ.`;
+        } else {
+            const firstGroup = definitions["6"][0];
+            const div = document.createElement('div');
+            div.className = 'group-row';
+            div.innerHTML = `
+                <label for="date_${firstGroup.id}">تاريخ أول يوم (دوام صباح) لـ ${firstGroup.name}:</label>
+                <input type="date" id="date_${firstGroup.id}" required>
+            `;
+            container.appendChild(div);
+            info.innerHTML = `📌 <strong>آلية نظام 6 مجموعات:</strong> النظام التلقائي محمي بطبيعته من التعارض لأنه يعتمد على إزاحة ثابتة (4 أيام).`;
+        }
+
+        const inputs = container.querySelectorAll('input[type="date"]');
+        inputs.forEach(input => {
+            if(!input.value) input.valueAsDate = new Date();
+        });
+    }
+
+    function hideAlerts() {
+        document.getElementById('saveAlert').style.display = 'none';
+        document.getElementById('conflictAlert').style.display = 'none';
+    }
+
+    // 🛡️ دالة فحص التعارض الذكية (Conflict Detector Engine)
+    function validateConflicts(generatedGroups) {
+        // فحص محاكاة لمستقبل الـ 100 يوم القادمة لضمان خلو الدورة تماماً من أي تداخل
+        const simulationDays = 100; 
+        const today = new Date();
+        
+        for (let i = 0; i < simulationDays; i++) {
+            let checkDate = new Date(today);
+            checkDate.setDate(today.getDate() + i);
+            let dateStr = checkDate.toISOString().split('T')[0];
+
+            // سجل الورديات لهذا اليوم المحدد (الصباح، الظهر، الليل)
+            let dailyLog = { morning: [], afternoon: [], evening: [] };
+
+            for (let group of generatedGroups) {
+                let baseDate = new Date(group.baseDate);
+                let diffTime = checkDate - baseDate;
+                let diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+                if (diffDays >= 0) {
+                    let cycleIndex = diffDays % 10;
+                    let currentShift = cycle5[cycleIndex];
+
+                    // إذا كان الشفت عمل (وليس راحة)، نسجله في سجل الشفتات اليومي للفحص
+                    if (currentShift.type !== 'off') {
+                        dailyLog[currentShift.type].push(group.name);
+                    }
+                }
+            }
+
+            // التحقق إذا كان هناك أكثر من مجموعة مسجلة في نفس الشفت لنفس اليوم
+            if (dailyLog.morning.length > 1) return { hasConflict: true, date: dateStr, shift: "الصباح ☀️", groups: dailyLog.morning };
+            if (dailyLog.afternoon.length > 1) return { hasConflict: true, date: dateStr, shift: "الظهر 🌆", groups: dailyLog.afternoon };
+            if (dailyLog.evening.length > 1) return { hasConflict: true, date: dateStr, shift: "الليل 🌙", groups: dailyLog.evening };
+        }
+
+        return { hasConflict: false };
+    }
+
+    function saveConfiguration() {
+        hideAlerts();
+        const systemType = document.getElementById('systemType').value;
+        const generatedGroups = [];
+        let cycle = [];
+
+        if (systemType === "5") {
+            for (let g of definitions["5"]) {
+                const dateVal = document.getElementById(`date_${g.id}`).value;
+                if (!dateVal) {
+                    alert(`الرجاء تحديد تاريخ أول يوم صباح لـ ${g.name}`);
+                    return;
+                }
+                generatedGroups.push({ id: g.id, name: g.name, baseDate: dateVal });
+            }
+
+            // تشغيل محرك الفحص قبل الحفظ والتثبيت
+            const conflictCheck = validateConflicts(generatedGroups);
+            if (conflictCheck.hasConflict) {
+                const dangerBox = document.getElementById('conflictAlert');
+                dangerBox.innerHTML = `⚠️ <strong>تنبيه تعارض منع الحفظ!</strong><br>
+                يوجد تعارض في وردية <b>(${conflictCheck.shift})</b> بتاريخ <b>${conflictCheck.date}</b><br>
+                بين المجموعات التالية المداومة معاً: <br>🚨 [ ${conflictCheck.groups.join(' و ')} ]<br>
+                الرجاء تعديل التواريخ المرجعية لمنع التداخل والتعارض.`;
+                dangerBox.style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                return; // إيقاف الحفظ فوراً
+            }
+
+            cycle = cycle5;
+
+        } else if (systemType === "6") {
+            const firstGroupInput = document.getElementById(`date_g1`).value;
+            if (!firstGroupInput) {
+                alert("الرجاء تحديد تاريخ بداية مجموعة A!");
+                return;
+            }
+            const baseDateObj = new Date(firstGroupInput);
+
+            definitions["6"].forEach(g => {
+                let tempDate = new Date(baseDateObj);
+                tempDate.setDate(tempDate.getDate() + offsets6[g.id]);
+                generatedGroups.push({ id: g.id, name: g.name, baseDate: tempDate.toISOString().split('T')[0] });
+            });
+
+            const shiftsOrder = [
+                { name: "☀️ صباح", type: "morning" },
+                { name: "🌿 راحة (أوف)", type: "off" },
+                { name: "🌆 ظهر", type: "afternoon" },
+                { name: "🌿 راحة (أوف)", type: "off" },
+                { name: "🌙 ليل", type: "evening" },
+                { name: "🌿 راحة (أوف)", type: "off" }
+            ];
+
+            shiftsOrder.forEach(s => {
+                for (let i = 1; i <= 4; i++) {
+                    cycle.push({ name: `${s.name} - اليوم ${getArabicNumber(i)}`, type: s.type });
+                }
+            });
+        }
+
+        // الحفظ الآمن في الـ LocalStorage عند اجتياز الفحص بنجاح
+        const configPayload = {
+            systemType: systemType,
+            cycle: cycle,
+            groups: generatedGroups
+        };
+
+        localStorage.setItem('shift_system_config', JSON.stringify(configPayload));
+
+        const alertBox = document.getElementById('saveAlert');
+        alertBox.style.display = 'block';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        setTimeout(() => {
+            alertBox.style.display = 'none';
+        }, 5000);
+    }
+
+    function getArabicNumber(num) {
+        const words = { 1: "الأول", 2: "الثاني", 3: "الثالث", 4: "الرابع" };
+        return words[num] || num;
+    }
+
+    window.onload = renderDynamicFields;
+</script>
+</body>
+</html>
