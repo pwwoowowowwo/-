@@ -19,13 +19,12 @@
             --color-evening: #9d4edd;
             --color-off: #52b788;
             --input-bg: rgba(255, 255, 255, 0.9);
-            --primary-blue: #0284c7; /* اللون الأزرق المميز للترويسة */
+            --primary-blue: #0284c7; 
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: 'Tajawal', sans-serif; background: var(--bg-gradient); color: var(--text-light); min-height: 100vh; padding-bottom: 30px; display: flex; flex-direction: column; align-items: center; }
         
-        /* 👑 الترويسة العلوية الفخمة باللون الأزرق المميز والكتابة البيضاء */
         .top-hero-banner {
             width: 100%;
             background: linear-gradient(135deg, #0284c7 0%, #1e40af 100%);
@@ -35,37 +34,19 @@
             border-bottom: 4px solid rgba(255, 255, 255, 0.1);
             margin-bottom: 0;
         }
-        .top-hero-banner h1 {
-            color: #ffffff;
-            font-size: 36px;
-            font-weight: 900;
-            letter-spacing: 1px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.15);
-        }
+        .top-hero-banner h1 { color: #ffffff; font-size: 36px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.15); }
 
-        /* 📢 شريط الترحيب والتحريك الذكي المتزن */
         .welcome-ticker-container {
             width: 100%;
             background: rgba(255, 255, 255, 0.9);
             border-bottom: 1px solid rgba(2, 132, 199, 0.15);
-            padding: 10px 0;
-            overflow: hidden;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            padding: 10px 0; overflow: hidden; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
         .welcome-ticker-text {
-            display: inline-block;
-            white-space: nowrap;
-            padding-right: 100%;
-            animation: marqueeSlide 22s linear infinite; /* سرعة متزنة ومريحة جداً للقراءة */
-            font-size: 14.5px;
-            font-weight: 700;
-            color: #1e3a8a;
+            display: inline-block; white-space: nowrap; padding-right: 100%;
+            animation: marqueeSlide 22s linear infinite; font-size: 14.5px; font-weight: 700; color: #1e3a8a;
         }
-        @keyframes marqueeSlide {
-            0% { transform: translate3d(0, 0, 0); }
-            100% { transform: translate3d(100%, 0, 0); }
-        }
+        @keyframes marqueeSlide { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(100%, 0, 0); } }
 
         .splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f8fafc; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.6s ease; }
         .splash-logo { font-size: 42px; font-weight: 900; background: linear-gradient(to right, #0284c7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; }
@@ -79,19 +60,26 @@
         .admin-notice-card { background: rgba(224, 242, 254, 0.8); border: 2px dashed #0284c7; border-radius: 20px; padding: 18px; margin-bottom: 25px; display: none; backdrop-filter: blur(10px); animation: noticeGlow 2.5s infinite alternate; }
         .admin-notice-card h3 { font-size: 14px; color: #0369a1; margin-bottom: 8px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
         .admin-notice-content { font-size: 13.5px; color: #1e293b; line-height: 1.6; white-space: pre-line; }
-        @keyframes noticeGlow {
-            0% { box-shadow: 0 0 5px rgba(2, 132, 199, 0.1); }
-            100% { box-shadow: 0 0 15px rgba(2, 132, 199, 0.25); }
-        }
+        @keyframes noticeGlow { 0% { box-shadow: 0 0 5px rgba(2, 132, 199, 0.1); } 100% { box-shadow: 0 0 15px rgba(2, 132, 199, 0.25); } }
         
         .selector-card { background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(20px); border-radius: 24px; padding: 24px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(148, 163, 184, 0.15); }
         label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #334155; }
-        select, input[type="date"] { width: 100%; padding: 14px 16px; background: var(--input-bg); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 14px; color: #0f172a; font-family: 'Tajawal', sans-serif; font-size: 15px; outline: none; margin-bottom: 18px; transition: border 0.3s; }
+        select, input[type="date"] { width: 100%; padding: 14px 16px; background: var(--input-bg); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 14px; color: #0f172a; font-family: 'Tajawal', sans-serif; font-size: 15px; outline: none; margin-bottom: 12px; transition: border 0.3s; }
         select:focus, input[type="date"]:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15); }
         
-        .search-hijri-output { font-size: 13px; color: #0284c7; margin-top: -12px; margin-bottom: 18px; font-weight: 500; padding-right: 4px; }
+        /* 📱 سطر عرض التاريخ الهجري المطابق تماماً للمرفق الرابع */
+        .search-hijri-output { 
+            font-size: 14px; 
+            color: #0284c7; 
+            font-weight: 700; 
+            margin-top: -2px;
+            margin-bottom: 6px;
+            text-align: center;
+            display: block;
+            width: 100%;
+        }
 
-        .status-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 28px; padding: 35px 20px; text-align: center; position: relative; overflow: hidden; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(148, 163, 184, 0.15); }
+        .status-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 28px; padding: 30px 20px; text-align: center; position: relative; overflow: hidden; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(148, 163, 184, 0.15); }
         .status-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: var(--text-muted); }
         .status-card.morning::before { background: var(--color-morning); }
         .status-card.afternoon::before { background: var(--color-afternoon); }
@@ -102,29 +90,30 @@
         .shift-main-name { font-size: 34px; font-weight: 900; margin-bottom: 8px; }
         .status-card.prompt-mode .shift-main-name { font-size: 22px; color: #475569; }
         
-        .morning .shift-main-name { color: #d97706; }
-        .afternoon .shift-main-name { color: #0284c7; }
-        .evening .shift-main-name { color: #7b2cbf; }
-        .off .shift-main-name { color: #2d6a4f; }
+        .morning .shift-main-name { color: #d97706; } .afternoon .shift-main-name { color: #0284c7; } .evening .shift-main-name { color: #7b2cbf; } .off .shift-main-name { color: #2d6a4f; }
 
-        .day-counter-badge { display: inline-block; padding: 6px 18px; background: rgba(0, 0, 0, 0.05); border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 10px; color: #334155; }
-        .main-card-hijri { font-size: 13px; color: #475569; opacity: 0.9; margin-top: 4px; }
+        .day-counter-badge { display: inline-block; padding: 6px 18px; background: rgba(0, 0, 0, 0.05); border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 15px; color: #334155; }
+
+        .apple-main-badge-container { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 5px; background: rgba(255,255,255,0.5); padding: 10px 20px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.04); }
+        .apple-day-name-block { font-size: 16px; font-weight: 900; color: #1e293b; border-left: 2px solid rgba(0,0,0,0.1); padding-left: 15px; text-align: right; }
+        .apple-calendar-circle { background: #ef4444; color: #ffffff; width: 62px; height: 62px; border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); }
+        .apple-circle-gregorian { font-size: 22px; font-weight: 900; line-height: 1; }
+        .apple-circle-hijri { font-size: 11px; font-weight: 700; opacity: 0.9; margin-top: 1px; }
+        .apple-text-details { display: flex; flex-direction: column; align-items: flex-start; text-align: right; gap: 1px; }
+        .apple-month-m { font-size: 13px; font-weight: 700; color: #1e3a8a; }
+        .apple-month-h { font-size: 12px; font-weight: 500; color: #0284c7; }
 
         .future-timeline-section { margin-bottom: 30px; }
-        .section-title { font-size: 14px; font-weight: 700; color: #475569; margin-bottom: 12px; }
-        
-        .timeline-list { display: flex; flex-direction: column; gap: 10px; }
+        .section-title { font-size: 14px; font-weight: 700; color: #475569; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;}
+        .timeline-scroll-box { max-height: 420px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
+        .timeline-scroll-box::-webkit-scrollbar { width: 6px; }
+        .timeline-scroll-box::-webkit-scrollbar-track { background: rgba(0,0,0,0.03); border-radius: 10px; }
+        .timeline-scroll-box::-webkit-scrollbar-thumb { background: rgba(2, 132, 199, 0.2); border-radius: 10px; }
+
         .timeline-row { 
-            background: var(--card-bg); 
-            border: 1px solid var(--card-border); 
-            border-radius: 16px; 
-            padding: 14px 18px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            position: relative; 
-            padding-right: 22px; 
-            box-shadow: 0 4px 10px rgba(148, 163, 184, 0.06); 
+            background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; 
+            padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; 
+            position: relative; padding-right: 22px; box-shadow: 0 4px 10px rgba(148, 163, 184, 0.06); 
         }
         
         .timeline-row::before { content: ''; position: absolute; top: 12%; right: 0; bottom: 12%; width: 5px; border-radius: 4px 0 0 4px; background: #94a3b8; }
@@ -133,18 +122,23 @@
         .timeline-row.evening::before { background: var(--color-evening); }
         .timeline-row.off::before { background: var(--color-off); }
 
-        .t-right-side { display: flex; flex-direction: column; gap: 2px; }
-        .t-date { font-size: 11.5px; color: var(--text-muted); }
-        .t-hijri { font-size: 11.5px; color: #0284c7; font-weight: 500; }
+        .t-apple-row-left { display: flex; align-items: center; gap: 12px; max-width: 60%; }
+        .t-apple-row-circle { background: #334155; color: #fff; width: 48px; height: 48px; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; flex-shrink: 0; font-family: sans-serif; }
+        .t-apple-row-circle .m-num { font-size: 18px; font-weight: 900; line-height: 1; }
+        .t-apple-row-circle .h-num { font-size: 10px; font-weight: 700; opacity: 0.85; margin-top: 1px; }
+        .t-apple-row-info { display: flex; flex-direction: column; text-align: right; gap: 2px; }
+        .t-apple-row-day { font-size: 13.5px; font-weight: 800; color: #1e293b; }
+        .t-apple-row-months { font-size: 11px; color: #64748b; font-weight: 500; }
         
-        .t-left-side { text-align: left; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+        .t-left-side { text-align: left; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
+        .t-name-wrapper { display: flex; align-items: center; gap: 6px; }
         .t-name { font-size: 15px; font-weight: 900; }
-        
-        .morning .t-name { color: #d97706; }
-        .afternoon .t-name { color: #0284c7; }
-        .evening .t-name { color: #7b2cbf; }
-        .off .t-name { color: #2d6a4f; }
+        .morning .t-name { color: #d97706; } .afternoon .t-name { color: #0284c7; } .evening .t-name { color: #7b2cbf; } .off .t-name { color: #2d6a4f; }
         .t-detail { font-size: 12px; color: #475569; font-weight: 500; }
+        
+        .badge-tab { font-size: 10.5px; font-weight: 800; padding: 3px 8px; border-radius: 8px; display: inline-block; direction: rtl; }
+        .badge-tab-receive { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; } 
+        .badge-tab-deliver { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; } 
 
         .app-info-card { background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(2, 132, 199, 0.15); border-radius: 20px; padding: 20px; text-align: center; box-shadow: 0 4px 15px rgba(148, 163, 184, 0.05); }
         .app-info-title { font-size: 14px; font-weight: 700; color: #0284c7; margin-bottom: 6px; }
@@ -162,12 +156,10 @@
     <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
 </div>
 
-<!-- 👑 الترويسة الزرقاء المميزة في رأس الصفحة -->
 <div class="top-hero-banner">
     <h1> نظام شِفتك الذكي</h1>
 </div>
 
-<!-- 📢 شريط الترحيب المتحرك المتزن والمختصر -->
 <div class="welcome-ticker-container">
     <div class="welcome-ticker-text">
         أهلاً بك في نظام شِفتك الذكي .. تطبيق متطور لمتابعة واستعلام فترات العمل وأيام الراحة بكل دقة وسهولة لجميع المجموعات والأفراد.
@@ -186,8 +178,9 @@
         <div class="selector-card">
             <label for="groupSelect">اختر مجموعتك :</label>
             <select id="groupSelect" onchange="calculateCurrentShift()"></select>
-            <label for="dateSelect">تاريخ البحث والاستعلام:</label>
+            <label for="dateSelect">تاريخ البحث والاستعلام (الأيام المنتهية مقفلة 🔒):</label>
             <input type="date" id="dateSelect" onchange="calculateCurrentShift()">
+            
             <div class="search-hijri-output" id="searchHijriOutput" style="display: none;"></div>
         </div>
 
@@ -195,12 +188,15 @@
             <div class="group-title" id="displayGroupName">النظام جاهز</div>
             <div class="shift-main-name" id="displayShiftName">📌 الرجاء اختيار مجموعتك أولاً لاستعراض الجدول</div>
             <div class="day-counter-badge" id="displayDayDetail">بانتظار الاختيار</div>
-            <div class="main-card-hijri" id="displayMainHijri"></div>
+            <div id="displayMainHijri"></div>
         </div>
 
         <div class="future-timeline-section" id="timelineSection" style="display: none;">
-            <div class="section-title">🗓️ جدول الأيام الخمسة المتتالية التالية لهذا اليوم:</div>
-            <div class="timeline-list" id="timelineList"></div>
+            <div class="section-title">
+                <span>🗓️ جدول المتابعة الطويل (لمدة 5 شهور قادمة):</span>
+                <span style="font-size: 11px; color:#0284c7;">📱 مرر للأسفل لقراءة المزيد</span>
+            </div>
+            <div class="timeline-scroll-box" id="timelineList"></div>
         </div>
 
         <div class="app-info-card">
@@ -209,9 +205,9 @@
                 تطبيق تنظيمي متطور مصمم خصيصاً لحساب وإدارة جداول فترات الدوام والورديات التناوبية للمجموعات والأفراد، مع محرك مرن يعتمد على الهندسة العكسية لحساب التتابع والتنبؤ بالأيام والراحات المستقبلية تلقائياً وبأثر رجعي دون فجوات زمنية.
             </div>
             <div class="app-meta-grid">
-                <div class="meta-item">النسخة: <strong>v2.1.0 (تحديث التاريخ الهجري)</strong></div>
+                <div class="meta-item">النسخة: <strong>v3.2.0 ( )</strong></div>
                 <div class="meta-item">المطور: <strong>فهد مرزوق المخلفي</strong></div>
-                <div class="meta-item">الحقوق: <strong>جميع محفوظة © 2026</strong></div>
+                <div class="meta-item">الحقوق: <strong>جميع الحقوق محفوظة © 2026</strong></div>
             </div>
         </div>
     </div>
@@ -224,9 +220,16 @@
 
     let systemConfig = null;
 
-    function formatToHijri(dateObj) {
-        try { return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { day: 'numeric', month: 'long', year: 'numeric' }).format(dateObj) + " هـ"; } catch (e) { return ""; }
+    function getHijriDayNumber(dateObj) {
+        try { return new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { day: 'numeric' }).format(dateObj); } catch (e) { return ""; }
     }
+    function getHijriMonthName(dateObj) {
+        try { return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { month: 'long' }).format(dateObj); } catch (e) { return ""; }
+    }
+    function getHijriYearNumber(dateObj) {
+        try { return new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { year: 'numeric' }).format(dateObj); } catch (e) { return ""; }
+    }
+    function getGregorianMonthName(dateObj) { return new Intl.DateTimeFormat('ar-EG', { month: 'long' }).format(dateObj); }
     function getArabicWeekday(dateObj) { return new Intl.DateTimeFormat('ar-EG', { weekday: 'long' }).format(dateObj); }
 
     function runSplashScreen() {
@@ -236,6 +239,21 @@
             if (width >= 100) { clearInterval(interval); document.getElementById('splashScreen').classList.add('fade-out'); document.body.classList.add('app-ready'); }
             else { width += 5; progressBar.style.width = width + '%'; }
         }, 20);
+    }
+
+    function getTodayDateString() {
+        const today = new Date();
+        const yyyy = today.getFullYear();
+        const mm = String(today.getMonth() + 1).padStart(2, '0');
+        const dd = String(today.getDate()).padStart(2, '0');
+        return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function restrictPastDates() {
+        const dateInput = document.getElementById('dateSelect');
+        const minDateStr = getTodayDateString();
+        dateInput.min = minDateStr; 
+        dateInput.value = minDateStr; 
     }
 
     function initDatabaseSync() {
@@ -270,20 +288,35 @@
 
             calculateCurrentShift();
         });
-        document.getElementById('dateSelect').valueAsDate = new Date();
+        
+        restrictPastDates(); 
         runSplashScreen();
     }
 
     function calculateCurrentShift() {
         if (!systemConfig) return;
         const groupId = document.getElementById('groupSelect').value;
-        const targetDateStr = document.getElementById('dateSelect').value;
+        let targetDateStr = document.getElementById('dateSelect').value;
         const hijriOutputDiv = document.getElementById('searchHijriOutput');
 
-        if (!targetDateStr) hijriOutputDiv.style.display = 'none';
-        else {
+        if (targetDateStr) {
+            const inputDate = new Date(targetDateStr);
+            const todayDate = new Date();
+            todayDate.setHours(0,0,0,0);
+            
+            if(inputDate < todayDate) {
+                alert("🔒 عذراً يا غالي؛ الأيام المنتهية مقفلة، تم إرجاعك لتاريخ اليوم تلقائياً.");
+                targetDateStr = getTodayDateString();
+                document.getElementById('dateSelect').value = targetDateStr;
+            }
+        }
+
+        // 📱 تحديث النص الهجري البسيط ليتطابق مع "الموافق هجرياً: الأربعاء، ٣ ذو الحجة، ١٤٤٧ هـ"
+        if (!targetDateStr) {
+            hijriOutputDiv.style.display = 'none';
+        } else {
             const tempDate = new Date(targetDateStr);
-            hijriOutputDiv.innerText = `الموافق هجرياً: ${getArabicWeekday(tempDate)}، ${formatToHijri(tempDate)}`;
+            hijriOutputDiv.innerHTML = `الموافق هجرياً: ${getArabicWeekday(tempDate)}، ${getHijriDayNumber(tempDate)} ${getHijriMonthName(tempDate)}، ${getHijriYearNumber(tempDate)} هـ`;
             hijriOutputDiv.style.display = 'block';
         }
 
@@ -291,7 +324,7 @@
             document.getElementById('displayGroupName').innerText = "النظام جاهز";
             document.getElementById('displayShiftName').innerText = "📌 الرجاء اختيار مجموعتك أولاً لاستعراض الجدول";
             document.getElementById('displayDayDetail').innerText = "بانتظار الاختيار";
-            document.getElementById('displayMainHijri').innerText = "";
+            document.getElementById('displayMainHijri').innerHTML = "";
             document.getElementById('statusCard').className = "status-card prompt-mode";
             document.getElementById('timelineSection').style.display = 'none';
             return;
@@ -307,28 +340,84 @@
         document.getElementById('displayGroupName').innerText = groupData.name;
         document.getElementById('displayShiftName').innerText = mainResult.shift.name;
         document.getElementById('displayDayDetail').innerText = mainResult.dayDetail;
-        document.getElementById('displayMainHijri').innerText = `${getArabicWeekday(mainDateObj)} | ${mainDateObj.getDate()}/${mainDateObj.getMonth() + 1} م - الموافق ${formatToHijri(mainDateObj)}`;
+        
+        document.getElementById('displayMainHijri').innerHTML = `
+            <div class="apple-main-badge-container">
+                <div class="apple-day-name-block">
+                    <div>${getArabicWeekday(mainDateObj)}</div>
+                </div>
+                <div class="apple-calendar-circle">
+                    <div class="apple-circle-gregorian">${mainDateObj.getDate()}</div>
+                    <div class="apple-circle-hijri">${getHijriDayNumber(mainDateObj)}</div>
+                </div>
+                <div class="apple-text-details">
+                    <div class="apple-month-m">شهر ${getGregorianMonthName(mainDateObj)}</div>
+                    <div class="apple-month-h">${getHijriMonthName(mainDateObj)}</div>
+                </div>
+            </div>
+        `;
         document.getElementById('statusCard').className = "status-card " + mainResult.shift.type;
 
         const timelineList = document.getElementById('timelineList');
         timelineList.innerHTML = '';
-        let currentLoopDate = new Date(targetDateStr);
+        
+        let totalDaysToForecast = 150; 
+        let forecastedDaysArray = [];
+        
+        for (let i = 0; i <= totalDaysToForecast; i++) {
+            let tempDateLoop = new Date(targetDateStr);
+            tempDateLoop.setDate(tempDateLoop.getDate() + i);
+            let loopDateStr = tempDateLoop.toISOString().split('T')[0];
+            let loopResult = getShiftInfoForDate(groupData.baseDate, loopDateStr);
+            forecastedDaysArray.push({
+                dateStr: loopDateStr,
+                dateObj: tempDateLoop,
+                result: loopResult
+            });
+        }
 
-        for (let i = 1; i <= 5; i++) {
-            currentLoopDate.setDate(currentLoopDate.getDate() + 1);
-            const loopDateStr = currentLoopDate.toISOString().split('T')[0];
-            const loopResult = getShiftInfoForDate(groupData.baseDate, loopDateStr);
-            const dateObj = new Date(loopDateStr);
+        for (let i = 1; i <= totalDaysToForecast; i++) {
+            let previousDay = forecastedDaysArray[i - 1];
+            let currentDay = forecastedDaysArray[i];
+            
+            let isReceiveDay = false; 
+            let isDeliverDay = false; 
+
+            if (previousDay.result.shift.type === 'off' && currentDay.result.shift.type !== 'off') {
+                isReceiveDay = true;
+            }
+            if (previousDay.result.shift.type !== 'off' && currentDay.result.shift.type === 'off') {
+                isDeliverDay = true;
+            }
+
+            let badgeHtml = "";
+            if (isReceiveDay) {
+                badgeHtml = `<span class="badge-tab badge-tab-receive">🏷️ أول يوم استلام</span>`;
+            } else if (isDeliverDay) {
+                badgeHtml = `<span class="badge-tab badge-tab-deliver">🏷️ أول يوم تسليم</span>`;
+            }
+
+            const dateObj = currentDay.dateObj;
+            const loopResult = currentDay.result;
 
             const tRow = document.createElement('div');
             tRow.className = `timeline-row ${loopResult.shift.type}`;
             tRow.innerHTML = `
-                <div class="t-right-side">
-                    <div class="t-date">📅 ${getArabicWeekday(dateObj)} (${dateObj.getMonth() + 1}/${dateObj.getDate()} م)</div>
-                    <div class="t-hijri">🌙 ${formatToHijri(dateObj)}</div>
+                <div class="t-apple-row-left">
+                    <div class="t-apple-row-circle">
+                        <div class="m-num">${dateObj.getDate()}</div>
+                        <div class="h-num">${getHijriDayNumber(dateObj)}</div>
+                    </div>
+                    <div class="t-apple-row-info">
+                        <div class="t-apple-row-day">${getArabicWeekday(dateObj)}</div>
+                        <div class="t-apple-row-months">${getGregorianMonthName(dateObj)} م | ${getHijriMonthName(dateObj)}</div>
+                    </div>
                 </div>
                 <div class="t-left-side">
-                    <div class="t-name">${loopResult.shift.name}</div>
+                    <div class="t-name-wrapper">
+                        ${badgeHtml}
+                        <div class="t-name">${loopResult.shift.name}</div>
+                    </div>
                     <div class="t-detail">${loopResult.dayDetail}</div>
                 </div>
             `;
