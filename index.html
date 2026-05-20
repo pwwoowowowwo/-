@@ -71,8 +71,8 @@
         
         .selector-card { background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(20px); border-radius: 24px; padding: 24px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(148, 163, 184, 0.15); }
         label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #334155; }
-        select, input[type="date"] { width: 100%; padding: 14px 16px; background: var(--input-bg); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 14px; color: #0f172a; font-family: 'Tajawal', sans-serif; font-size: 15px; outline: none; margin-bottom: 12px; transition: border 0.3s; }
-        select:focus, input[type="date"]:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15); }
+        select, input[type="date"], input[type="text"] { width: 100%; padding: 14px 16px; background: var(--input-bg); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 14px; color: #0f172a; font-family: 'Tajawal', sans-serif; font-size: 15px; outline: none; margin-bottom: 12px; transition: border 0.3s; }
+        select:focus, input[type="date"]:focus, input[type="text"]:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15); }
         
         .search-hijri-output { 
             font-size: 14px; 
@@ -184,8 +184,12 @@
         <div class="selector-card">
             <label for="groupSelect">اختر مجموعتك :</label>
             <select id="groupSelect" onchange="calculateCurrentShift()"></select>
-            <label for="dateSelect">تاريخ البحث والاستعلام (الأيام المنتهية مقفلة 🔒):</label>
-            <input type="date" id="dateSelect" onchange="calculateCurrentShift()">
+            
+            <label for="dateSelect">تاريخ البحث الميلادي (الأيام المنتهية مقفلة 🔒):</label>
+            <input type="date" id="dateSelect" onchange="syncFromGregorianInput()">
+            
+            <label for="queryHijriSelect">تاريخ البحث الهجري (السنة/الشهر/اليوم):</label>
+            <input type="text" id="queryHijriSelect" placeholder="مثال: 1447/12/25" onchange="syncFromHijriInput()" onkeyup="if(event.key === 'Enter') syncFromHijriInput()">
             
             <div class="search-hijri-output" id="searchHijriOutput" style="display: none;"></div>
         </div>
@@ -211,7 +215,7 @@
                 تطبيق تنظيمي متطور مصمم خصيصاً لحساب وإدارة جداول فترات الدوام والورديات التناوبية للمجموعات والأفراد، مع محرك مرن يعتمد على الهندسة العكسية لحساب التتابع والتنبؤ بالأيام والراحات المستقبلية تلقائياً وبأثر رجعي دون فجوات زمنية.
             </div>
             <div class="app-meta-grid">
-                <div class="meta-item">النسخة: <strong>v3.3.0 (تحديث الأيقونة الرسمية)</strong></div>
+                <div class="meta-item">النسخة: <strong>v3.5.0 (تحديث دعم المدخل الهجري المزدوج)</strong></div>
                 <div class="meta-item">المطور: <strong>فهد مرزوق المخلفي</strong></div>
                 <div class="meta-item">الحقوق: <strong>جميع الحقوق محفوظة © 2026</strong></div>
             </div>
@@ -220,7 +224,7 @@
 </div>
 
 <script>
-    // 🔒 كود حماية الواجهة ومنع الفحص (Inspect Element)
+    // 🔒 قفل الفحص للواجهة البصرية
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) {
         if (e.keyCode == 123) { return false; } 
@@ -236,17 +240,65 @@
 
     let systemConfig = null;
 
+    // دوال التقويم الهجري
     function getHijriDayNumber(dateObj) {
         try { return new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { day: 'numeric' }).format(dateObj); } catch (e) { return ""; }
     }
     function getHijriMonthName(dateObj) {
         try { return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { month: 'long' }).format(dateObj); } catch (e) { return ""; }
     }
+    function getHijriMonthNumber(dateObj) {
+        try { return new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { month: 'numeric' }).format(dateObj); } catch (e) { return 1; }
+    }
     function getHijriYearNumber(dateObj) {
         try { return new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { year: 'numeric' }).format(dateObj); } catch (e) { return ""; }
     }
     function getGregorianMonthName(dateObj) { return new Intl.DateTimeFormat('ar-EG', { month: 'long' }).format(dateObj); }
     function getArabicWeekday(dateObj) { return new Intl.DateTimeFormat('ar-EG', { weekday: 'long' }).format(dateObj); }
+
+    // تحويل التاريخ الميلادي المدخل لعرضه في خانة الهجري بصيغة yyyy/mm/dd
+    function formatHijriInputString(dateObj) {
+        const hY = getHijriYearNumber(dateObj).replace(/[^0-9]/g, '');
+        const hM = String(getHijriMonthNumber(dateObj).replace(/[^0-9]/g, '')).padStart(2, '0');
+        const hD = String(getHijriDayNumber(dateObj).replace(/[^0-9]/g, '')).padStart(2, '0');
+        return `${hY}/${hM}/${hD}`;
+    }
+
+    // هندسة عكسية لتحويل النص الهجري المكتوب (1447/12/25) إلى تاريخ ميلادي حقيقي
+    function hijriToGregorian(hijriStr) {
+        const parts = hijriStr.split('/');
+        if (parts.length !== 3) return null;
+        
+        const hYear = parseInt(parts[0]);
+        const hMonth = parseInt(parts[1]);
+        const hDay = parseInt(parts[2]);
+        
+        if (isNaN(hYear) || isNaN(hMonth) || isNaN(hDay)) return null;
+
+        // البحث العكسي الدقيق عبر محاذاة التقويم الرياضي للمتصفح
+        let testDate = new Date();
+        // تقريب ذكي للوصول للسنة المستهدفة بسرعة
+        let approxGregorianYear = Math.floor((hYear - 1447) * 0.97) + 2026;
+        testDate.setFullYear(approxGregorianYear, 0, 1);
+
+        let bestDate = new Date(testDate);
+        let minDiff = 999999;
+
+        // البحث في نطاق 60 يوماً حول النقطة التقريبية
+        for (let i = -30; i < 180; i++) {
+            let d = new Date(testDate);
+            d.setDate(d.getDate() + i);
+            
+            let curHY = parseInt(getHijriYearNumber(d).replace(/[^0-9]/g, ''));
+            let curHM = parseInt(getHijriMonthNumber(d).replace(/[^0-9]/g, ''));
+            let curHD = parseInt(getHijriDayNumber(d).replace(/[^0-9]/g, ''));
+            
+            if (curHY === hYear && curHM === hMonth && curHD === hDay) {
+                return d;
+            }
+        }
+        return null;
+    }
 
     function runSplashScreen() {
         const progressBar = document.getElementById('progressBar');
@@ -270,6 +322,35 @@
         const minDateStr = getTodayDateString();
         dateInput.min = minDateStr; 
         dateInput.value = minDateStr; 
+        
+        // تعبئة حقل الهجري تلقائياً عند البداية لتاريخ اليوم
+        document.getElementById('queryHijriSelect').value = formatHijriInputString(new Date());
+    }
+
+    // مزامنة عند تغيير الحقل الميلادي
+    function syncFromGregorianInput() {
+        const dateInput = document.getElementById('dateSelect');
+        if (dateInput.value) {
+            const dObj = new Date(dateInput.value);
+            document.getElementById('queryHijriSelect').value = formatHijriInputString(dObj);
+        }
+        calculateCurrentShift();
+    }
+
+    // مزامنة عند كتابة التاريخ الهجري يدوياً
+    function syncFromHijriInput() {
+        const hijriValue = document.getElementById('queryHijriSelect').value.trim();
+        const gDate = hijriToGregorian(hijriValue);
+        
+        if (gDate) {
+            const yyyy = gDate.getFullYear();
+            const mm = String(gDate.getMonth() + 1).padStart(2, '0');
+            const dd = String(gDate.getDate()).padStart(2, '0');
+            document.getElementById('dateSelect').value = `${yyyy}-${mm}-${dd}`;
+            calculateCurrentShift();
+        } else {
+            alert("⚠️ يرجى التأكد من كتابة التاريخ الهجري بشكل صحيح متبوعاً بالفواصل المائلة، مثال: 1447/12/25");
+        }
     }
 
     function initDatabaseSync() {
@@ -324,6 +405,7 @@
                 alert("🔒 عذراً يا غالي؛ الأيام المنتهية مقفلة، تم إرجاعك لتاريخ اليوم تلقائياً.");
                 targetDateStr = getTodayDateString();
                 document.getElementById('dateSelect').value = targetDateStr;
+                document.getElementById('queryHijriSelect').value = formatHijriInputString(new Date());
             }
         }
 
