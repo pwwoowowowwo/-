@@ -29,7 +29,7 @@
             --primary-blue: #0284c7; 
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
         body { font-family: 'Tajawal', sans-serif; background: var(--bg-gradient); color: var(--text-light); min-height: 100vh; padding-bottom: 30px; display: flex; flex-direction: column; align-items: center; }
         
         .top-hero-banner {
@@ -220,6 +220,16 @@
 </div>
 
 <script>
+    // 🔒 كود حماية الواجهة ومنع الفحص (Inspect Element)
+    document.addEventListener('contextmenu', event => event.preventDefault());
+    document.onkeydown = function(e) {
+        if (e.keyCode == 123) { return false; } 
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; } 
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; } 
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; } 
+        if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } 
+    };
+
     const firebaseConfig = { databaseURL: "https://rksti-29fc8-default-rtdb.firebaseio.com/" };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
