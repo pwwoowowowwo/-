@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>شِفتك - جدول الورديات الذكي المطور</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/v4XyYg0/sheftak-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/v4XyYg0/sheftak-icon.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://i.ibb.co/v4XyYg0/sheftak-icon.png">
+    <meta name="apple-mobile-web-app-title" content="شِفتك">
+    <meta name="application-name" content="شِفتك">
+    
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -67,7 +74,6 @@
         select, input[type="date"] { width: 100%; padding: 14px 16px; background: var(--input-bg); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 14px; color: #0f172a; font-family: 'Tajawal', sans-serif; font-size: 15px; outline: none; margin-bottom: 12px; transition: border 0.3s; }
         select:focus, input[type="date"]:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15); }
         
-        /* 📱 سطر عرض التاريخ الهجري المطابق تماماً للمرفق الرابع */
         .search-hijri-output { 
             font-size: 14px; 
             color: #0284c7; 
@@ -205,7 +211,7 @@
                 تطبيق تنظيمي متطور مصمم خصيصاً لحساب وإدارة جداول فترات الدوام والورديات التناوبية للمجموعات والأفراد، مع محرك مرن يعتمد على الهندسة العكسية لحساب التتابع والتنبؤ بالأيام والراحات المستقبلية تلقائياً وبأثر رجعي دون فجوات زمنية.
             </div>
             <div class="app-meta-grid">
-                <div class="meta-item">النسخة: <strong>v3.2.0 ( )</strong></div>
+                <div class="meta-item">النسخة: <strong>v3.3.0 (تحديث الأيقونة الرسمية)</strong></div>
                 <div class="meta-item">المطور: <strong>فهد مرزوق المخلفي</strong></div>
                 <div class="meta-item">الحقوق: <strong>جميع الحقوق محفوظة © 2026</strong></div>
             </div>
@@ -311,7 +317,6 @@
             }
         }
 
-        // 📱 تحديث النص الهجري البسيط ليتطابق مع "الموافق هجرياً: الأربعاء، ٣ ذو الحجة، ١٤٤٧ هـ"
         if (!targetDateStr) {
             hijriOutputDiv.style.display = 'none';
         } else {
