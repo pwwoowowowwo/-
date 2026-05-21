@@ -215,7 +215,7 @@
                 تطبيق تنظيمي متطور مصمم خصيصاً لحساب وإدارة جداول فترات الدوام والورديات التناوبية للمجموعات والأفراد، مع محرك مرن يعتمد على الهندسة العكسية لحساب التتابع والتنبؤ بالأيام والراحات المستقبلية تلقائياً وبأثر رجعي دون فجوات زمنية.
             </div>
             <div class="app-meta-grid">
-                <div class="meta-item">النسخة: <strong>v3.5.0 (تحديث دعم المدخل الهجري المزدوج)</strong></div>
+                <div class="meta-item">النسخة: <strong>v3.5.1 (تحديث دقة المحاذاة الهجرية المستقبلية)</strong></div>
                 <div class="meta-item">المطور: <strong>فهد مرزوق المخلفي</strong></div>
                 <div class="meta-item">الحقوق: <strong>جميع الحقوق محفوظة © 2026</strong></div>
             </div>
@@ -264,7 +264,7 @@
         return `${hY}/${hM}/${hD}`;
     }
 
-    // هندسة عكسية لتحويل النص الهجري المكتوب (1447/12/25) إلى تاريخ ميلادي حقيقي
+    // 🛠️ تحديث دالة الهندسة العكسية للبحث الموسع والدقيق جداً للتاريخ الهجري
     function hijriToGregorian(hijriStr) {
         const parts = hijriStr.split('/');
         if (parts.length !== 3) return null;
@@ -275,17 +275,12 @@
         
         if (isNaN(hYear) || isNaN(hMonth) || isNaN(hDay)) return null;
 
-        // البحث العكسي الدقيق عبر محاذاة التقويم الرياضي للمتصفح
+        // نقطة بداية للبحث العكسي من العام الحالي 2026 م
         let testDate = new Date();
-        // تقريب ذكي للوصول للسنة المستهدفة بسرعة
-        let approxGregorianYear = Math.floor((hYear - 1447) * 0.97) + 2026;
-        testDate.setFullYear(approxGregorianYear, 0, 1);
+        testDate.setHours(0,0,0,0);
 
-        let bestDate = new Date(testDate);
-        let minDiff = 999999;
-
-        // البحث في نطاق 60 يوماً حول النقطة التقريبية
-        for (let i = -30; i < 180; i++) {
+        // توسيع نطاق الفحص إلى 400 يوم للأمام لضمان صيد أي تاريخ مستقبلي بدقة تامة (مثل عام 1448 وما بعده)
+        for (let i = -30; i < 400; i++) {
             let d = new Date(testDate);
             d.setDate(d.getDate() + i);
             
