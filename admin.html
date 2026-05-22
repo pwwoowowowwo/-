@@ -136,10 +136,7 @@
                     <tr>
                         <th>اليوم</th>
                         <th>التاريخ م</th>
-                        <th>التاريخ هـ (اليوم/الشهر)</th>
-                        <th>☀️ وردية الصباح</th>
-                        <th>🌆 وردية الظهر</th>
-                        <th>🌙 وردية الليل</th>
+                        <th>التاريخ هـ</th>
                     </tr>
                 </thead>
                 <tbody id="matrixBody"></tbody>
@@ -153,7 +150,6 @@
 </div>
 
 <script>
-    // تهيئة Firebase برابط قاعدة البيانات المباشر الخاص بك
     const firebaseConfig = { databaseURL: "https://rksti-29fc8-default-rtdb.firebaseio.com/" };
     if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
     const database = firebase.database();
@@ -180,6 +176,21 @@
         { name: "🌿 راحة أولى", type: "off" }, { name: "🌿 راحة ثانية", type: "off" },
         { name: "🌿 راحة ثالثة", type: "off" }, { name: "🌿 راحة رابعة", type: "off" }
     ];
+
+    // دالة جلب التاريخ الهجري بصيغة رقمية (يوم/شهر) مطابقة تماماً للميلادي
+    function getHijriNumericUnified(dateObj) {
+        try {
+            const day = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { day: 'numeric' }).format(dateObj);
+            const month = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { month: 'numeric' }).format(dateObj);
+            
+            const cleanDay = day.replace(/[^0-9]/g, '');
+            const cleanMonth = month.replace(/[^0-9]/g, '');
+            
+            return `${cleanDay}/${cleanMonth}`;
+        } catch (e) {
+            return "-";
+        }
+    }
 
     function switchTab(tabId, btn) {
         document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -266,6 +277,8 @@
     function getShiftInfoRaw(baseDateStr, targetDateObj, cycle) {
         const parts = baseDateStr.split('-');
         const baseDate = new Date(parts[0], parts[1] - 1, parts[2]);
+        baseDate.setHours(0,0,0,0);
+        
         let dayDiff = Math.floor((targetDateObj.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24));
         let index = dayDiff % cycle.length;
         if (index < 0) index += cycle.length;
@@ -285,7 +298,7 @@
             if(shift.type === 'off') badgeStyle = 'background-color: #10b981';
 
             let box = document.createElement('div'); box.className = 'live-box';
-            box.innerHTML = `<h4>${g.name}</h4><span class="badge" style="${badgeStyle}">${shift.name}</span>`;
+            box.innerHTML = `<h4>${g.name}</h4><span class="badge" style="${badgeStyle}">${shift.name.split(' - ')[0]}</span>`;
             grid.appendChild(box);
         });
     }
@@ -301,19 +314,32 @@
 
         const body = document.getElementById('matrixBody');
         body.innerHTML = '';
+        
         let loopDate = new Date(); loopDate.setHours(0,0,0,0);
-
         const dayNames = ["الأحد", "الإثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت"];
+
+        // تحديث الهيدر في الجدول ليعكس توزيع الفترات
+        const currentThead = document.querySelector("table thead tr");
+        if(currentThead) {
+            currentThead.innerHTML = `
+                <th>اليوم</th>
+                <th>التاريخ م</th>
+                <th>التاريخ هـ</th>
+                <th>☀️ وردية الصباح</th>
+                <th>🌆 وردية الظهر</th>
+                <th>🌙 وردية الليل</th>
+            `;
+        }
 
         for (let d = 0; d < 30; d++) {
             let tr = document.createElement('tr');
             let dayName = dayNames[loopDate.getDay()];
-            let hijriDayMonth = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { day: 'numeric', month: 'long' }).format(loopDate);
+            let hijriNumeric = getHijriNumericUnified(loopDate);
             
             tr.innerHTML = `
                 <td><strong>${dayName}</strong></td>
                 <td>${loopDate.getDate()}/${loopDate.getMonth()+1}</td>
-                <td style="color: #cbd5e1;">${hijriDayMonth}</td>
+                <td style="color: #38bdf8; font-weight: bold;">${hijriNumeric}</td>
             `;
             
             let morningGroups = [];
@@ -362,6 +388,7 @@
             
             const parts = firstInput.split('-');
             const baseDateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+            baseDateObj.setHours(0,0,0,0);
 
             activeDefs.forEach(g => {
                 let tempDate = new Date(baseDateObj); 
@@ -420,7 +447,7 @@
         
         for (let i = 0; i < 30; i++) {
             let dayName = dayNames[loopDate.getDay()];
-            let hijriStr = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { day: 'numeric', month: 'long' }).format(loopDate);
+            let hijriNumericStr = getHijriNumericUnified(loopDate);
             
             let mG = [], aG = [], eG = [];
             globalConfig.groups.forEach(g => {
@@ -434,7 +461,7 @@
             rowsHtml += `<tr>
                 <td><strong>${dayName}</strong></td>
                 <td>${loopDate.getDate()}/${loopDate.getMonth()+1}/${loopDate.getFullYear()} م</td>
-                <td>${hijriStr}</td>
+                <td style="font-weight: bold; color: #0284c7;">${hijriNumericStr}</td>
                 <td>${mG.join(' ') || '-'}</td>
                 <td>${aG.join(' ') || '-'}</td>
                 <td>${eG.join(' ') || '-'}</td>
@@ -475,7 +502,7 @@
                         <tr>
                             <th>اليوم</th>
                             <th>التاريخ الميلادي</th>
-                            <th>التاريخ الهجري (اليوم/الشهر)</th>
+                            <th>التاريخ الهجري</th>
                             <th>☀️ وردية الصباح</th>
                             <th>🌆 وردية الظهر</th>
                             <th>🌙 وردية الليل</th>
@@ -489,7 +516,6 @@
         printWindow.document.close();
     }
 
-    // جلب الإعدادات الحالية عند التشغيل مباشرة
     window.onload = fetchCurrentConfig;
 </script>
 </body>
