@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>شِفتك - جدول الورديات الذكي المطور</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0284c7">
+    
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     
     <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/v4XyYg0/sheftak-icon.png">
@@ -130,8 +134,8 @@
 
         .t-apple-row-left { display: flex; align-items: center; gap: 12px; max-width: 60%; }
         .t-apple-row-circle { background: #334155; color: #fff; width: 48px; height: 48px; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; flex-shrink: 0; font-family: sans-serif; }
-        .t-apple-row-circle .m-num { font-size: 18px; font-weight: 900; line-height: 1; }
-        .t-apple-row-circle .h-num { font-size: 10px; font-weight: 700; opacity: 0.85; margin-top: 1px; }
+        .t-apple-row-circle .m-num { font-size: 16px; font-weight: 900; line-height: 1; }
+        .t-apple-row-circle .h-num { font-size: 11px; font-weight: 700; color: #38bdf8; margin-top: 1px; }
         .t-apple-row-info { display: flex; flex-direction: column; text-align: right; gap: 2px; }
         .t-apple-row-day { font-size: 13.5px; font-weight: 800; color: #1e293b; }
         .t-apple-row-months { font-size: 11px; color: #64748b; font-weight: 500; }
@@ -183,7 +187,7 @@
     <div id="mainAppContainer">
         <div class="selector-card">
             <label for="groupSelect">اختر مجموعتك :</label>
-            <select id="groupSelect" onchange="calculateCurrentShift()"></select>
+            <select id="groupSelect" onchange="onGroupChange()"></select>
             
             <label for="dateSelect">تاريخ البحث الميلادي (الأيام المنتهية مقفلة 🔒):</label>
             <input type="date" id="dateSelect" onchange="syncFromGregorianInput()">
@@ -215,7 +219,7 @@
                 تطبيق تنظيمي متطور مصمم خصيصاً لحساب وإدارة جداول فترات الدوام والورديات التناوبية للمجموعات والأفراد، مع محرك مرن يعتمد على الهندسة العكسية لحساب التتابع والتنبؤ بالأيام والراحات المستقبلية تلقائياً وبأثر رجعي دون فجوات زمنية.
             </div>
             <div class="app-meta-grid">
-                <div class="meta-item">النسخة: <strong>v3.5.1 (تحديث دقة المحاذاة الهجرية المستقبلية)</strong></div>
+                <div class="meta-item">النسخة: <strong>v4.0.0 (دعم الكرستالة الذكية PWA)</strong></div>
                 <div class="meta-item">المطور: <strong>فهد مرزوق المخلفي</strong></div>
                 <div class="meta-item">الحقوق: <strong>جميع الحقوق محفوظة © 2026</strong></div>
             </div>
@@ -234,13 +238,26 @@
         if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } 
     };
 
+    // تسجيل الـ Service Worker لدعم الكرستالة
+    let swRegistration = null;
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+        .then((reg) => {
+            swRegistration = reg;
+            console.log('تم تسجيل الـ Service Worker بنجاح!');
+            // مسح الكرستالة فور فتح الموظف للتطبيق لقراءة الجدول الجديد
+            clearAppBadgeCounter();
+        }).catch((err) => {
+            console.error('فشل تسجيل الـ Service Worker:', err);
+        });
+    }
+
     const firebaseConfig = { databaseURL: "https://rksti-29fc8-default-rtdb.firebaseio.com/" };
     firebase.initializeApp(firebaseConfig);
     const database = firebase.database();
 
     let systemConfig = null;
 
-    // دوال التقويم الهجري
     function getHijriDayNumber(dateObj) {
         try { return new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { day: 'numeric' }).format(dateObj); } catch (e) { return ""; }
     }
@@ -256,7 +273,14 @@
     function getGregorianMonthName(dateObj) { return new Intl.DateTimeFormat('ar-EG', { month: 'long' }).format(dateObj); }
     function getArabicWeekday(dateObj) { return new Intl.DateTimeFormat('ar-EG', { weekday: 'long' }).format(dateObj); }
 
-    // تحويل التاريخ الميلادي المدخل لعرضه في خانة الهجري بصيغة yyyy/mm/dd
+    function getHijriNumericUnified(dateObj) {
+        try {
+            const day = getHijriDayNumber(dateObj).replace(/[^0-9]/g, '');
+            const month = getHijriMonthNumber(dateObj).replace(/[^0-9]/g, '');
+            return `${day}/${month}`;
+        } catch (e) { return "-"; }
+    }
+
     function formatHijriInputString(dateObj) {
         const hY = getHijriYearNumber(dateObj).replace(/[^0-9]/g, '');
         const hM = String(getHijriMonthNumber(dateObj).replace(/[^0-9]/g, '')).padStart(2, '0');
@@ -264,33 +288,19 @@
         return `${hY}/${hM}/${hD}`;
     }
 
-    // 🛠️ تحديث دالة الهندسة العكسية للبحث الموسع والدقيق جداً للتاريخ الهجري
     function hijriToGregorian(hijriStr) {
         const parts = hijriStr.split('/');
         if (parts.length !== 3) return null;
-        
-        const hYear = parseInt(parts[0]);
-        const hMonth = parseInt(parts[1]);
-        const hDay = parseInt(parts[2]);
-        
+        const hYear = parseInt(parts[0]); const hMonth = parseInt(parts[1]); const hDay = parseInt(parts[2]);
         if (isNaN(hYear) || isNaN(hMonth) || isNaN(hDay)) return null;
 
-        // نقطة بداية للبحث العكسي من العام الحالي 2026 م
-        let testDate = new Date();
-        testDate.setHours(0,0,0,0);
-
-        // توسيع نطاق الفحص إلى 400 يوم للأمام لضمان صيد أي تاريخ مستقبلي بدقة تامة (مثل عام 1448 وما بعده)
+        let testDate = new Date(); testDate.setHours(0,0,0,0);
         for (let i = -30; i < 400; i++) {
-            let d = new Date(testDate);
-            d.setDate(d.getDate() + i);
-            
+            let d = new Date(testDate); d.setDate(d.getDate() + i);
             let curHY = parseInt(getHijriYearNumber(d).replace(/[^0-9]/g, ''));
             let curHM = parseInt(getHijriMonthNumber(d).replace(/[^0-9]/g, ''));
             let curHD = parseInt(getHijriDayNumber(d).replace(/[^0-9]/g, ''));
-            
-            if (curHY === hYear && curHM === hMonth && curHD === hDay) {
-                return d;
-            }
+            if (curHY === hYear && curHM === hMonth && curHD === hDay) return d;
         }
         return null;
     }
@@ -305,24 +315,16 @@
     }
 
     function getTodayDateString() {
-        const today = new Date();
-        const yyyy = today.getFullYear();
-        const mm = String(today.getMonth() + 1).padStart(2, '0');
-        const dd = String(today.getDate()).padStart(2, '0');
+        const today = new Date(); const yyyy = today.getFullYear(); const mm = String(today.getMonth() + 1).padStart(2, '0'); const dd = String(today.getDate()).padStart(2, '0');
         return `${yyyy}-${mm}-${dd}`;
     }
 
     function restrictPastDates() {
-        const dateInput = document.getElementById('dateSelect');
-        const minDateStr = getTodayDateString();
-        dateInput.min = minDateStr; 
-        dateInput.value = minDateStr; 
-        
-        // تعبئة حقل الهجري تلقائياً عند البداية لتاريخ اليوم
+        const dateInput = document.getElementById('dateSelect'); const minDateStr = getTodayDateString();
+        dateInput.min = minDateStr; dateInput.value = minDateStr; 
         document.getElementById('queryHijriSelect').value = formatHijriInputString(new Date());
     }
 
-    // مزامنة عند تغيير الحقل الميلادي
     function syncFromGregorianInput() {
         const dateInput = document.getElementById('dateSelect');
         if (dateInput.value) {
@@ -332,15 +334,11 @@
         calculateCurrentShift();
     }
 
-    // مزامنة عند كتابة التاريخ الهجري يدوياً
     function syncFromHijriInput() {
         const hijriValue = document.getElementById('queryHijriSelect').value.trim();
         const gDate = hijriToGregorian(hijriValue);
-        
         if (gDate) {
-            const yyyy = gDate.getFullYear();
-            const mm = String(gDate.getMonth() + 1).padStart(2, '0');
-            const dd = String(gDate.getDate()).padStart(2, '0');
+            const yyyy = gDate.getFullYear(); const mm = String(gDate.getMonth() + 1).padStart(2, '0'); const dd = String(gDate.getDate()).padStart(2, '0');
             document.getElementById('dateSelect').value = `${yyyy}-${mm}-${dd}`;
             calculateCurrentShift();
         } else {
@@ -360,29 +358,108 @@
             document.getElementById('noConfigContainer').style.display = 'none';
             document.getElementById('mainAppContainer').style.display = 'block';
 
-            const noticeCard = document.getElementById('adminNoticeCard');
-            const noticeContent = document.getElementById('adminNoticeContent');
+            const noticeCard = document.getElementById('adminNoticeCard'); const noticeContent = document.getElementById('adminNoticeContent');
             if(data.notice && data.notice.trim() !== "") {
-                noticeContent.innerText = data.notice;
-                noticeCard.style.display = 'block';
-            } else {
-                noticeCard.style.display = 'none';
-            }
+                noticeContent.innerText = data.notice; noticeCard.style.display = 'block';
+            } else { noticeCard.style.display = 'none'; }
 
-            const select = document.getElementById('groupSelect');
-            const savedValue = select.value;
+            const select = document.getElementById('groupSelect'); const savedValue = select.value;
             select.innerHTML = '<option value="">-- اختر مجموعتك من هنا --</option>';
-
             systemConfig.groups.forEach(group => {
                 let opt = document.createElement('option'); opt.value = group.id; opt.innerText = group.name; select.appendChild(opt);
             });
-            if(savedValue) select.value = savedValue;
+            
+            const localSavedGroup = localStorage.getItem('selected_shift_group');
+            if (localSavedGroup && !savedValue) {
+                select.value = localSavedGroup;
+            } else if(savedValue) {
+                select.value = savedValue;
+            }
 
             calculateCurrentShift();
+            checkAndSendShiftNotifications(); 
         });
         
-        restrictPastDates(); 
-        runSplashScreen();
+        restrictPastDates(); runSplashScreen();
+        requestNotificationPermission(); 
+        
+        setInterval(checkAndSendShiftNotifications, 3600000);
+    }
+
+    function requestNotificationPermission() {
+        if ("Notification" in window) {
+            if (Notification.permission !== "granted" && Notification.permission !== "denied") {
+                Notification.requestPermission();
+            }
+        }
+    }
+
+    function onGroupChange() {
+        const groupId = document.getElementById('groupSelect').value;
+        if(groupId) {
+            localStorage.setItem('selected_shift_group', groupId);
+        }
+        calculateCurrentShift();
+        checkAndSendShiftNotifications();
+    }
+
+    // إدارة الكرستالة (Badge) الحمراء
+    function updateAppBadgeCounter() {
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'SET_BADGE', count: 1 });
+        }
+    }
+
+    function clearAppBadgeCounter() {
+        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
+            navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_BADGE' });
+        }
+    }
+
+    function checkAndSendShiftNotifications() {
+        if (!systemConfig || !("Notification" in window) || Notification.permission !== "granted") return;
+        
+        const groupId = document.getElementById('groupSelect').value;
+        if (!groupId) return;
+
+        const currentHour = new Date().getHours();
+        if (currentHour < 12) return; 
+
+        const groupData = systemConfig.groups.find(g => g.id === groupId);
+        if (!groupData) return;
+
+        const todayStr = getTodayDateString();
+        const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowStr = tomorrow.toISOString().split('T')[0];
+
+        const todayResult = getShiftInfoForDate(groupData.baseDate, todayStr);
+        const tomorrowResult = getShiftInfoForDate(groupData.baseDate, tomorrowStr);
+
+        let notificationTitle = `شِفتك (${groupData.name})`;
+        let notificationBody = "";
+
+        if (todayResult.shift.type === 'off' && tomorrowResult.shift.type !== 'off') {
+            notificationBody = `📢 تنبيه غدًا الدوام: ينتهي الجلوس وتبدأ فترة الاستلام بوردية (${tomorrowResult.shift.name})`;
+        } else if (todayResult.shift.type !== 'off' && tomorrowResult.shift.type === 'off') {
+            notificationBody = `🎉 بشرى غدًا الراحة: يبدأ التسليم وأول أيام الراحة المستحقة لك!`;
+        } else if (todayResult.shift.name !== tomorrowResult.shift.name) {
+            notificationBody = `🔄 تنبيه: غداً يتغير الدوام إلى وردية (${tomorrowResult.shift.name})`;
+        }
+
+        if (notificationBody !== "") {
+            const lastSentDate = localStorage.getItem('last_notification_date');
+            if (lastSentDate !== todayStr) {
+                new Notification(notificationTitle, {
+                    body: notificationBody,
+                    icon: "https://i.ibb.co/v4XyYg0/sheftak-icon.png",
+                    dir: "rtl"
+                });
+                localStorage.setItem('last_notification_date', todayStr);
+                
+                // تفعيل الكرستالة الحمراء برقم 1 على أيقونة التطبيق في شاشة الجوال
+                updateAppBadgeCounter();
+            }
+        }
     }
 
     function calculateCurrentShift() {
@@ -392,21 +469,16 @@
         const hijriOutputDiv = document.getElementById('searchHijriOutput');
 
         if (targetDateStr) {
-            const inputDate = new Date(targetDateStr);
-            const todayDate = new Date();
-            todayDate.setHours(0,0,0,0);
-            
+            const inputDate = new Date(targetDateStr); const todayDate = new Date(); todayDate.setHours(0,0,0,0);
             if(inputDate < todayDate) {
                 alert("🔒 عذراً يا غالي؛ الأيام المنتهية مقفلة، تم إرجاعك لتاريخ اليوم تلقائياً.");
-                targetDateStr = getTodayDateString();
-                document.getElementById('dateSelect').value = targetDateStr;
+                targetDateStr = getTodayDateString(); document.getElementById('dateSelect').value = targetDateStr;
                 document.getElementById('queryHijriSelect').value = formatHijriInputString(new Date());
             }
         }
 
-        if (!targetDateStr) {
-            hijriOutputDiv.style.display = 'none';
-        } else {
+        if (!targetDateStr) { hijriOutputDiv.style.display = 'none'; } 
+        else {
             const tempDate = new Date(targetDateStr);
             hijriOutputDiv.innerHTML = `الموافق هجرياً: ${getArabicWeekday(tempDate)}، ${getHijriDayNumber(tempDate)} ${getHijriMonthName(tempDate)}، ${getHijriYearNumber(tempDate)} هـ`;
             hijriOutputDiv.style.display = 'block';
@@ -415,19 +487,15 @@
         if (!groupId || !targetDateStr) {
             document.getElementById('displayGroupName').innerText = "النظام جاهز";
             document.getElementById('displayShiftName').innerText = "📌 الرجاء اختيار مجموعتك أولاً لاستعراض الجدول";
-            document.getElementById('displayDayDetail').innerText = "بانتظار الاختيار";
-            document.getElementById('displayMainHijri').innerHTML = "";
-            document.getElementById('statusCard').className = "status-card prompt-mode";
-            document.getElementById('timelineSection').style.display = 'none';
+            document.getElementById('displayDayDetail').innerText = "بانتظار الاختيار"; document.getElementById('displayMainHijri').innerHTML = "";
+            document.getElementById('statusCard').className = "status-card prompt-mode"; document.getElementById('timelineSection').style.display = 'none';
             return;
         }
 
-        const groupData = systemConfig.groups.find(g => g.id === groupId);
-        if (!groupData) return;
+        const groupData = systemConfig.groups.find(g => g.id === groupId); if (!groupData) return;
 
         document.getElementById('timelineSection').style.display = 'block';
-        const mainResult = getShiftInfoForDate(groupData.baseDate, targetDateStr);
-        const mainDateObj = new Date(targetDateStr);
+        const mainResult = getShiftInfoForDate(groupData.baseDate, targetDateStr); const mainDateObj = new Date(targetDateStr);
 
         document.getElementById('displayGroupName').innerText = groupData.name;
         document.getElementById('displayShiftName').innerText = mainResult.shift.name;
@@ -435,9 +503,7 @@
         
         document.getElementById('displayMainHijri').innerHTML = `
             <div class="apple-main-badge-container">
-                <div class="apple-day-name-block">
-                    <div>${getArabicWeekday(mainDateObj)}</div>
-                </div>
+                <div class="apple-day-name-block"><div>${getArabicWeekday(mainDateObj)}</div></div>
                 <div class="apple-calendar-circle">
                     <div class="apple-circle-gregorian">${mainDateObj.getDate()}</div>
                     <div class="apple-circle-hijri">${getHijriDayNumber(mainDateObj)}</div>
@@ -450,47 +516,28 @@
         `;
         document.getElementById('statusCard').className = "status-card " + mainResult.shift.type;
 
-        const timelineList = document.getElementById('timelineList');
-        timelineList.innerHTML = '';
-        
-        let totalDaysToForecast = 150; 
-        let forecastedDaysArray = [];
+        const timelineList = document.getElementById('timelineList'); timelineList.innerHTML = '';
+        let totalDaysToForecast = 150; let forecastedDaysArray = [];
         
         for (let i = 0; i <= totalDaysToForecast; i++) {
-            let tempDateLoop = new Date(targetDateStr);
-            tempDateLoop.setDate(tempDateLoop.getDate() + i);
+            let tempDateLoop = new Date(targetDateStr); tempDateLoop.setDate(tempDateLoop.getDate() + i);
             let loopDateStr = tempDateLoop.toISOString().split('T')[0];
             let loopResult = getShiftInfoForDate(groupData.baseDate, loopDateStr);
-            forecastedDaysArray.push({
-                dateStr: loopDateStr,
-                dateObj: tempDateLoop,
-                result: loopResult
-            });
+            forecastedDaysArray.push({ dateStr: loopDateStr, dateObj: tempDateLoop, result: loopResult });
         }
 
         for (let i = 1; i <= totalDaysToForecast; i++) {
-            let previousDay = forecastedDaysArray[i - 1];
-            let currentDay = forecastedDaysArray[i];
-            
-            let isReceiveDay = false; 
-            let isDeliverDay = false; 
+            let previousDay = forecastedDaysArray[i - 1]; let currentDay = forecastedDaysArray[i];
+            let isReceiveDay = false; let isDeliverDay = false; 
 
-            if (previousDay.result.shift.type === 'off' && currentDay.result.shift.type !== 'off') {
-                isReceiveDay = true;
-            }
-            if (previousDay.result.shift.type !== 'off' && currentDay.result.shift.type === 'off') {
-                isDeliverDay = true;
-            }
+            if (previousDay.result.shift.type === 'off' && currentDay.result.shift.type !== 'off') isReceiveDay = true;
+            if (previousDay.result.shift.type !== 'off' && currentDay.result.shift.type === 'off') isDeliverDay = true;
 
             let badgeHtml = "";
-            if (isReceiveDay) {
-                badgeHtml = `<span class="badge-tab badge-tab-receive">🏷️ أول يوم استلام</span>`;
-            } else if (isDeliverDay) {
-                badgeHtml = `<span class="badge-tab badge-tab-deliver">🏷️ أول يوم تسليم</span>`;
-            }
+            if (isReceiveDay) badgeHtml = `<span class="badge-tab badge-tab-receive">🏷️ أول يوم استلام</span>`;
+            else if (isDeliverDay) badgeHtml = `<span class="badge-tab badge-tab-deliver">🏷️ أول يوم تسليم</span>`;
 
-            const dateObj = currentDay.dateObj;
-            const loopResult = currentDay.result;
+            const dateObj = currentDay.dateObj; const loopResult = currentDay.result; const hijriNumeric = getHijriNumericUnified(dateObj);
 
             const tRow = document.createElement('div');
             tRow.className = `timeline-row ${loopResult.shift.type}`;
@@ -498,11 +545,11 @@
                 <div class="t-apple-row-left">
                     <div class="t-apple-row-circle">
                         <div class="m-num">${dateObj.getDate()}</div>
-                        <div class="h-num">${getHijriDayNumber(dateObj)}</div>
+                        <div class="h-num">${hijriNumeric}</div>
                     </div>
                     <div class="t-apple-row-info">
                         <div class="t-apple-row-day">${getArabicWeekday(dateObj)}</div>
-                        <div class="t-apple-row-months">${getGregorianMonthName(dateObj)} م | ${getHijriMonthName(dateObj)}</div>
+                        <div class="t-apple-row-months">${dateObj.getDate()}/${dateObj.getMonth()+1} م | ${hijriNumeric} هـ</div>
                     </div>
                 </div>
                 <div class="t-left-side">
@@ -521,11 +568,9 @@
         const baseDate = new Date(baseDateStr); const targetDate = new Date(targetDateStr);
         let dayDiff = Math.floor((targetDate.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24));
         const cycleLength = systemConfig.cycle.length;
-        let index = dayDiff % cycleLength;
-        if (index < 0) index += cycleLength;
+        let index = dayDiff % cycleLength; if (index < 0) index += cycleLength;
 
-        const shift = systemConfig.cycle[index];
-        let dayDetail = "";
+        const shift = systemConfig.cycle[index]; let dayDetail = "";
 
         if (cycleLength === 10) {
             if (index === 0 || index === 1) dayDetail = index === 0 ? "☀️ اليوم الأول" : "☀️ اليوم الثاني";
@@ -538,7 +583,7 @@
             else if (index <= 7) dayDetail = `🌿 اليوم الـ ${getArabicOrdinal(relativeDay)} (بعد الصباح)`;
             else if (index <= 11) dayDetail = `🌆 اليوم الـ ${getArabicOrdinal(relativeDay)}`;
             else if (index <= 15) dayDetail = `🌿 اليوم الـ ${getArabicOrdinal(relativeDay)} (بعد الظهر)`;
-            else if (index <= 19) dayDetail = `🌙 اليوم الـ ${getArabicOrdinal(relativeDay)}`;
+            else if (index <= 11) dayDetail = `🌙 اليوم الـ ${getArabicOrdinal(relativeDay)}`;
             else dayDetail = `🌿 اليوم الـ ${getArabicOrdinal(relativeDay)} (بعد الليل)`;
         }
         return { shift, dayDetail };
