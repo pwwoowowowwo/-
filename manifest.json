@@ -5,25 +5,17 @@
     {
       "src": "https://i.ibb.co/v4XyYg0/sheftak-icon.png",
       "type": "image/png",
-      "sizes": "180x180",
-      "purpose": "any"
+      "sizes": "192x192"
     },
     {
       "src": "https://i.ibb.co/v4XyYg0/sheftak-icon.png",
       "type": "image/png",
-      "sizes": "192x192",
-      "purpose": "any"
-    },
-    {
-      "src": "https://i.ibb.co/v4XyYg0/sheftak-icon.png",
-      "type": "image/png",
-      "sizes": "512x512",
-      "purpose": "any"
+      "sizes": "512x512"
     }
   ],
   "start_url": "index.html",
-  "background_color": "#f0f4f8",
+  "background_color": "#f8fafc",
+  "theme-color": "#0284c7",
   "display": "standalone",
-  "theme_color": "#0284c7",
   "orientation": "portrait"
 }
