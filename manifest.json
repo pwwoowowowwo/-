@@ -3,12 +3,12 @@
   "name": "شِفتك - جدول الورديات الذكي المطور",
   "icons": [
     {
-      "src": "https://i.ibb.co/v4XyYg0/sheftak-icon.png",
+      "src": "icon.png",
       "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "https://i.ibb.co/v4XyYg0/sheftak-icon.png",
+      "src": "icon.png",
       "type": "image/png",
       "sizes": "512x512"
     }
