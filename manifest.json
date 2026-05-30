@@ -6,12 +6,19 @@
       "src": "https://i.ibb.co/v4XyYg0/sheftak-icon.png",
       "type": "image/png",
       "sizes": "180x180",
-      "purpose": "any maskable"
+      "purpose": "any"
     },
     {
       "src": "https://i.ibb.co/v4XyYg0/sheftak-icon.png",
       "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "192x192",
+      "purpose": "any"
+    },
+    {
+      "src": "https://i.ibb.co/v4XyYg0/sheftak-icon.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any"
     }
   ],
   "start_url": "index.html",
