@@ -1,9 +1,9 @@
-const CACHE_NAME = 'sheftak-cache-v4';
+const CACHE_NAME = 'sheftak-cache-v5';
 const assets = [
   'index.html',
   'admin.html',
   'manifest.json',
-  'https://i.ibb.co/v4XyYg0/sheftak-icon.png'
+  'icon.png'
 ];
 
 // تثبيت وتخزين الملفات الأساسية
@@ -33,7 +33,7 @@ self.addEventListener('activate', e => {
 // استدعاء الملفات وسرعة التصفح offline
 self.addEventListener('fetch', e => {
   if (e.request.url.includes('firebaseio.com')) {
-    return; // بيانات الفايربيز تأتي حية دائماً
+    return;
   }
   e.respondWith(
     caches.match(e.request).then(cachedResponse => {
