@@ -10,9 +10,12 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     
+    <link rel="apple-touch-icon" href="https://i.ibb.co/v4XyYg0/sheftak-icon.png">
+    <link rel="apple-touch-icon" sizes="152x152" href="https://i.ibb.co/v4XyYg0/sheftak-icon.png">
     <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/v4XyYg0/sheftak-icon.png">
     <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/v4XyYg0/sheftak-icon.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="https://i.ibb.co/v4XyYg0/sheftak-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="https://i.ibb.co/v4XyYg0/sheftak-icon.png">
+    
     <meta name="apple-mobile-web-app-title" content="شِفتك">
     <meta name="application-name" content="شِفتك">
     
@@ -119,7 +122,6 @@
         .apple-month-m { font-size: 13px; font-weight: 700; color: #1e3a8a; }
         .apple-month-h { font-size: 12px; font-weight: 500; color: #0284c7; }
 
-        /* تنسيق جدول الفترات التتابعية القادمة داخل المنبثقة */
         .all-groups-table-section { background: #f8fafc; border: 1px solid rgba(0,0,0,0.05); border-radius: 20px; padding: 16px; margin-bottom: 20px; text-align: right; }
         .table-title { font-size: 13.5px; font-weight: 800; color: #1e3a8a; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
         .groups-grid-layout { display: flex; flex-direction: column; gap: 8px; }
@@ -138,7 +140,6 @@
         .g-bg-evening { background-color: var(--color-evening); color: #fff; }
         .g-bg-off { background-color: var(--color-off); color: #fff; }
 
-        /* 📌 تصميم الشاشة المنبثقة المخصصة لـ "من مداوم الآن" */
         .custom-popup-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 10000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
         .custom-popup-overlay.active { opacity: 1; pointer-events: auto; }
         .custom-popup-box { background: #ffffff; width: 92%; max-width: 470px; border-radius: 28px; padding: 22px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); text-align: center; transform: translateY(20px); transition: transform 0.3s ease; direction: rtl; max-height: 92vh; overflow-y: auto; }
@@ -146,7 +147,7 @@
         .popup-header-title { font-size: 18px; font-weight: 800; color: #1e3a8a; margin-bottom: 4px; }
         .popup-time-sub { font-size: 13px; color: #64748b; font-weight: 500; margin-bottom: 16px; }
         
-        .popup-duty-card { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 20px; padding: 18px; margin-bottom: 16px; border: 1px solid rgba(0,0,0,0.04); text-align: center; }
+        .popup-duty-card { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9(100%)); border-radius: 20px; padding: 18px; margin-bottom: 16px; border: 1px solid rgba(0,0,0,0.04); text-align: center; }
         .popup-duty-group { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
         .popup-duty-shift-badge { display: inline-block; font-size: 13.5px; font-weight: 800; padding: 6px 16px; border-radius: 10px; color: #fff; margin-top: 4px; }
         
@@ -290,7 +291,7 @@
 </div>
 
 <script>
-    // 🔒 قفل الفحص للواجهة البصرية
+    // قفل الفحص للواجهة البصرية
     document.addEventListener('contextmenu', event => event.preventDefault());
     document.onkeydown = function(e) {
         if (e.keyCode == 123) { return false; } 
@@ -300,7 +301,6 @@
         if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } 
     };
 
-    // تسجيل الـ Service Worker لدعم الكرستالة
     let swRegistration = null;
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js')
@@ -459,7 +459,6 @@
         }
     }
 
-    // حفظ خيار المجموعة محلياً
     function onGroupChange() {
         const groupId = document.getElementById('groupSelect').value;
         if(groupId) {
@@ -525,7 +524,6 @@
         }
     }
 
-    // 🌟 تحديث محرك حساب من المداوم الآن وجدول الفترات القادمة تتابعياً 🌟
     function openWhoIsDutyPopup() {
         if (!systemConfig) return;
         
@@ -536,7 +534,6 @@
         let currentPeriodText = "";
         let baseWorkingDate = new Date(); 
         
-        // حساب الفترة الحالية الفعلية بناءً على الوقت مع معالجة إزاحة الليل
         if (curHour >= 0 && curHour < 6) {
             currentPeriodType = 'evening'; 
             currentPeriodText = "الفترة الليلية (10:00 م - 06:00 ص)";
@@ -552,7 +549,6 @@
             currentPeriodText = "الفترة الليلية (10:00 م - 06:00 ص)";
         }
         
-        // استخراج اسم المجموعة المداومة حالياً وتلوين الكرت
         const yyyy = baseWorkingDate.getFullYear(); const mm = String(baseWorkingDate.getMonth() + 1).padStart(2, '0'); const dd = String(baseWorkingDate.getDate()).padStart(2, '0');
         const currentWorkingDateStr = `${yyyy}-${mm}-${dd}`;
         
@@ -578,7 +574,6 @@
         const badgeEl = document.getElementById('popupShiftBadge');
         badgeEl.innerText = currentShiftName; badgeEl.style.backgroundColor = currentBgColor;
         
-        // 🔄 بناء مصفوفة الفترات الـ 3 القادمة تتابعياً بالترتيب الزمني الصحيح 🔄
         const periodSequence = ['morning', 'afternoon', 'evening'];
         let currentIndex = periodSequence.indexOf(currentPeriodType);
         
@@ -589,7 +584,7 @@
             currentIndex++;
             if (currentIndex > 2) {
                 currentIndex = 0;
-                loopDate.setDate(loopDate.getDate() + 1); // الانتقال لليوم التالي زمنيًا
+                loopDate.setDate(loopDate.getDate() + 1);
             }
             
             let pType = periodSequence[currentIndex];
@@ -618,7 +613,6 @@
             });
         }
         
-        // حقن الفترات الـ 3 القادمة مرتبة زمنياً داخل مظهر الجدول المحدث بالمنبثقة
         const popupGroupsGrid = document.getElementById('popupGroupsGrid');
         popupGroupsGrid.innerHTML = '';
         
@@ -627,7 +621,6 @@
             let matchedShiftName = "راحة";
             let bgClass = 'g-bg-off';
             
-            // البحث عن المجموعة اللي يصادف جدولها استلام الدوام في هذه الفترة المحددة زمنيًا
             for (let i = 0; i < systemConfig.groups.length; i++) {
                 const grp = systemConfig.groups[i];
                 const res = getShiftInfoForDate(grp.baseDate, period.dateStr);
