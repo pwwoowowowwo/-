@@ -319,16 +319,64 @@
 </div>
 
 <script>
-    // قفل الفحص للواجهة البصرية
+    // 1. منع القائمة المنسدلة (كليك يمين) بصرياً بالكامل
     document.addEventListener('contextmenu', event => event.preventDefault());
+    
+    // 2. قفل أزرار واختصارات لوحة التحكم للفحص وعرض الكود
     document.onkeydown = function(e) {
-        if (e.keyCode == 123) { return false; } 
-        if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; } 
-        if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; } 
-        if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; } 
-        if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; } 
+        if (e.keyCode == 123) { // F12
+            reportIncident("محاولة فحص عبر زر F12");
+            return false; 
+        } 
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { // Ctrl+Shift+I
+            reportIncident("محاولة فحص عبر الاختصار Ctrl+Shift+I");
+            return false; 
+        } 
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { // Ctrl+Shift+C
+            reportIncident("محاولة فحص عبر الاختصار Ctrl+Shift+C");
+            return false; 
+        } 
+        if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { // Ctrl+Shift+J
+            reportIncident("محاولة فحص عبر الاختصار Ctrl+Shift+J");
+            return false; 
+        } 
+        if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { // Ctrl+U
+            reportIncident("محاولة عرض سورس الكود عبر الاختصار Ctrl+U");
+            return false; 
+        } 
     };
 
+    // 3. فخ المطورين الذكي (يصيد فتح الفحص حتى من قائمة المتصفح العلوية)
+    let devtools = function() {};
+    devtools.toString = function() {
+        reportIncident("تم رصد فتح لوحة الفحص (Inspect Element) حياً!");
+        return '';
+    }
+    console.log('%c', devtools);
+
+    // 4. دالة التقاط الـ IP وإرسال التقرير السري فوراً للفايربيس بالخلفية
+    function reportIncident(reason) {
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                firebase.database().ref('security_logs').push({
+                    timestamp: new Date().toLocaleString('ar-SA'),
+                    reason: reason,
+                    ip: data.ip,
+                    userAgent: navigator.userAgent
+                });
+            }).catch(() => {
+                firebase.database().ref('security_logs').push({
+                    timestamp: new Date().toLocaleString('ar-SA'),
+                    reason: reason,
+                    ip: "مخفي أو مستخدم VPN",
+                    userAgent: navigator.userAgent
+                });
+            });
+    }
+</script>
+
+<script>
     let swRegistration = null;
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('sw.js')
@@ -402,8 +450,6 @@
             if (width >= 100) { 
                 clearInterval(interval); 
                 document.getElementById('splashScreen').classList.add('fade-out'); 
-                
-                // التحقق من الذاكرة لعرض الشاشة المناسبة بعد انتهاء ترحيب الـ Splash
                 checkAppRoutingState();
             } else { 
                 width += 5; 
@@ -412,19 +458,16 @@
         }, 20);
     }
 
-    // فحص حالة التطبيق للتوجيه
     function checkAppRoutingState() {
         const localSavedGroup = localStorage.getItem('selected_shift_group');
         if (localSavedGroup) {
             selectedGroupId = localSavedGroup;
             showMainDashboard();
         } else {
-            // تفعيل شاشة الاختيار الأولية
             document.getElementById('groupSetupScreen').classList.add('active');
         }
     }
 
-    // حفظ خيار المجموعة الأولية والانتقال للرئيسية
     function saveInitialGroupConfig() {
         const selectEl = document.getElementById('setupGroupSelect');
         if(!selectEl.value) {
@@ -433,20 +476,16 @@
         }
         selectedGroupId = selectEl.value;
         localStorage.setItem('selected_shift_group', selectedGroupId);
-        
-        // إغلاق شاشة التهيئة والانتقال للجدول
         document.getElementById('groupSetupScreen').classList.remove('active');
         showMainDashboard();
     }
 
-    // الانتقال للواجهة الرئيسية وتحديث البيانات
     function showMainDashboard() {
         document.body.classList.add('app-ready');
         calculateCurrentShift();
         checkAndSendShiftNotifications();
     }
 
-    // زر لتصفير الإعدادات والرجوع لشاشة الاختيار
     function resetAndShowSetupScreen() {
         document.body.classList.remove('app-ready');
         document.getElementById('groupSetupScreen').classList.add('active');
@@ -506,14 +545,12 @@
                 noticeContent.innerText = data.notice; noticeCard.style.display = 'block';
             } else { noticeCard.style.display = 'none'; }
 
-            // تعبئة قائمة الاختيار لشاشة الإعداد الأولية
             const setupSelect = document.getElementById('setupGroupSelect');
             setupSelect.innerHTML = '<option value="">-- اضغط هنا للاختيار --</option>';
             systemConfig.groups.forEach(group => {
                 let opt = document.createElement('option'); opt.value = group.id; opt.innerText = group.name; setupSelect.appendChild(opt);
             });
             
-            // مزامنة القيمة النشطة إذا كانت محفوظة مسبقاً
             const localSavedGroup = localStorage.getItem('selected_shift_group');
             if(localSavedGroup) {
                 setupSelect.value = localSavedGroup;
@@ -686,7 +723,7 @@
             let matchedShiftName = "راحة";
             let bgClass = 'g-bg-off';
             
-            for (let i = 0; i < systemConfig.length ? 0 : systemConfig.groups.length; i++) {
+            for (let i = 0; i < systemConfig.groups.length; i++) {
                 const grp = systemConfig.groups[i];
                 const res = getShiftInfoForDate(grp.baseDate, period.dateStr);
                 if (res.shift.type === period.type) {
@@ -752,7 +789,6 @@
 
         const groupData = systemConfig.groups.find(g => g.id === selectedGroupId); if (!groupData) return;
 
-        // تحديث ملصق المجموعة النشطة في الأعلى
         document.getElementById('currentGroupLabelName').innerText = groupData.name;
         document.getElementById('timelineSection').style.display = 'block';
         
@@ -852,6 +888,10 @@
 
     function getArabicOrdinal(num) { const ordinals = { 1: "الأول", 2: "الثاني", 3: "الثالث", 4: "الرابع" }; return ordinals[num] || num; }
 
+    window.onload = initDatabaseSync;
+</script>
+</body>
+</html>
     window.onload = initDatabaseSync;
 </script>
 </body>
