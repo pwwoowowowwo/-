@@ -3,893 +3,298 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>شِفتك - جدول الورديات الذكي المطور</title>
-    
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#0284c7">
-    
+    <title>الموقع تحت الصيانة - نظام شِفتك</title>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-    
-    <link rel="apple-touch-icon" href="https://i.ibb.co/v4XyYg0/sheftak-icon.png">
-    <link rel="apple-touch-icon" sizes="152x152" href="https://i.ibb.co/v4XyYg0/sheftak-icon.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="https://i.ibb.co/v4XyYg0/sheftak-icon.png">
-    <link rel="icon" type="image/png" sizes="32x32" href="https://i.ibb.co/v4XyYg0/sheftak-icon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="https://i.ibb.co/v4XyYg0/sheftak-icon.png">
-    
-    <meta name="apple-mobile-web-app-title" content="شِفتك">
-    <meta name="application-name" content="شِفتك">
-    
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #f0f4f8 0%, #e0e7ff 100%);
-            --card-bg: rgba(255, 255, 255, 0.75);
-            --card-border: rgba(56, 189, 248, 0.2);
-            --text-light: #1e293b;
-            --text-muted: #64748b;
-            --color-morning: #ffb703;
-            --color-afternoon: #4ea8de;
-            --color-evening: #9d4edd;
-            --color-off: #52b788;
-            --input-bg: rgba(255, 255, 255, 0.9);
-            --primary-blue: #0284c7; 
+            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            --card-bg: rgba(255, 255, 255, 0.04);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-light: #f8fafc;
+            --text-muted: #94a3b8;
+            --color-primary: #38bdf8;
+            --color-accent: #818cf8;
+            --color-amber: #fbbf24;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
-        body { font-family: 'Tajawal', sans-serif; background: var(--bg-gradient); color: var(--text-light); min-height: 100vh; padding-bottom: 30px; display: flex; flex-direction: column; align-items: center; }
-        
-        .top-hero-banner {
-            width: 100%;
-            background: linear-gradient(135deg, #0284c7 0%, #1e40af 100%);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-light);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             padding: 25px 15px;
-            text-align: center;
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.2);
-            border-bottom: 4px solid rgba(255, 255, 255, 0.1);
-            margin-bottom: 0;
+            overflow-x: hidden;
         }
-        .top-hero-banner h1 { color: #ffffff; font-size: 36px; font-weight: 900; letter-spacing: 1px; text-shadow: 0 2px 4px rgba(0,0,0,0.15); }
 
-        .welcome-ticker-container {
+        .container {
             width: 100%;
-            background: rgba(255, 255, 255, 0.9);
-            border-bottom: 1px solid rgba(2, 132, 199, 0.15);
-            padding: 10px 0; overflow: hidden; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.02);
+            max-width: 680px;
+            perspective: 1000px;
         }
-        .welcome-ticker-text {
-            display: inline-block; white-space: nowrap; padding-right: 100%;
-            animation: marqueeSlide 22s linear infinite; font-size: 14.5px; font-weight: 700; color: #1e3a8a;
-        }
-        @keyframes marqueeSlide { 0% { transform: translate3d(0, 0, 0); } 100% { transform: translate3d(100%, 0, 0); } }
 
-        /* شاشة التحميل الترحيبية */
-        .splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #f8fafc; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 9999; transition: opacity 0.6s ease; }
-        .splash-logo { font-size: 42px; font-weight: 900; background: linear-gradient(to right, #0284c7, #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 15px; }
-        .progress-container { width: 200px; height: 4px; background: rgba(0, 0, 0, 0.05); border-radius: 10px; overflow: hidden; }
-        .progress-bar { height: 100%; width: 0%; background: linear-gradient(to left, #0284c7, #6366f1); }
-        .splash-screen.fade-out { opacity: 0; pointer-events: none; }
-
-        /* شاشة اختيار المجموعة لأول مرة (Onboarding) */
-        .group-setup-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-gradient); display: flex; justify-content: center; align-items: center; z-index: 9998; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; padding: 20px; }
-        .group-setup-screen.active { opacity: 1; pointer-events: auto; }
-        .setup-card { background: #ffffff; width: 100%; max-width: 440px; border-radius: 28px; padding: 30px 24px; box-shadow: 0 20px 40px rgba(15, 23, 42, 0.15); text-align: center; border: 1px solid rgba(2, 132, 199, 0.1); }
-        .setup-title { font-size: 22px; font-weight: 900; color: #1e3a8a; margin-bottom: 8px; }
-        .setup-desc { font-size: 14px; color: #64748b; margin-bottom: 24px; line-height: 1.5; }
-        .setup-btn { width: 100%; background: linear-gradient(135deg, #0284c7 0%, #1e40af 100%); color: #fff; border: none; border-radius: 14px; padding: 14px; font-family: 'Tajawal', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25); margin-top: 10px; }
-        .setup-btn:active { transform: scale(0.98); }
-
-        /* الحاوية الأساسية للتطبيق */
-        .container { width: 100%; max-width: 520px; padding: 0 15px; display: none; opacity: 0; transform: translateY(15px); transition: all 0.6s ease; }
-        body.app-ready .container { display: block; opacity: 1; transform: translateY(0); }
-
-        .admin-notice-card { background: rgba(224, 242, 254, 0.8); border: 2px dashed #0284c7; border-radius: 20px; padding: 18px; margin-bottom: 25px; display: none; backdrop-filter: blur(10px); animation: noticeGlow 2.5s infinite alternate; }
-        .admin-notice-card h3 { font-size: 14px; color: #0369a1; margin-bottom: 8px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
-        .admin-notice-content { font-size: 13.5px; color: #1e293b; line-height: 1.6; white-space: pre-line; }
-        @keyframes noticeGlow { 0% { box-shadow: 0 0 5px rgba(2, 132, 199, 0.1); } 100% { box-shadow: 0 0 15px rgba(2, 132, 199, 0.25); } }
-        
-        /* محددات البحث العلوي بعد الدخول */
-        .selector-card { background: var(--card-bg); border: 1px solid var(--card-border); backdrop-filter: blur(20px); border-radius: 24px; padding: 20px 24px; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(148, 163, 184, 0.15); }
-        label { display: block; font-size: 13px; font-weight: 700; margin-bottom: 8px; color: #334155; }
-        
-        .top-action-row { display: flex; gap: 10px; align-items: center; margin-bottom: 15px; background: rgba(2, 132, 199, 0.05); padding: 10px 14px; border-radius: 16px; justify-content: space-between; border: 1px solid rgba(2, 132, 199, 0.1); }
-        .current-group-badge-info { font-size: 14px; font-weight: 800; color: #1e3a8a; }
-        .change-group-link-btn { background: none; border: none; color: #ef4444; font-family: 'Tajawal', sans-serif; font-size: 12.5px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; }
-        
-        .who-is-duty-btn { background: linear-gradient(135deg, #0284c7 0%, #1e40af 100%); color: #fff; border: none; border-radius: 14px; padding: 0 16px; height: 50px; font-family: 'Tajawal', sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: all 0.2s; box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2); width: 100%; margin-bottom: 12px; }
-        .who-is-duty-btn:active { transform: scale(0.95); }
-
-        select, input[type="date"], input[type="text"] { width: 100%; padding: 14px 16px; background: var(--input-bg); border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 14px; color: #0f172a; font-family: 'Tajawal', sans-serif; font-size: 15px; outline: none; margin-bottom: 12px; transition: border 0.3s; }
-        select:focus, input[type="date"]:focus, input[type="text"]:focus { border-color: #0284c7; box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15); }
-        
-        .search-hijri-output { 
-            font-size: 14px; 
-            color: #0284c7; 
-            font-weight: 700; 
-            margin-top: -2px;
-            margin-bottom: 6px;
+        .main-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border-radius: 28px;
+            padding: 45px 35px;
             text-align: center;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            position: relative;
+            overflow: hidden;
+            animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* لمسة ضوئية خلفية ناعمة غير مزعجة */
+        .main-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(56, 189, 248, 0.05) 0%, transparent 60%);
+            pointer-events: none;
+        }
+
+        .badge-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 18px;
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.25);
+            border-radius: 50px;
+            color: var(--color-amber);
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 25px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background-color: var(--color-amber);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--color-amber);
+            animation: pulse 1.8s infinite;
+        }
+
+        .icon-box {
+            font-size: 55px;
+            margin-bottom: 15px;
+            display: inline-block;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.3));
+            animation: float 4s ease-in-out infinite;
+        }
+
+        h1 {
+            font-size: 30px;
+            font-weight: 900;
+            background: linear-gradient(to left, #38bdf8, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            font-size: 17px;
+            color: var(--text-light);
+            font-weight: 500;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .interactive-section {
+            margin: 30px 0 20px 0;
+            background: rgba(15, 23, 42, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 22px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-interactive {
+            background: linear-gradient(135deg, #38bdf8 0%, #818cf8 100%);
+            border: none;
+            color: #fff;
+            padding: 14px 28px;
+            font-size: 15px;
+            font-weight: 700;
+            font-family: 'Tajawal', sans-serif;
+            border-radius: 14px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(56, 189, 248, 0.25);
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-interactive:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 25px rgba(56, 189, 248, 0.35);
+        }
+
+        .btn-interactive:active {
+            transform: translateY(0);
+        }
+
+        /* رسالة التقدير المخبأة التفاعلية */
+        .appreciation-msg {
+            max-height: 0;
+            opacity: 0;
+            overflow: hidden;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            color: #cbd5e1;
+            font-size: 14px;
+            line-height: 1.8;
+            text-align: right;
+            margin-top: 0;
+            padding: 0 10px;
+        }
+
+        .appreciation-msg.show {
+            max-height: 200px;
+            opacity: 1;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px dashed rgba(255, 255, 255, 0.1);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-top: 25px;
+        }
+
+        .feature-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 15px 12px;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(56, 189, 248, 0.3);
+            transform: translateY(-3px);
+        }
+
+        .feature-item span {
+            font-size: 20px;
             display: block;
-            width: 100%;
+            margin-bottom: 6px;
         }
 
-        .status-card { background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 28px; padding: 30px 20px; text-align: center; position: relative; overflow: hidden; margin-bottom: 25px; box-shadow: 0 10px 25px rgba(148, 163, 184, 0.15); }
-        .status-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: var(--text-muted); }
-        .status-card.morning::before { background: var(--color-morning); }
-        .status-card.afternoon::before { background: var(--color-afternoon); }
-        .status-card.evening::before { background: var(--color-evening); }
-        .status-card.off::before { background: var(--color-off); }
-
-        .group-title { font-size: 15px; color: var(--text-muted); font-weight: 500; margin-bottom: 10px; }
-        .shift-main-name { font-size: 34px; font-weight: 900; margin-bottom: 8px; }
-        .status-card.prompt-mode .shift-main-name { font-size: 22px; color: #475569; }
-        
-        .morning .shift-main-name { color: #d97706; } .afternoon .shift-main-name { color: #0284c7; } .evening .shift-main-name { color: #7b2cbf; } .off .shift-main-name { color: #2d6a4f; }
-
-        .day-counter-badge { display: inline-block; padding: 6px 18px; background: rgba(0, 0, 0, 0.05); border-radius: 20px; font-size: 13px; font-weight: 700; margin-bottom: 15px; color: #334155; }
-
-        .apple-main-badge-container { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 5px; background: rgba(255,255,255,0.5); padding: 10px 20px; border-radius: 20px; border: 1px solid rgba(0,0,0,0.04); }
-        .apple-day-name-block { font-size: 16px; font-weight: 900; color: #1e293b; border-left: 2px solid rgba(0,0,0,0.1); padding-left: 15px; text-align: right; }
-        .apple-calendar-circle { background: #ef4444; color: #ffffff; width: 62px; height: 62px; border-radius: 16px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: 0 4px 10px rgba(239, 68, 68, 0.3); }
-        .apple-circle-gregorian { font-size: 22px; font-weight: 900; line-height: 1; }
-        .apple-circle-hijri { font-size: 11px; font-weight: 700; opacity: 0.9; margin-top: 1px; }
-        .apple-text-details { display: flex; flex-direction: column; align-items: flex-start; text-align: right; gap: 1px; }
-        .apple-month-m { font-size: 13px; font-weight: 700; color: #1e3a8a; }
-        .apple-month-h { font-size: 12px; font-weight: 500; color: #0284c7; }
-
-        .all-groups-table-section { background: #f8fafc; border: 1px solid rgba(0,0,0,0.05); border-radius: 20px; padding: 16px; margin-bottom: 20px; text-align: right; }
-        .table-title { font-size: 13.5px; font-weight: 800; color: #1e3a8a; margin-bottom: 12px; display: flex; align-items: center; gap: 6px; }
-        .groups-grid-layout { display: flex; flex-direction: column; gap: 8px; }
-        .group-row-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 14px; border-radius: 12px; background: #ffffff; border: 1px solid rgba(0,0,0,0.03); }
-        
-        .g-label-info-wrapper { display: flex; flex-direction: column; gap: 2px; }
-        .g-label-info { font-size: 13.5px; font-weight: 800; color: #1e3a8a; }
-        .g-label-subtime { font-size: 11.5px; color: #64748b; font-weight: 500; }
-        
-        .g-status-badge-wrapper { display: flex; align-items: center; gap: 8px; }
-        .g-group-name-highlight { font-size: 14px; font-weight: 900; color: #334155; }
-        .g-status-badge { font-size: 12px; font-weight: 800; padding: 4px 12px; border-radius: 8px; color: #fff; text-align: center; min-width: 90px; }
-        
-        .g-bg-morning { background-color: var(--color-morning); color: #fff; }
-        .g-bg-afternoon { background-color: var(--color-afternoon); color: #fff; }
-        .g-bg-evening { background-color: var(--color-evening); color: #fff; }
-        .g-bg-off { background-color: var(--color-off); color: #fff; }
-
-        .custom-popup-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 10000; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
-        .custom-popup-overlay.active { opacity: 1; pointer-events: auto; }
-        .custom-popup-box { background: #ffffff; width: 92%; max-width: 470px; border-radius: 28px; padding: 22px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); text-align: center; transform: translateY(20px); transition: transform 0.3s ease; direction: rtl; max-height: 92vh; overflow-y: auto; }
-        .custom-popup-overlay.active .custom-popup-box { transform: translateY(0); }
-        .popup-header-title { font-size: 18px; font-weight: 800; color: #1e3a8a; margin-bottom: 4px; }
-        .popup-time-sub { font-size: 13px; color: #64748b; font-weight: 500; margin-bottom: 16px; }
-        
-        .popup-duty-card { background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-radius: 20px; padding: 18px; margin-bottom: 16px; border: 1px solid rgba(0,0,0,0.04); text-align: center; }
-        .popup-duty-group { font-size: 22px; font-weight: 900; margin-bottom: 4px; }
-        .popup-duty-shift-badge { display: inline-block; font-size: 13.5px; font-weight: 800; padding: 6px 16px; border-radius: 10px; color: #fff; margin-top: 4px; }
-        
-        .popup-close-btn { width: 100%; background: #e2e8f0; color: #334155; border: none; border-radius: 14px; padding: 14px; font-family: 'Tajawal', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: background 0.2s; }
-        .popup-close-btn:hover { background: #cbd5e1; }
-
-        .future-timeline-section { margin-bottom: 30px; }
-        .section-title { font-size: 14px; font-weight: 700; color: #475569; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center;}
-        .timeline-scroll-box { max-height: 420px; overflow-y: auto; padding-right: 4px; display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth; }
-        .timeline-scroll-box::-webkit-scrollbar { width: 6px; }
-        .timeline-scroll-box::-webkit-scrollbar-track { background: rgba(0,0,0,0.03); border-radius: 10px; }
-        .timeline-scroll-box::-webkit-scrollbar-thumb { background: rgba(2, 132, 199, 0.2); border-radius: 10px; }
-
-        .timeline-row { 
-            background: var(--card-bg); border: 1px solid var(--card-border); border-radius: 18px; 
-            padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; 
-            position: relative; padding-right: 22px; box-shadow: 0 4px 10px rgba(148, 163, 184, 0.06); 
+        .feature-item h4 {
+            font-size: 13px;
+            color: var(--text-light);
+            font-weight: 700;
         }
-        
-        .timeline-row::before { content: ''; position: absolute; top: 12%; right: 0; bottom: 12%; width: 5px; border-radius: 4px 0 0 4px; background: #94a3b8; }
-        .timeline-row.morning::before { background: var(--color-morning); }
-        .timeline-row.afternoon::before { background: var(--color-afternoon); }
-        .timeline-row.evening::before { background: var(--color-evening); }
-        .timeline-row.off::before { background: var(--color-off); }
 
-        .t-apple-row-left { display: flex; align-items: center; gap: 12px; max-width: 60%; }
-        .t-apple-row-circle { background: #334155; color: #fff; width: 48px; height: 48px; border-radius: 12px; display: flex; flex-direction: column; justify-content: center; align-items: center; flex-shrink: 0; font-family: sans-serif; }
-        .t-apple-row-circle .m-num { font-size: 16px; font-weight: 900; line-height: 1; }
-        .t-apple-row-circle .h-num { font-size: 11px; font-weight: 700; color: #38bdf8; margin-top: 1px; }
-        .t-apple-row-info { display: flex; flex-direction: column; text-align: right; gap: 2px; }
-        .t-apple-row-day { font-size: 13.5px; font-weight: 800; color: #1e293b; }
-        .t-apple-row-months { font-size: 11px; color: #64748b; font-weight: 500; }
-        
-        .t-left-side { text-align: left; display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-        .t-name-wrapper { display: flex; align-items: center; gap: 6px; }
-        .t-name { font-size: 15px; font-weight: 900; }
-        .morning .t-name { color: #d97706; } .afternoon .t-name { color: #0284c7; } .evening .t-name { color: #7b2cbf; } .off .t-name { color: #2d6a4f; }
-        .t-detail { font-size: 12px; color: #475569; font-weight: 500; }
-        
-        .badge-tab { font-size: 10.5px; font-weight: 800; padding: 3px 8px; border-radius: 8px; display: inline-block; direction: rtl; }
-        .badge-tab-receive { background: #e0f2fe; color: #0369a1; border: 1px solid #bae6fd; } 
-        .badge-tab-deliver { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; } 
+        .footer {
+            margin-top: 35px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            font-size: 13px;
+            color: var(--text-muted);
+        }
 
-        .app-info-card { background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(2, 132, 199, 0.15); border-radius: 20px; padding: 20px; text-align: center; box-shadow: 0 4px 15px rgba(148, 163, 184, 0.05); }
-        .app-info-title { font-size: 14px; font-weight: 700; color: #0284c7; margin-bottom: 6px; }
-        .app-info-desc { font-size: 12px; color: #475569; line-height: 1.6; margin-bottom: 12px; }
-        .app-meta-grid { display: flex; justify-content: center; gap: 20px; border-top: 1px solid rgba(0, 0, 0, 0.06); padding-top: 12px; font-size: 11px; color: #475569; }
-        .meta-item strong { color: #4f46e5; }
-        
-        .no-config-alert { background: #fee2e2; border: 1px solid #fca5a5; color: #991b1b; padding: 18px; border-radius: 18px; text-align: center; }
+        .footer span {
+            color: var(--color-primary);
+            font-weight: 700;
+        }
+
+        /* الأنيميشن والتأثيرات الحركية */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.4; transform: scale(0.8); }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
 
-<div class="splash-screen" id="splashScreen">
-    <div class="splash-logo">شِفتك</div>
-    <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
-</div>
-
-<div class="group-setup-screen" id="groupSetupScreen">
-    <div class="setup-card">
-        <div class="setup-title">مرحباً بك في شِفتك 👋</div>
-        <div class="setup-desc">الرجاء اختيار مجموعتك الحالية لتهيئة جدول الفترات والراحات القادمة الخاص بك وحفظه على هذا الجهاز.</div>
+<div class="container">
+    <div class="main-card">
         
-        <select id="setupGroupSelect">
-            <option value="">-- اضغط هنا للاختيار --</option>
-        </select>
-        
-        <button type="button" class="setup-btn" onclick="saveInitialGroupConfig()">تأكيد المجموعة والتحول للجدول 🗓️</button>
-    </div>
-</div>
+        <div class="badge-status">
+            <span class="pulse-dot"></span>
+            أعمال تطوير وتحسين جارية
+        </div>
 
-<div class="top-hero-banner">
-    <h1> نظام شِفتك الذكي</h1>
-</div>
+        <div class="icon-box">✨</div>
 
-<div class="welcome-ticker-container">
-    <div class="welcome-ticker-text">
-        أهلاً بك في نظام شِفتك الذكي .. تطبيق متطور لمتابعة واستعلام فترات العمل وأيام الراحة بكل دقة وسهولة لجميع المجموعات والأفراد.
-    </div>
-</div>
+        <h1>نعتذر منكم، الموقع تحت الصيانة</h1>
+        <p class="subtitle">
+            نعمل الآن خلف الكواليس على ترقية النظام وتحديث الخوادم لنمنحكم تجربة أفضل وأسرع بكثير! 🚀
+        </p>
 
-<div class="container" id="appMainContentContainer">
-    <div class="admin-notice-card" id="adminNoticeCard">
-        <h3>📢 اعلان من المطور :</h3>
-        <div class="admin-notice-content" id="adminNoticeContent"></div>
-    </div>
-
-    <div id="noConfigContainer" style="display: none;" class="no-config-alert">⚠️ جاري تحميل البيانات وإعداد الجدولة التناوبية...</div>
-
-    <div id="mainAppContainer">
-        <div class="selector-card">
-            <div class="top-action-row">
-                <div class="current-group-badge-info">المجموعة النشطة: <span id="currentGroupLabelName" style="color:#0284c7;">---</span></div>
-                <button type="button" class="change-group-link-btn" onclick="resetAndShowSetupScreen()">تغيير المجموعة 🔄</button>
-            </div>
-
-            <button type="button" class="who-is-duty-btn" onclick="openWhoIsDutyPopup()">🔍 من مداوم الآن؟ (كل المجموعات)</button>
+        <!-- القسم التفاعلي -->
+        <div class="interactive-section">
+            <button class="btn-interactive" onclick="toggleAppreciation()">
+                <span>💌 اضغط لمشاهدة رسالة فريق العمل</span>
+            </button>
             
-            <label for="dateSelect">تاريخ البحث الميلادي (الأيام المنتهية مقفلة 🔒):</label>
-            <input type="date" id="dateSelect" onchange="syncFromGregorianInput()">
-            
-            <label for="queryHijriSelect">تاريخ البحث الهجري (السنة/الشهر/اليوم):</label>
-            <input type="text" id="queryHijriSelect" placeholder="مثال: 1448/02/16" onchange="syncFromHijriInput()" onkeyup="if(event.key === 'Enter') syncFromHijriInput()">
-            
-            <div class="search-hijri-output" id="searchHijriOutput" style="display: none;"></div>
-        </div>
-
-        <div class="status-card prompt-mode" id="statusCard">
-            <div class="group-title" id="displayGroupName">النظام جاهز</div>
-            <div class="shift-main-name" id="displayShiftName">📌 الرجاء اختيار مجموعتك أولاً لاستعراض الجدول</div>
-            <div class="day-counter-badge" id="displayDayDetail">بانتظار الاختيار</div>
-            <div id="displayMainHijri"></div>
-        </div>
-
-        <div class="future-timeline-section" id="timelineSection" style="display: none;">
-            <div class="section-title">
-                <span>🗓️ جدول المتابعة الشخصي الطويل (لمدة 5 شهور قادمة):</span>
-                <span style="font-size: 11px; color:#0284c7;">📱 مرر للأسفل لقراءة المزيد</span>
-            </div>
-            <div class="timeline-scroll-box" id="timelineList"></div>
-        </div>
-
-        <div class="app-info-card">
-            <div class="app-info-title">عن نظام شِفتك الذكي</div>
-            <div class="app-info-desc">
-                تطبيق تنظيمي متطور مصمم خصيصاً لحساب وإدارة جداول فترات الدوام والورديات التناوبية للمجموعات والأفراد، مع محرك مرن يعتمد على الهندسة العكسية لحساب التتابع والتنبؤ بالأيام والراحات المستقبلية تلقائياً وبأثر رجعي دون فجوات زمنية.
-            </div>
-            <div class="app-meta-grid">
-                <div class="meta-item">النسخة: <strong>v4.6.0 (الجدول التتابعي للفترات القادمة)</strong></div>
-                <div class="meta-item">المطور: <strong>فهد مرزوق المخلفي</strong></div>
-                <div class="meta-item">الحقوق: <strong>جميع الحقوق محفوظة © 2026</strong></div>
+            <div class="appreciation-msg" id="appreciationMsg">
+                <p>
+                    <strong>أهلاً بكم وشكراً لزيارتكم! 🌸</strong><br>
+                    نقدر لكم وجودكم وتفهمكم جداً. نعتذر عن أي إزعاج قد يسببه هذا التوقف المؤقت، ونعدكم بالعودة في أقرب وقت بميزات جديدة وتجربة تليق بكم.
+                </p>
             </div>
         </div>
-    </div>
-</div>
 
-<div class="custom-popup-overlay" id="dutyPopup">
-    <div class="custom-popup-box">
-        <div class="popup-header-title">👥 الوردية والمجموعة المداومة حالياً</div>
-        <div class="popup-time-sub" id="popupTimeSub">حسب تاريخ ووقت البحث الحالي</div>
-        
-        <div class="popup-duty-card">
-            <div id="popupGroupName" class="popup-duty-group" style="color: #1e293b;">جاري الحساب...</div>
-            <div id="popupShiftBadge" class="popup-duty-shift-badge">---</div>
+        <!-- بطاقات توضيحية خفيفة -->
+        <div class="features-grid">
+            <div class="feature-item">
+                <span>⚡</span>
+                <h4>سرعة استجابة أعلى</h4>
+            </div>
+            <div class="feature-item">
+                <span>🛡️</span>
+                <h4>حماية واستقرار أعمق</h4>
+            </div>
+            <div class="feature-item">
+                <span>🎨</span>
+                <h4>تحسينات واجهة المستخدم</h4>
+            </div>
         </div>
-        
-        <div class="all-groups-table-section">
-            <div class="table-title">⏱️ ترتيب فترات الاستلام والورديات القادمة تتابعياً:</div>
-            <div class="groups-grid-layout" id="popupGroupsGrid"></div>
+
+        <div class="footer">
+            جميع الحقوق محفوظة &copy; 2026 | تم التطوير والتصميم بواسطة <span>أبو مرزوق</span> 🚀
         </div>
-        
-        <button type="button" class="popup-close-btn" onclick="closeWhoIsDutyPopup()">إغلاق النافذة</button>
+
     </div>
 </div>
 
 <script>
-    // 1. منع القائمة المنسدلة (كليك يمين) بصرياً بالكامل
-    document.addEventListener('contextmenu', event => event.preventDefault());
-    
-    // 2. قفل أزرار واختصارات لوحة التحكم للفحص وعرض الكود
-    document.onkeydown = function(e) {
-        if (e.keyCode == 123) { // F12
-            reportIncident("محاولة فحص عبر زر F12");
-            return false; 
-        } 
-        if (e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { // Ctrl+Shift+I
-            reportIncident("محاولة فحص عبر الاختصار Ctrl+Shift+I");
-            return false; 
-        } 
-        if (e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { // Ctrl+Shift+C
-            reportIncident("محاولة فحص عبر الاختصار Ctrl+Shift+C");
-            return false; 
-        } 
-        if (e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { // Ctrl+Shift+J
-            reportIncident("محاولة فحص عبر الاختصار Ctrl+Shift+J");
-            return false; 
-        } 
-        if (e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { // Ctrl+U
-            reportIncident("محاولة عرض سورس الكود عبر الاختصار Ctrl+U");
-            return false; 
-        } 
-    };
-
-    // 3. فخ المطورين الذكي (يصيد فتح الفحص حتى من قائمة المتصفح العلوية)
-    let devtools = function() {};
-    devtools.toString = function() {
-        reportIncident("تم رصد فتح لوحة الفحص (Inspect Element) حياً!");
-        return '';
-    }
-    console.log('%c', devtools);
-
-    // 4. دالة التقاط الـ IP وإرسال التقرير السري فوراً للفايربيس بالخلفية
-    function reportIncident(reason) {
-        fetch('https://api.ipify.org?format=json')
-            .then(response => response.json())
-            .then(data => {
-                firebase.database().ref('security_logs').push({
-                    timestamp: new Date().toLocaleString('ar-SA'),
-                    reason: reason,
-                    ip: data.ip,
-                    userAgent: navigator.userAgent
-                });
-            }).catch(() => {
-                firebase.database().ref('security_logs').push({
-                    timestamp: new Date().toLocaleString('ar-SA'),
-                    reason: reason,
-                    ip: "مخفي أو مستخدم VPN",
-                    userAgent: navigator.userAgent
-                });
-            });
+    function toggleAppreciation() {
+        const msg = document.getElementById('appreciationMsg');
+        msg.classList.toggle('show');
     }
 </script>
 
-<script>
-    let swRegistration = null;
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
-        .then((reg) => {
-            swRegistration = reg;
-            console.log('تم تسجيل الـ Service Worker بنجاح!');
-            clearAppBadgeCounter();
-        }).catch((err) => {
-            console.error('فشل تسجيل الـ Service Worker:', err);
-        });
-    }
-
-    const firebaseConfig = { databaseURL: "https://rksti-29fc8-default-rtdb.firebaseio.com/" };
-    firebase.initializeApp(firebaseConfig);
-    const database = firebase.database();
-
-    let systemConfig = null;
-    let selectedGroupId = null;
-
-    function getHijriDayNumber(dateObj) {
-        try { return new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { day: 'numeric' }).format(dateObj); } catch (e) { return ""; }
-    }
-    function getHijriMonthName(dateObj) {
-        try { return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { month: 'long' }).format(dateObj); } catch (e) { return ""; }
-    }
-    function getHijriMonthNumber(dateObj) {
-        try { return new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { month: 'numeric' }).format(dateObj); } catch (e) { return 1; }
-    }
-    function getHijriYearNumber(dateObj) {
-        try { return new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura', { year: 'numeric' }).format(dateObj); } catch (e) { return ""; }
-    }
-    function getGregorianMonthName(dateObj) { return new Intl.DateTimeFormat('ar-EG', { month: 'long' }).format(dateObj); }
-    function getArabicWeekday(dateObj) { return new Intl.DateTimeFormat('ar-EG', { weekday: 'long' }).format(dateObj); }
-
-    function getHijriNumericUnified(dateObj) {
-        try {
-            const day = getHijriDayNumber(dateObj).replace(/[^0-9]/g, '');
-            const month = getHijriMonthNumber(dateObj).replace(/[^0-9]/g, '');
-            return `${day}/${month}`;
-        } catch (e) { return "-"; }
-    }
-
-    function formatHijriInputString(dateObj) {
-        const hY = getHijriYearNumber(dateObj).replace(/[^0-9]/g, '');
-        const hM = String(getHijriMonthNumber(dateObj).replace(/[^0-9]/g, '')).padStart(2, '0');
-        const hD = String(getHijriDayNumber(dateObj).replace(/[^0-9]/g, '')).padStart(2, '0');
-        return `${hY}/${hM}/${hD}`;
-    }
-
-    function hijriToGregorian(hijriStr) {
-        const parts = hijriStr.split('/');
-        if (parts.length !== 3) return null;
-        const hYear = parseInt(parts[0]); const hMonth = parseInt(parts[1]); const hDay = parseInt(parts[2]);
-        if (isNaN(hYear) || isNaN(hMonth) || isNaN(hDay)) return null;
-
-        let testDate = new Date(); testDate.setHours(0,0,0,0);
-        for (let i = -100; i < 1200; i++) {
-            let d = new Date(testDate); d.setDate(d.getDate() + i);
-            let curHY = parseInt(getHijriYearNumber(d).replace(/[^0-9]/g, ''));
-            let curHM = parseInt(getHijriMonthNumber(d).replace(/[^0-9]/g, ''));
-            let curHD = parseInt(getHijriDayNumber(d).replace(/[^0-9]/g, ''));
-            if (curHY === hYear && curHM === hMonth && curHD === hDay) return d;
-        }
-        return null;
-    }
-
-    function runSplashScreen() {
-        const progressBar = document.getElementById('progressBar');
-        let width = 0;
-        const interval = setInterval(() => {
-            if (width >= 100) { 
-                clearInterval(interval); 
-                document.getElementById('splashScreen').classList.add('fade-out'); 
-                checkAppRoutingState();
-            } else { 
-                width += 5; 
-                progressBar.style.width = width + '%'; 
-            }
-        }, 20);
-    }
-
-    function checkAppRoutingState() {
-        const localSavedGroup = localStorage.getItem('selected_shift_group');
-        if (localSavedGroup) {
-            selectedGroupId = localSavedGroup;
-            showMainDashboard();
-        } else {
-            document.getElementById('groupSetupScreen').classList.add('active');
-        }
-    }
-
-    function saveInitialGroupConfig() {
-        const selectEl = document.getElementById('setupGroupSelect');
-        if(!selectEl.value) {
-            alert("الرجاء اختيار مجموعتك أولاً للمتابعة.");
-            return;
-        }
-        selectedGroupId = selectEl.value;
-        localStorage.setItem('selected_shift_group', selectedGroupId);
-        document.getElementById('groupSetupScreen').classList.remove('active');
-        showMainDashboard();
-    }
-
-    function showMainDashboard() {
-        document.body.classList.add('app-ready');
-        calculateCurrentShift();
-        checkAndSendShiftNotifications();
-    }
-
-    function resetAndShowSetupScreen() {
-        document.body.classList.remove('app-ready');
-        document.getElementById('groupSetupScreen').classList.add('active');
-    }
-
-    function getTodayDateString() {
-        const today = new Date(); const yyyy = today.getFullYear(); const mm = String(today.getMonth() + 1).padStart(2, '0'); const dd = String(today.getDate()).padStart(2, '0');
-        return `${yyyy}-${mm}-${dd}`;
-    }
-
-    function restrictPastDates() {
-        const dateInput = document.getElementById('dateSelect'); const minDateStr = getTodayDateString();
-        dateInput.min = minDateStr; dateInput.value = minDateStr; 
-        document.getElementById('queryHijriSelect').value = formatHijriInputString(new Date());
-    }
-
-    function syncFromGregorianInput() {
-        const dateInput = document.getElementById('dateSelect');
-        if (dateInput.value) {
-            const dObj = new Date(dateInput.value);
-            document.getElementById('queryHijriSelect').value = formatHijriInputString(dObj);
-        }
-        calculateCurrentShift();
-    }
-
-    function syncFromHijriInput() {
-        const hijriValue = document.getElementById('queryHijriSelect').value.trim();
-        const gDate = hijriToGregorian(hijriValue);
-        if (gDate) {
-            const yyyy = gDate.getFullYear(); const mm = String(gDate.getMonth() + 1).padStart(2, '0'); const dd = String(gDate.getDate()).padStart(2, '0');
-            document.getElementById('dateSelect').value = `${yyyy}-${mm}-${dd}`;
-            calculateCurrentShift();
-        } else {
-            const dateInput = document.getElementById('dateSelect').value;
-            if(dateInput) {
-                const dObj = new Date(dateInput);
-                document.getElementById('queryHijriSelect').value = formatHijriInputString(dObj);
-                calculateCurrentShift();
-            }
-        }
-    }
-
-    function initDatabaseSync() {
-        database.ref('shift_system_config').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (!data) {
-                document.getElementById('noConfigContainer').style.display = 'block';
-                document.getElementById('appMainContentContainer').style.display = 'none';
-                return;
-            }
-            systemConfig = data;
-            document.getElementById('noConfigContainer').style.display = 'none';
-            document.getElementById('appMainContentContainer').style.display = 'block';
-
-            const noticeCard = document.getElementById('adminNoticeCard'); const noticeContent = document.getElementById('adminNoticeContent');
-            if(data.notice && data.notice.trim() !== "") {
-                noticeContent.innerText = data.notice; noticeCard.style.display = 'block';
-            } else { noticeCard.style.display = 'none'; }
-
-            const setupSelect = document.getElementById('setupGroupSelect');
-            setupSelect.innerHTML = '<option value="">-- اضغط هنا للاختيار --</option>';
-            systemConfig.groups.forEach(group => {
-                let opt = document.createElement('option'); opt.value = group.id; opt.innerText = group.name; setupSelect.appendChild(opt);
-            });
-            
-            const localSavedGroup = localStorage.getItem('selected_shift_group');
-            if(localSavedGroup) {
-                setupSelect.value = localSavedGroup;
-                selectedGroupId = localSavedGroup;
-            }
-
-            if(document.body.classList.contains('app-ready')) {
-                calculateCurrentShift();
-                checkAndSendShiftNotifications(); 
-            }
-        });
-        
-        restrictPastDates(); runSplashScreen();
-        requestNotificationPermission(); 
-        setInterval(checkAndSendShiftNotifications, 3600000);
-    }
-
-    function requestNotificationPermission() {
-        if ("Notification" in window) {
-            if (Notification.permission !== "granted" && Notification.permission !== "denied") {
-                Notification.requestPermission();
-            }
-        }
-    }
-
-    function updateAppBadgeCounter() {
-        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({ type: 'SET_BADGE', count: 1 });
-        }
-    }
-
-    function clearAppBadgeCounter() {
-        if (navigator.serviceWorker && navigator.serviceWorker.controller) {
-            navigator.serviceWorker.controller.postMessage({ type: 'CLEAR_BADGE' });
-        }
-    }
-
-    function checkAndSendShiftNotifications() {
-        if (!systemConfig || !selectedGroupId || !("Notification" in window) || Notification.permission !== "granted") return;
-        
-        const groupData = systemConfig.groups.find(g => g.id === selectedGroupId);
-        if (!groupData) return;
-
-        const todayStr = getTodayDateString();
-        const tomorrow = new Date(); tomorrow.setDate(tomorrow.getDate() + 1);
-        const tomorrowStr = tomorrow.toISOString().split('T')[0];
-
-        const todayResult = getShiftInfoForDate(groupData.baseDate, todayStr);
-        const tomorrowResult = getShiftInfoForDate(groupData.baseDate, tomorrowStr);
-
-        let notificationTitle = `شِفتك (${groupData.name})`;
-        let notificationBody = "";
-
-        if (todayResult.shift.type === 'off' && tomorrowResult.shift.type !== 'off') {
-            notificationBody = `📢 تنبيه غدًا الدوام: ينتهي الجلوس وتبدأ فترة الاستلام بوردية (${tomorrowResult.shift.name})`;
-        } else if (todayResult.shift.type !== 'off' && tomorrowResult.shift.type === 'off') {
-            notificationBody = `🎉 بشرى غدًا الراحة: يبدأ التسليم وأول أيام الراحة المستحقة لك!`;
-        } else if (todayResult.shift.name !== tomorrowResult.shift.name) {
-            notificationBody = `🔄 تنبيه: غداً يتغير الدوام إلى وردية (${tomorrowResult.shift.name})`;
-        }
-
-        if (notificationBody !== "") {
-            const lastSentDate = localStorage.getItem('last_notification_date');
-            if (lastSentDate !== todayStr) {
-                new Notification(notificationTitle, {
-                    body: notificationBody,
-                    icon: "https://i.ibb.co/v4XyYg0/sheftak-icon.png",
-                    dir: "rtl"
-                });
-                localStorage.setItem('last_notification_date', todayStr);
-                updateAppBadgeCounter();
-            }
-        }
-    }
-
-    function openWhoIsDutyPopup() {
-        if (!systemConfig) return;
-        
-        const actualNow = new Date();
-        const curHour = actualNow.getHours();
-        
-        let currentPeriodType = 'morning'; 
-        let currentPeriodText = "";
-        let baseWorkingDate = new Date(); 
-        
-        if (curHour >= 0 && curHour < 6) {
-            currentPeriodType = 'evening'; 
-            currentPeriodText = "الفترة الليلية (10:00 م - 06:00 ص)";
-            baseWorkingDate.setDate(baseWorkingDate.getDate() - 1); 
-        } else if (curHour >= 6 && curHour < 14) {
-            currentPeriodType = 'morning';
-            currentPeriodText = "الفترة الصباحية (06:00 ص - 02:00 ظ)";
-        } else if (curHour >= 14 && curHour < 22) {
-            currentPeriodType = 'afternoon';
-            currentPeriodText = "الفترة الظهرية (02:00 ظ - 10:00 م)";
-        } else {
-            currentPeriodType = 'evening';
-            currentPeriodText = "الفترة الليلية (10:00 م - 06:00 ص)";
-        }
-        
-        const yyyy = baseWorkingDate.getFullYear(); const mm = String(baseWorkingDate.getMonth() + 1).padStart(2, '0'); const dd = String(baseWorkingDate.getDate()).padStart(2, '0');
-        const currentWorkingDateStr = `${yyyy}-${mm}-${dd}`;
-        
-        let foundCurrentGroup = "لا توجد مجموعة مستلمة";
-        let currentShiftName = "راحة عامة";
-        let currentBgColor = "var(--color-off)";
-        
-        for (let i = 0; i < systemConfig.groups.length; i++) {
-            const grp = systemConfig.groups[i];
-            const res = getShiftInfoForDate(grp.baseDate, currentWorkingDateStr);
-            if (res.shift.type === currentPeriodType) {
-                foundCurrentGroup = grp.name;
-                currentShiftName = res.shift.name;
-                if (currentPeriodType === 'morning') currentBgColor = "var(--color-morning)";
-                else if (currentPeriodType === 'afternoon') currentBgColor = "var(--color-afternoon)";
-                else if (currentPeriodType === 'evening') currentBgColor = "var(--color-evening)";
-                break;
-            }
-        }
-        
-        document.getElementById('popupTimeSub').innerText = currentPeriodText;
-        document.getElementById('popupGroupName').innerText = foundCurrentGroup;
-        const badgeEl = document.getElementById('popupShiftBadge');
-        badgeEl.innerText = currentShiftName; badgeEl.style.backgroundColor = currentBgColor;
-        
-        const periodSequence = ['morning', 'afternoon', 'evening'];
-        let currentIndex = periodSequence.indexOf(currentPeriodType);
-        
-        let nextPeriodsArray = [];
-        let loopDate = new Date(baseWorkingDate);
-        
-        for (let k = 1; k <= 3; k++) {
-            currentIndex++;
-            if (currentIndex > 2) {
-                currentIndex = 0;
-                loopDate.setDate(loopDate.getDate() + 1);
-            }
-            
-            let pType = periodSequence[currentIndex];
-            let pTitle = "";
-            let pSubtext = "";
-            
-            if (pType === 'morning') {
-                pTitle = "الفترة الصباحية القادمة";
-                pSubtext = "من 06:00 ص إلى 02:00 ظ";
-            } else if (pType === 'afternoon') {
-                pTitle = "الفترة الظهرية القادمة";
-                pSubtext = "من 02:00 ظ إلى 10:00 م";
-            } else if (pType === 'evening') {
-                pTitle = "الفترة الليلية القادمة";
-                pSubtext = "من 10:00 م إلى 06:00 ص";
-            }
-            
-            const ly = loopDate.getFullYear(); const lm = String(loopDate.getMonth() + 1).padStart(2, '0'); const ld = String(loopDate.getDate()).padStart(2, '0');
-            let loopDateStr = `${ly}-${lm}-${ld}`;
-            
-            nextPeriodsArray.push({
-                type: pType,
-                title: pTitle,
-                subtext: pSubtext + ` (${getArabicWeekday(loopDate)} ${loopDate.getDate()}/${loopDate.getMonth()+1})`,
-                dateStr: loopDateStr
-            });
-        }
-        
-        const popupGroupsGrid = document.getElementById('popupGroupsGrid');
-        popupGroupsGrid.innerHTML = '';
-        
-        nextPeriodsArray.forEach(period => {
-            let matchedGroupName = "لا توجد مجموعة";
-            let matchedShiftName = "راحة";
-            let bgClass = 'g-bg-off';
-            
-            for (let i = 0; i < systemConfig.groups.length; i++) {
-                const grp = systemConfig.groups[i];
-                const res = getShiftInfoForDate(grp.baseDate, period.dateStr);
-                if (res.shift.type === period.type) {
-                    matchedGroupName = grp.name;
-                    matchedShiftName = res.shift.name;
-                    if(period.type === 'morning') bgClass = 'g-bg-morning';
-                    else if(period.type === 'afternoon') bgClass = 'g-bg-afternoon';
-                    else if(period.type === 'evening') bgClass = 'g-bg-evening';
-                    break;
-                }
-            }
-            
-            const itemRow = document.createElement('div');
-            itemRow.className = 'group-row-item';
-            itemRow.innerHTML = `
-                <div class="g-label-info-wrapper">
-                    <div class="g-label-info">⏱️ ${period.title}</div>
-                    <div class="g-label-subtime">${period.subtext}</div>
-                </div>
-                <div class="g-status-badge-wrapper">
-                    <span class="g-group-name-highlight">${matchedGroupName}</span>
-                    <div class="g-status-badge ${bgClass}">${matchedShiftName}</div>
-                </div>
-            `;
-            popupGroupsGrid.appendChild(itemRow);
-        });
-        
-        document.getElementById('dutyPopup').classList.add('active');
-    }
-
-    function closeWhoIsDutyPopup() {
-        document.getElementById('dutyPopup').classList.remove('active');
-    }
-
-    function calculateCurrentShift() {
-        if (!systemConfig) return;
-        let targetDateStr = document.getElementById('dateSelect').value;
-        const hijriOutputDiv = document.getElementById('searchHijriOutput');
-
-        if (targetDateStr) {
-            const inputDate = new Date(targetDateStr); const todayDate = new Date(); todayDate.setHours(0,0,0,0);
-            if(inputDate < todayDate) {
-                targetDateStr = getTodayDateString(); document.getElementById('dateSelect').value = targetDateStr;
-                document.getElementById('queryHijriSelect').value = formatHijriInputString(new Date());
-            }
-        }
-
-        if (!targetDateStr) { hijriOutputDiv.style.display = 'none'; } 
-        else {
-            const tempDate = new Date(targetDateStr);
-            hijriOutputDiv.innerHTML = `الموافق هجرياً: ${getArabicWeekday(tempDate)}، ${getHijriDayNumber(tempDate)} ${getHijriMonthName(tempDate)}، ${getHijriYearNumber(tempDate)} هـ`;
-            hijriOutputDiv.style.display = 'block';
-        }
-
-        if (!selectedGroupId || !targetDateStr) {
-            document.getElementById('displayGroupName').innerText = "النظام جاهز";
-            document.getElementById('displayShiftName').innerText = "📌 الرجاء اختيار مجموعتك أولاً لاستعراض الجدول";
-            document.getElementById('displayDayDetail').innerText = "بانتظار الاختيار"; document.getElementById('displayMainHijri').innerHTML = "";
-            document.getElementById('statusCard').className = "status-card prompt-mode"; document.getElementById('timelineSection').style.display = 'none';
-            document.getElementById('currentGroupLabelName').innerText = "---";
-            return;
-        }
-
-        const groupData = systemConfig.groups.find(g => g.id === selectedGroupId); if (!groupData) return;
-
-        document.getElementById('currentGroupLabelName').innerText = groupData.name;
-        document.getElementById('timelineSection').style.display = 'block';
-        
-        const mainResult = getShiftInfoForDate(groupData.baseDate, targetDateStr); const mainDateObj = new Date(targetDateStr);
-
-        document.getElementById('displayGroupName').innerText = groupData.name;
-        document.getElementById('displayShiftName').innerText = mainResult.shift.name;
-        document.getElementById('displayDayDetail').innerText = mainResult.dayDetail;
-        
-        document.getElementById('displayMainHijri').innerHTML = `
-            <div class="apple-main-badge-container">
-                <div class="apple-day-name-block"><div>${getArabicWeekday(mainDateObj)}</div></div>
-                <div class="apple-calendar-circle">
-                    <div class="apple-circle-gregorian">${mainDateObj.getDate()}</div>
-                    <div class="apple-circle-hijri">${getHijriDayNumber(mainDateObj)}</div>
-                </div>
-                <div class="apple-text-details">
-                    <div class="apple-month-m">شهر ${getGregorianMonthName(mainDateObj)}</div>
-                    <div class="apple-month-h">${getHijriMonthName(mainDateObj)}</div>
-                </div>
-            </div>
-        `;
-        document.body.querySelector('#statusCard').className = "status-card " + mainResult.shift.type;
-
-        const timelineList = document.getElementById('timelineList'); timelineList.innerHTML = '';
-        let totalDaysToForecast = 150; let forecastedDaysArray = [];
-        
-        for (let i = 0; i <= totalDaysToForecast; i++) {
-            let tempDateLoop = new Date(targetDateStr); tempDateLoop.setDate(tempDateLoop.getDate() + i);
-            let loopDateStr = tempDateLoop.toISOString().split('T')[0];
-            let loopResult = getShiftInfoForDate(groupData.baseDate, loopDateStr);
-            forecastedDaysArray.push({ dateStr: loopDateStr, dateObj: tempDateLoop, result: loopResult });
-        }
-
-        for (let i = 1; i <= totalDaysToForecast; i++) {
-            let previousDay = forecastedDaysArray[i - 1]; let currentDay = forecastedDaysArray[i];
-            let isReceiveDay = false; let isDeliverDay = false; 
-
-            if (previousDay.result.shift.type === 'off' && currentDay.result.shift.type !== 'off') isReceiveDay = true;
-            if (previousDay.result.shift.type !== 'off' && currentDay.result.shift.type === 'off') isDeliverDay = true;
-
-            let badgeHtml = "";
-            if (isReceiveDay) badgeHtml = `<span class="badge-tab badge-tab-receive">🏷️ أول يوم استلام</span>`;
-            else if (isDeliverDay) badgeHtml = `<span class="badge-tab badge-tab-deliver">🏷️ أول يوم تسليم</span>`;
-
-            const dateObj = currentDay.dateObj; const loopResult = currentDay.result; const hijriNumeric = getHijriNumericUnified(dateObj);
-
-            const tRow = document.createElement('div');
-            tRow.className = `timeline-row ${loopResult.shift.type}`;
-            tRow.innerHTML = `
-                <div class="t-apple-row-left">
-                    <div class="t-apple-row-circle">
-                        <div class="m-num">${dateObj.getDate()}</div>
-                        <div class="h-num">${hijriNumeric}</div>
-                    </div>
-                    <div class="t-apple-row-info">
-                        <div class="t-apple-row-day">${getArabicWeekday(dateObj)}</div>
-                        <div class="t-apple-row-months">${dateObj.getDate()}/${dateObj.getMonth()+1} م | ${hijriNumeric} هـ</div>
-                    </div>
-                </div>
-                <div class="t-left-side">
-                    <div class="t-name-wrapper">
-                        ${badgeHtml}
-                        <div class="t-name">${loopResult.shift.name}</div>
-                    </div>
-                    <div class="t-detail">${loopResult.dayDetail}</div>
-                </div>
-            `;
-            timelineList.appendChild(tRow);
-        }
-    }
-
-    function getShiftInfoForDate(baseDateStr, targetDateStr) {
-        const baseDate = new Date(baseDateStr); const targetDate = new Date(targetDateStr);
-        let dayDiff = Math.floor((targetDate.getTime() - baseDate.getTime()) / (1000 * 60 * 60 * 24));
-        const cycleLength = systemConfig.cycle.length;
-        let index = dayDiff % cycleLength; if (index < 0) index += cycleLength;
-
-        const shift = systemConfig.cycle[index]; let dayDetail = "";
-
-        if (cycleLength === 10) {
-            if (index === 0 || index === 1) dayDetail = index === 0 ? "☀️ اليوم الأول" : "☀️ اليوم الثاني";
-            else if (index === 2 || index === 3) dayDetail = index === 2 ? "🌆 اليوم الأول" : "🌆 اليوم الثاني";
-            else if (index === 4 || index === 5) dayDetail = index === 4 ? "🌙 اليوم الأول" : "🌙 اليوم الثاني";
-            else dayDetail = `🌿 اليوم الـ ${getArabicOrdinal((index - 6) + 1)}`;
-        } else {
-            let relativeDay = (index % 4) + 1;
-            if (index <= 3) dayDetail = `☀️ اليوم الـ ${getArabicOrdinal(relativeDay)}`;
-            else if (index <= 7) dayDetail = `🌿 اليوم الـ ${getArabicOrdinal(relativeDay)} (بعد الصباح)`;
-            else if (index <= 11) dayDetail = `🌆 اليوم الـ ${getArabicOrdinal(relativeDay)}`;
-            else if (index <= 15) dayDetail = `🌿 اليوم الـ ${getArabicOrdinal(relativeDay)} (بعد الظهر)`;
-            else if (index <= 19) dayDetail = `🌙 اليوم الـ ${getArabicOrdinal(relativeDay)}`;
-            else dayDetail = `🌿 اليوم الـ ${getArabicOrdinal(relativeDay)} (بعد الليل)`;
-        }
-        return { shift, dayDetail };
-    }
-
-    function getArabicOrdinal(num) { const ordinals = { 1: "الأول", 2: "الثاني", 3: "الثالث", 4: "الرابع" }; return ordinals[num] || num; }
-
-    window.onload = initDatabaseSync;
-</script>
 </body>
 </html>
-    
