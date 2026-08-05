@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نظام متابعة الشفتات والدوام الذكي</title>
+    
+    <!-- الخطوط والأيقونات -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
     <style>
         :root {
             --primary: #0f172a;
@@ -13,7 +16,6 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             
-            /* التدرجات اللونية للشفتات */
             --morning-grad: linear-gradient(135deg, #0284c7, #38bdf8);
             --afternoon-grad: linear-gradient(135deg, #d97706, #fbbf24);
             --night-grad: linear-gradient(135deg, #4338ca, #6366f1);
@@ -40,7 +42,6 @@
             overflow: hidden;
         }
 
-        /* 1. الشاشة الترحيبية */
         #splash-screen {
             position: fixed;
             top: 0;
@@ -110,7 +111,6 @@
             opacity: 1;
         }
 
-        /* 2. تصميم الصناديق الزجاجية العامة */
         .glass-card {
             background: rgba(255, 255, 255, 0.07);
             backdrop-filter: blur(16px);
@@ -155,7 +155,6 @@
             text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
         }
 
-        /* صندوق نظام التدوير الأبيض المخصص أسفل الترويسة */
         .system-desc-box {
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
@@ -176,7 +175,6 @@
             margin-left: 6px;
         }
 
-        /* Hero Card الزجاجية */
         .hero-card {
             color: white;
             text-align: center;
@@ -242,7 +240,6 @@
             color: #e2e8f0;
         }
 
-        /* عناصر الإدخال التفاعلية والزجاجية */
         input[type="date"], select {
             padding: 11px 14px;
             border: 1.5px solid rgba(255, 255, 255, 0.2);
@@ -297,7 +294,6 @@
             box-shadow: 0 8px 25px rgba(0,0,0,0.3);
         }
 
-        /* 3. حاوية الجدول بزجاجية وأشرطة تمرير أنيقة */
         .table-container {
             max-height: 480px;
             overflow-y: auto;
@@ -364,7 +360,6 @@
             box-shadow: 0 3px 8px rgba(0,0,0,0.25);
         }
 
-        /* 4. تذييل الصفحة المتميز */
         footer {
             margin-top: 30px;
             background: rgba(15, 23, 42, 0.9);
@@ -438,7 +433,6 @@
 </head>
 <body class="splash-active">
 
-<!-- الشاشة الترحيبية -->
 <div id="splash-screen">
     <div class="splash-content">
         <div class="logo-animated"><i class="fa-solid fa-clock"></i></div>
@@ -451,18 +445,16 @@
 
     <div class="welcome-banner">
         <i class="fa-solid fa-sparkles"></i>
-        <span>أهلاً بك في حاسبة دوامك الذكية - جدول 5ايام ب 4ايام!</span>
+        <span>أهلاً بك يا أبو مرزوق في حاسبة دوامك الذكية[span_2](start_span)[span_2](end_span)!</span>
     </div>
     
     <div class="header">
         <h1><i class="fa-solid fa-calendar-check" style="color: #38bdf8;"></i> جدول الشفتات الذكي</h1>
-        <!-- الصندوق الأبيض المخصص للتوضيح أسفل الترويسة -->
         <div class="system-desc-box">
-            <i class="fa-solid fa-arrows-rotate"></i> نظام حاسبة الدوام الخاص بك فقط حدد اقرب اول يوم صباح سابق او مستقبلي ليتم الحسبة مستمره 
+            <i class="fa-solid fa-arrows-rotate"></i> نظام حاسبة الدوام الخاص بك، الحفظ التلقائي مفعل لبياناتك بالكامل
         </div>
     </div>
 
-    <!-- كرت حالة اليوم -->
     <div id="heroCard" class="hero-card bg-morning">
         <div id="liveDateBadge" class="date-badge">جاري الحساب...</div>
         <div style="font-size: 0.9rem; opacity: 0.9;">حالتك اليوم:</div>
@@ -470,18 +462,16 @@
         <div id="liveShiftSub" class="shift-subtitle">---</div>
     </div>
 
-    <!-- إعدادات بداية الدورة -->
     <div class="glass-card">
-        <div class="card-title"><i class="fa-solid fa-sliders"></i> ضبط بداية الدورة</div>
+        <div class="card-title"><i class="fa-solid fa-sliders"></i> ضبط بداية الدورة (الحفظ التلقائي نشط)</div>
         <div class="grid-form">
             <div class="form-group">
                 <label for="startDate">تاريخ أول يوم (بداية أول شفت صباح):</label>
-                <input type="date" id="startDate" onchange="calculateAll()">
+                <input type="date" id="startDate" onchange="saveAndCalculate()">
             </div>
         </div>
     </div>
 
-    <!-- كرت الاستعلام المفتوح المزدوج -->
     <div class="glass-card">
         <div class="card-title"><i class="fa-solid fa-magnifying-glass"></i> استعلام غير محدود عن أي تاريخ (ميلادي ⇄ هجري)</div>
         <div class="grid-form">
@@ -502,7 +492,6 @@
         <div id="queryResultCard" class="query-result-card"></div>
     </div>
 
-    <!-- جدول الأيام القادمة (5 أشهر) -->
     <div class="glass-card">
         <div class="card-title"><i class="fa-solid fa-table-list"></i> جدول الدوام (5 أشهر قادمة)</div>
         <div class="table-container">
@@ -521,10 +510,9 @@
         </div>
     </div>
 
-    <!-- تذييل الصفحة -->
     <footer>
-        <p><span class="rights-text">جميع الحقوق محفوظة © 2026</span> | تصميم <span class="designer">أبو مرزوق</span></p>
-        <div class="version-badge">الإصدار v3.6 الصندوق الأبيض الجذاب</div>
+        <p><span class="rights-text">جميع الحقوق محفوظة © 2026</span> | تصميم <span class="designer">أبو مرزوق</span>[span_3](start_span)[span_3](end_span)</p>
+        <div class="version-badge">الإصدار v3.8 - مع خاصية الحفظ التلقائي المحلي</div>
     </footer>
 
 </div>
@@ -533,7 +521,7 @@
     const daysOfWeek = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
     const ordinalNames = ['', 'اليوم الأول', 'اليوم الثاني', 'اليوم الثالث', 'اليوم الرابع', 'اليوم الخامس'];
     const hijriMonths = ["محرم", "صفر", "ربيع الأول", "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
-
+    
     let isSyncing = false;
 
     function hijriToJulianDay(year, month, day) {
@@ -582,9 +570,11 @@
         for (let i = 1; i <= 30; i++) {
             daySelect.innerHTML += `<option value="${i}">${i}</option>`;
         }
+        
         hijriMonths.forEach((m, idx) => {
             monthSelect.innerHTML += `<option value="${idx + 1}">${m}</option>`;
         });
+        
         for (let y = 1440; y <= 1460; y++) {
             yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
         }
@@ -593,9 +583,12 @@
     window.onload = function() {
         initHijriDropdowns();
 
-        const today = new Date().toISOString().split('T')[0];
-        document.getElementById('startDate').value = today;
-        document.getElementById('queryDate').value = today;
+        // استرجاع التاريخ المحفوظ تلقائياً من المتصفح أو ضبط تاريخ اليوم افتراضياً
+        const savedStartDate = localStorage.getItem('abumarzook_shift_start');
+        const todayStr = new Date().toISOString().split('T')[0];
+        
+        document.getElementById('startDate').value = savedStartDate ? savedStartDate : todayStr;
+        document.getElementById('queryDate').value = todayStr;
 
         syncGregToHijri();
         calculateAll();
@@ -608,8 +601,17 @@
             splashScreen.classList.add('fade-out');
             document.body.classList.remove('splash-active');
             mainContainer.classList.add('visible');
-        }, 2000);
+        }, 1500);
     };
+
+    // دالة الحفظ التلقائي عند تغيير تاريخ البداية
+    function saveAndCalculate() {
+        const startDateInput = document.getElementById('startDate').value;
+        if (startDateInput) {
+            localStorage.setItem('abumarzook_shift_start', startDateInput);
+        }
+        calculateAll();
+    }
 
     function syncGregToHijri() {
         if (isSyncing) return;
@@ -695,8 +697,9 @@
         const startDate = new Date(startParts[0], startParts[1] - 1, startParts[2]);
 
         const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        
+        const adjustedNow = new Date(now.getTime() - (6 * 60 * 60 * 1000));
+        const today = new Date(adjustedNow.getFullYear(), adjustedNow.getMonth(), adjustedNow.getDate());
+
         const diffTimeCurrent = today - startDate;
         const diffDaysCurrent = Math.floor(diffTimeCurrent / (1000 * 60 * 60 * 24));
         
@@ -706,7 +709,7 @@
         heroCard.className = `hero-card ${currentInfo.bgClass}`;
         
         const todayHijri = getHijriDateStr(today);
-        document.getElementById('liveDateBadge').innerHTML = `${daysOfWeek[now.getDay()]}، ${today.toISOString().split('T')[0]} م<br>الموافق: ${todayHijri}`;
+        document.getElementById('liveDateBadge').innerHTML = `${daysOfWeek[adjustedNow.getDay()]}، ${today.toISOString().split('T')[0]} م<br>الموافق: ${todayHijri}`;
         
         document.getElementById('liveShiftTitle').innerText = currentInfo.title;
         document.getElementById('liveShiftSub').innerText = currentInfo.sub;
