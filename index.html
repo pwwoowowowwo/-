@@ -3,497 +3,766 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>الموقع تحت الصيانة - نظام شِفتك</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <title>نظام متابعة الشفتات والدوام الذكي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            --card-bg: rgba(255, 255, 255, 0.04);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --text-light: #f8fafc;
+            --primary: #0f172a;
+            --bg: #0b132b;
+            --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --color-primary: #38bdf8;
-            --color-accent: #a855f7;
-            --color-amber: #fbbf24;
-            --color-emerald: #10b981;
-            --color-rose: #f43f5e;
+            
+            /* التدرجات اللونية للشفتات */
+            --morning-grad: linear-gradient(135deg, #0284c7, #38bdf8);
+            --afternoon-grad: linear-gradient(135deg, #d97706, #fbbf24);
+            --night-grad: linear-gradient(135deg, #4338ca, #6366f1);
+            --off-grad: linear-gradient(135deg, #059669, #34d399);
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; }
+        * {
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0;
+            padding: 0;
+        }
 
         body {
-            font-family: 'Tajawal', sans-serif;
-            background: var(--bg-gradient);
-            color: var(--text-light);
+            background: linear-gradient(135deg, #0f172a, #1e1b4b);
+            color: var(--text-main);
+            padding: 20px 10px 0 10px;
+            direction: rtl;
             min-height: 100vh;
+        }
+
+        body.splash-active {
+            overflow: hidden;
+        }
+
+        /* 1. الشاشة الترحيبية */
+        #splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #0f172a, #1e293b);
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px 15px;
+            z-index: 9999;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
         }
 
-        .container { width: 100%; max-width: 650px; }
-
-        .main-card {
-            background: var(--card-bg);
-            border: 1px solid var(--card-border);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border-radius: 28px;
-            padding: 35px 25px;
+        .splash-content {
             text-align: center;
-            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+            color: #ffffff;
+            animation: zoomIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         }
 
-        .badge-status {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 6px 16px;
-            background: rgba(251, 191, 36, 0.1);
-            border: 1px solid rgba(251, 191, 36, 0.25);
-            border-radius: 50px;
-            color: var(--color-amber);
-            font-size: 12px;
-            font-weight: 700;
-            margin-bottom: 15px;
+        .logo-animated {
+            font-size: 3.5rem;
+            margin-bottom: 12px;
+            display: inline-block;
+            color: #38bdf8;
+            animation: pulse 1.5s infinite alternate ease-in-out;
         }
 
-        .pulse-dot {
-            width: 8px; height: 8px;
-            background-color: var(--color-amber);
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--color-amber);
-            animation: pulse 1.8s infinite;
+        .welcome-text {
+            font-size: 1.8rem;
+            font-weight: 800;
         }
 
-        h1 {
-            font-size: 26px;
-            font-weight: 900;
-            background: linear-gradient(to left, #38bdf8, #c084fc);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 8px;
+        .loader-bar {
+            width: 220px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.15);
+            margin: 22px auto 0;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
         }
 
-        .subtitle {
-            font-size: 14px;
-            color: var(--text-muted);
+        .loader-bar::after {
+            content: '';
+            position: absolute;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            animation: loading 1.8s ease-in-out infinite;
+        }
+
+        .fade-out {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            opacity: 0;
+        }
+
+        .container.visible {
+            opacity: 1;
+        }
+
+        /* 2. تصميم الصناديق الزجاجية العامة */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.07);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 20px;
+            padding: 20px;
             margin-bottom: 20px;
         }
 
-        .btn-fun {
-            background: linear-gradient(135deg, #a855f7 0%, #ec4899 100%);
-            border: none;
-            color: #fff;
-            padding: 12px 26px;
-            font-size: 15px;
-            font-weight: 700;
-            font-family: 'Tajawal', sans-serif;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 8px 25px rgba(236, 72, 153, 0.3);
-            transition: all 0.3s ease;
+        .glass-card:hover {
+            border-color: rgba(56, 189, 248, 0.4);
+            box-shadow: 0 10px 35px 0 rgba(56, 189, 248, 0.15);
         }
 
-        .btn-fun:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(236, 72, 153, 0.45); }
-
-        .game-wrapper {
-            max-height: 0;
-            opacity: 0;
-            overflow: hidden;
-            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-            background: rgba(15, 23, 42, 0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            margin-top: 10px;
-            text-align: right;
-        }
-
-        .game-wrapper.active {
-            max-height: 850px;
-            opacity: 1;
-            padding: 20px;
-            margin-top: 20px;
-        }
-
-        .ai-header {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            padding-bottom: 10px;
-            margin-bottom: 12px;
-        }
-
-        .ai-avatar {
-            width: 38px; height: 38px;
-            background: linear-gradient(135deg, #38bdf8, #818cf8);
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px;
-        }
-
-        .ai-chat-box {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 10px 14px;
-            font-size: 13px;
-            color: #e2e8f0;
-            margin-bottom: 15px;
-            border-right: 3px solid var(--color-primary);
-            line-height: 1.5;
-            transition: border-color 0.3s ease;
-        }
-
-        .stats-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(255, 255, 255, 0.02);
-            padding: 8px 14px;
-            border-radius: 12px;
-            font-size: 13px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .question-card {
-            background: rgba(15, 23, 42, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+        .welcome-banner {
+            background: rgba(56, 189, 248, 0.12);
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            color: #38bdf8;
+            padding: 14px 20px;
             border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 15px;
-            text-align: center;
-        }
-
-        .question-category {
-            display: inline-block;
-            font-size: 11px;
-            padding: 3px 10px;
-            border-radius: 20px;
-            background: rgba(56, 189, 248, 0.15);
-            color: var(--color-primary);
-            font-weight: bold;
-            margin-bottom: 10px;
-        }
-
-        .question-text {
-            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 18px;
             font-weight: 700;
-            color: #fff;
-            line-height: 1.5;
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
         }
 
-        .options-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            font-size: 1.85rem;
+            color: #ffffff;
+            margin-bottom: 12px;
+            font-weight: 800;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+        }
+
+        /* صندوق نظام التدوير الأبيض المخصص أسفل الترويسة */
+        .system-desc-box {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            color: #0f172a;
+            padding: 12px 22px;
+            border-radius: 14px;
+            display: inline-block;
+            font-size: 0.95rem;
+            font-weight: 800;
+            box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2), 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 2px solid #38bdf8;
+            letter-spacing: 0.2px;
+        }
+
+        .system-desc-box i {
+            color: #0284c7;
+            margin-left: 6px;
+        }
+
+        /* Hero Card الزجاجية */
+        .hero-card {
+            color: white;
+            text-align: center;
+            padding: 24px 18px;
+            border-radius: 24px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.4);
+            margin-bottom: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .hero-card .date-badge {
+            background: rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            padding: 6px 18px;
+            border-radius: 50px;
+            display: inline-block;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .hero-card .shift-title {
+            font-size: 2.1rem;
+            font-weight: 800;
+            margin: 6px 0;
+            text-shadow: 0 3px 6px rgba(0,0,0,0.3);
+        }
+
+        .hero-card .shift-subtitle {
+            font-size: 1.15rem;
+            opacity: 0.95;
+            font-weight: 700;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
             gap: 10px;
         }
 
-        .btn-opt {
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            color: #fff;
-            padding: 12px;
+        .grid-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        label {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #e2e8f0;
+        }
+
+        /* عناصر الإدخال التفاعلية والزجاجية */
+        input[type="date"], select {
+            padding: 11px 14px;
+            border: 1.5px solid rgba(255, 255, 255, 0.2);
             border-radius: 12px;
-            font-family: 'Tajawal';
-            font-size: 14px;
-            font-weight: 500;
+            font-size: 0.95rem;
+            outline: none;
+            background: rgba(15, 23, 42, 0.6);
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        select option {
+            background: #0f172a;
+            color: #ffffff;
+        }
+
+        input[type="date"]:focus, select:focus {
+            border-color: #38bdf8;
+            box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+            background: rgba(15, 23, 42, 0.85);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #0284c7, #2563eb);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 800;
             cursor: pointer;
-            transition: all 0.2s;
+            width: 100%;
+            margin-top: 14px;
+            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(2, 132, 199, 0.6);
+        }
+
+        .query-result-card {
+            display: none;
+            margin-top: 14px;
+            padding: 16px;
+            border-radius: 16px;
+            text-align: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.05rem;
+            animation: fadeIn 0.4s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+
+        /* 3. حاوية الجدول بزجاجية وأشرطة تمرير أنيقة */
+        .table-container {
+            max-height: 480px;
+            overflow-y: auto;
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: rgba(15, 23, 42, 0.4);
+        }
+
+        .table-container::-webkit-scrollbar {
+            width: 7px;
+        }
+
+        .table-container::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        .table-container::-webkit-scrollbar-thumb {
+            background: #38bdf8;
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
             text-align: center;
         }
 
-        .btn-opt:hover:not(:disabled) {
-            background: rgba(56, 189, 248, 0.2);
-            border-color: var(--color-primary);
-            transform: translateY(-2px);
+        th {
+            position: sticky;
+            top: 0;
+            background: #0f172a;
+            color: #38bdf8;
+            padding: 12px 8px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            z-index: 10;
         }
 
-        .btn-opt:disabled { cursor: not-allowed; opacity: 0.8; }
-        .btn-opt.correct { background: rgba(16, 185, 129, 0.3) !important; border-color: var(--color-emerald) !important; color: #a7f3d0 !important; }
-        .btn-opt.wrong { background: rgba(244, 63, 94, 0.3) !important; border-color: var(--color-rose) !important; color: #fecdd3 !important; }
-
-        .footer {
-            margin-top: 25px;
-            padding-top: 15px;
-            border-top: 1px solid rgba(255, 255, 255, 0.06);
-            font-size: 12px;
-            color: var(--text-muted);
+        td {
+            padding: 10px 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 0.88rem;
+            font-weight: 600;
+            color: #cbd5e1;
         }
 
-        .footer span { color: var(--color-primary); font-weight: 700; }
+        .hijri-text {
+            color: #38bdf8;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
 
-        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.4; transform: scale(0.8); } }
+        .pill {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+        }
+
+        /* 4. تذييل الصفحة المتميز */
+        footer {
+            margin-top: 30px;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(10px);
+            color: #94a3b8;
+            padding: 22px 15px;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+            text-align: center;
+            box-shadow: 0 -10px 25px rgba(0, 0, 0, 0.5);
+            border-top: 2px solid #38bdf8;
+        }
+
+        footer p {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #e2e8f0;
+        }
+
+        footer .designer {
+            color: #38bdf8;
+            font-weight: 800;
+            font-size: 1.1rem;
+            text-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+            margin: 0 4px;
+        }
+
+        footer .rights-text {
+            color: #34d399;
+            font-weight: 700;
+        }
+
+        footer .version-badge {
+            background: rgba(56, 189, 248, 0.15);
+            color: #38bdf8;
+            border: 1px solid rgba(56, 189, 248, 0.3);
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            display: inline-block;
+            margin-top: 8px;
+        }
+
+        .bg-morning { background: var(--morning-grad) !important; }
+        .bg-afternoon { background: var(--afternoon-grad) !important; }
+        .bg-night { background: var(--night-grad) !important; }
+        .bg-off { background: var(--off-grad) !important; }
+
+        @keyframes zoomIn {
+            from { transform: scale(0.85); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        @keyframes pulse {
+            from { transform: scale(1); }
+            to { transform: scale(1.12); }
+        }
+
+        @keyframes loading {
+            0% { left: -100%; }
+            50% { left: 0%; }
+            100% { left: 100%; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
-<body>
+<body class="splash-active">
 
-<div class="container">
-    <div class="main-card">
-        
-        <div class="badge-status">
-            <span class="pulse-dot"></span>
-            تحديث وتطوير جاري للنظام
-        </div>
-
-        <h1>الموقع تحت الصيانة 🛠️</h1>
-        <p class="subtitle">نعتذر عن التوقف المؤقت! اختبر معلوماتك العامة مع 100 سؤال واستمتع بالتحدي 🚀</p>
-
-        <button class="btn-fun" onclick="toggleGame()">
-            🧠 اضغط هنا لبدء تحدي الـ 100 سؤال!
-        </button>
-
-        <div class="game-wrapper" id="gameWrapper">
-            <div class="ai-header">
-                <div class="ai-avatar">🤖</div>
-                <div>
-                    <strong style="font-size:13px; color:#fff;">مساعد شِفتك الذكي</strong>
-                    <div style="font-size:10px; color:var(--color-emerald);">تحدي الـ 100 سؤال  🟢</div>
-                </div>
-            </div>
-
-            <div class="ai-chat-box" id="aiChat">
-                مرحباً بك! اختر الإجابة الصحيحة واجمع النقاط لرفع رتبتك 🌟
-            </div>
-
-            <div class="stats-bar">
-                <span>🏆 النقاط: <strong id="score" style="color:var(--color-amber);">0</strong></span>
-                <span>🏅 الرتبة: <strong id="rank" style="color:var(--color-primary);">مبتدئ</strong></span>
-                <span>🔥 التتابع: <strong id="streak" style="color:var(--color-emerald);">0</strong></span>
-            </div>
-
-            <div class="question-card">
-                <span class="question-category" id="qCategory">ثقافة عامة</span>
-                <div class="question-text" id="qText">جاري تحميل السؤال...</div>
-            </div>
-
-            <div class="options-grid" id="optionsGrid"></div>
-        </div>
-
-        <div class="footer">
-            جميع الحقوق محفوظة &copy; 2026 | تطوير وإدارة <span>أبو مرزوق</span> 🚀
-        </div>
-
+<!-- الشاشة الترحيبية -->
+<div id="splash-screen">
+    <div class="splash-content">
+        <div class="logo-animated"><i class="fa-solid fa-clock"></i></div>
+        <h1 class="welcome-text">أهلاً بك في نظام جدول الشفتات</h1>
+        <div class="loader-bar"></div>
     </div>
 </div>
 
+<div id="mainContainer" class="container">
+
+    <div class="welcome-banner">
+        <i class="fa-solid fa-sparkles"></i>
+        <span>أهلاً بك في حاسبة دوامك الذكية - جدول 5ايام ب 4ايام!</span>
+    </div>
+    
+    <div class="header">
+        <h1><i class="fa-solid fa-calendar-check" style="color: #38bdf8;"></i> جدول الشفتات الذكي</h1>
+        <!-- الصندوق الأبيض المخصص للتوضيح أسفل الترويسة -->
+        <div class="system-desc-box">
+            <i class="fa-solid fa-arrows-rotate"></i> نظام حاسبة الدوام الخاص بك فقط حدد اقرب اول يوم صباح سابق او مستقبلي ليتم الحسبة مستمره 
+        </div>
+    </div>
+
+    <!-- كرت حالة اليوم -->
+    <div id="heroCard" class="hero-card bg-morning">
+        <div id="liveDateBadge" class="date-badge">جاري الحساب...</div>
+        <div style="font-size: 0.9rem; opacity: 0.9;">حالتك اليوم:</div>
+        <div id="liveShiftTitle" class="shift-title">---</div>
+        <div id="liveShiftSub" class="shift-subtitle">---</div>
+    </div>
+
+    <!-- إعدادات بداية الدورة -->
+    <div class="glass-card">
+        <div class="card-title"><i class="fa-solid fa-sliders"></i> ضبط بداية الدورة</div>
+        <div class="grid-form">
+            <div class="form-group">
+                <label for="startDate">تاريخ أول يوم (بداية أول شفت صباح):</label>
+                <input type="date" id="startDate" onchange="calculateAll()">
+            </div>
+        </div>
+    </div>
+
+    <!-- كرت الاستعلام المفتوح المزدوج -->
+    <div class="glass-card">
+        <div class="card-title"><i class="fa-solid fa-magnifying-glass"></i> استعلام غير محدود عن أي تاريخ (ميلادي ⇄ هجري)</div>
+        <div class="grid-form">
+            <div class="form-group">
+                <label for="queryDate">التاريخ الميلادي:</label>
+                <input type="date" id="queryDate" onchange="syncGregToHijri(); querySpecificDate();">
+            </div>
+            <div class="form-group">
+                <label>التاريخ الهجري:</label>
+                <div style="display: flex; gap: 6px;">
+                    <select id="hijriDay" onchange="syncHijriToGreg(); querySpecificDate();"></select>
+                    <select id="hijriMonth" onchange="syncHijriToGreg(); querySpecificDate();"></select>
+                    <select id="hijriYear" onchange="syncHijriToGreg(); querySpecificDate();"></select>
+                </div>
+            </div>
+        </div>
+        <button class="btn" onclick="querySpecificDate()"><i class="fa-solid fa-search"></i> استعلام عن الشفت</button>
+        <div id="queryResultCard" class="query-result-card"></div>
+    </div>
+
+    <!-- جدول الأيام القادمة (5 أشهر) -->
+    <div class="glass-card">
+        <div class="card-title"><i class="fa-solid fa-table-list"></i> جدول الدوام (5 أشهر قادمة)</div>
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>اليوم</th>
+                        <th>الميلادي</th>
+                        <th>الهجري</th>
+                        <th>حالة الدوام / الشفت</th>
+                    </tr>
+                </thead>
+                <tbody id="scheduleTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- تذييل الصفحة -->
+    <footer>
+        <p><span class="rights-text">جميع الحقوق محفوظة © 2026</span> | تصميم <span class="designer">أبو مرزوق</span></p>
+        <div class="version-badge">الإصدار v3.6 الصندوق الأبيض الجذاب</div>
+    </footer>
+
+</div>
+
 <script>
-    // بنك 100 سؤال متنوع
-    const questionsBank = [
-        { cat: "جغرافيا", q: "ما هي أكبر دولة في العالم من حيث المساحة؟", opts: ["روسيا", "كندا", "الصين", "أمريكا"], ans: "روسيا" },
-        { cat: "علوم", q: "ما هو العنصر الكيميائي الذي رمزه 'O'؟", opts: ["الهيدروجين", "الأكسجين", "الحديد", "الذهب"], ans: "الأكسجين" },
-        { cat: "ثقافة عامة", q: "كم عدد ألوان قوس قزح؟", opts: ["5 ألوان", "6 ألوان", "7 ألوان", "8 ألوان"], ans: "7 ألوان" },
-        { cat: "تاريخ إسلامي", q: "في أي سنة كان فتح مكة المكرمة؟", opts: ["8 هجرية", "10 هجرية", "6 هجرية", "9 هجرية"], ans: "8 هجرية" },
-        { cat: "لغة عربية", q: "ما هي أطول كلمة في القرآن الكريم؟", opts: ["فأسقيناكموه", "أنلزمكموها", "فسيكفيكهم", "المستغفرين"], ans: "فأسقيناكموه" },
-        { cat: "جغرافيا", q: "ما هو أطول نهر في العالم؟", opts: ["نهر الأمازون", "نهر النيل", "نهر الدانوب", "نهر الميسيسيبي"], ans: "نهر النيل" },
-        { cat: "فلك وفضاء", q: "ما هو أكبر كوكب في المجموعة الشمسية؟", opts: ["المشتري", "زحل", "المريخ", "الأرض"], ans: "المشتري" },
-        { cat: "ثقافة عامة", q: "ما هو الحيوان الملقب بـ 'سفينة الصحراء'؟", opts: ["الحصان", "الجمل", "الفهد", "الغزال"], ans: "الجمل" },
-        { cat: "علوم", q: "ما هي أسرع الكائنات الحية برياً؟", opts: ["الأسد", "الفهد", "النعامة", "الغزال"], ans: "الفهد" },
-        { cat: "تقنية", q: "ما هي وحدة قياس ذاكرة الكمبيوتر الفائقة بعد الجيجابايت؟", opts: ["ميجابايت", "تيرا بايت", "كيلوبايت", "بيت"], ans: "تيرا بايت" },
-        { cat: "جغرافيا", q: "ما هي عاصمة جمهورية مصر العربية؟", opts: ["الإسكندرية", "القاهرة", "الجيزة", "أسوان"], ans: "القاهرة" },
-        { cat: "تاريخ إسلامي", q: "من هو أول خلفاء الراشدين؟", opts: ["عمر بن الخطاب", "علي بن أبي طالب", "أبو بكر الصديق", "عثمان بن عفان"], ans: "أبو بكر الصديق" },
-        { cat: "علوم", q: "ما هو الكوكب الملقب بـ 'الكوكب الأحمر'؟", opts: ["الزهرة", "المريخ", "عطارد", "نيبتون"], ans: "المريخ" },
-        { cat: "لغة عربية", q: "كم عدد حروف اللغة العربية؟", opts: ["26 حرفاً", "28 حرفاً", "30 حرفاً", "24 حرفاً"], ans: "28 حرفاً" },
-        { cat: "ثقافة عامة", q: "ما هي عاصمة المملكة العربية السعودية؟", opts: ["جدة", "الرياض", "الدمام", "مكة المكرمة"], ans: "الرياض" },
-        { cat: "جغرافيا", q: "في أي قارة تقع دولة اليابان؟", opts: ["أوروبا", "آسيا", "أفريقيا", "أستراليا"], ans: "آسيا" },
-        { cat: "علوم", q: "ما هو الغاز الأساسي الذي يتنفسه الإنسان للحياة؟", opts: ["النيتروجين", "الأكسجين", "ثاني أكسيد الكربون", "الهيليوم"], ans: "الأكسجين" },
-        { cat: "تاريخ", q: "ما هي الدولة التي شيدت الأهرامات الثلاثة؟", opts: ["اليونان", "مصر", "العراق", "إيطاليا"], ans: "مصر" },
-        { cat: "تقنية", q: "ماذا تعني اختصار كلمة 'HTML'؟", opts: ["لغة ترميز النص الفائق", "نظام تشغيل الخوادم", "برنامج الحماية", "قاعدة بيانات"], ans: "لغة ترميز النص الفائق" },
-        { cat: "ثقافة عامة", q: "ما هي أسرع الطيور في العالم؟", opts: ["الصقر الشاهين", "النسر", "النعامة", "الحمام"], ans: "الصقر الشاهين" },
-        { cat: "علوم", q: "ما هو العضو المسؤول عن تصفية الدم في جسم الإنسان؟", opts: ["القلب", "الكلى", "الرئة", "الكبد"], ans: "الكلى" },
-        { cat: "جغرافيا", q: "ما هو أكبر محيط في العالم؟", opts: ["المحيط الأطلسي", "المحيط الهادي", "المحيط الهندي", "المحيط المتجمد الشمالي"], ans: "المحيط الهادي" },
-        { cat: "تاريخ إسلامي", q: "كم عدد سور القرآن الكريم؟", opts: ["110 سورة", "114 سورة", "120 سورة", "100 سورة"], ans: "114 سورة" },
-        { cat: "ثقافة عامة", q: "ما هي الدولة الشهيرة بإنتاج الساعات والشوكولاتة والجبن؟", opts: ["سويسرا", "ألمانيا", "فرنسا", "إسبانيا"], ans: "سويسرا" },
-        { cat: "علوم", q: "ما هو أصلد مادة طبيعية على وجه الأرض؟", opts: ["الحديد", "الألماس", "الجرانيت", "الذهب"], ans: "الألماس" },
-        { cat: "تقنية", q: "من هو مؤسس شركة شرائح وشاشات أبل 'Apple' مع ستيف جوبز؟", opts: ["ستيف ووزنياك", "بيل جيتس", "مارك زوكربرغ", "إيلون ماسك"], ans: "ستيف ووزنياك" },
-        { cat: "جغرافيا", q: "ما هي أصغر دولة في العالم من حيث المساحة؟", opts: ["موناكو", "الفاتيكان", "سان مارينو", "المالديف"], ans: "الفاتيكان" },
-        { cat: "لغة عربية", q: "ما هو مفرد كلمة 'أطباء'؟", opts: ["طب", "طبيب", "مطب", "طبيبة"], ans: "طبيب" },
-        { cat: "ثقافة عامة", q: "كم عدد أضلاع المثلث؟", opts: ["3 أضلاع", "4 أضلاع", "5 أضلاع", "6 أضلاع"], ans: "3 أضلاع" },
-        { cat: "تاريخ إسلامي", q: "ما هي أطول سورة في القرآن الكريم؟", opts: ["سورة آل عمران", "سورة البقرة", "سورة النساء", "سورة المائدة"], ans: "سورة البقرة" },
-        { cat: "علوم", q: "ما هو أقرب كوكب إلى الشمس؟", opts: ["الزهرة", "عطارد", "الأرض", "المريخ"], ans: "عطارد" },
-        { cat: "جغرافيا", q: "ما هي عاصمة دولة الإمارات العربية المتحدة؟", opts: ["دبي", "أبوظبي", "الشارقة", "العين"], ans: "أبوظبي" },
-        { cat: "تقنية", q: "ماذا يقصد باختصار 'CPU' في أجهزة الحاسب؟", opts: ["وحدة المعالجة المركزية", "الشاشة", "الذاكرة العشوائية", "كرت الشاشة"], ans: "وحدة المعالجة المركزية" },
-        { cat: "ثقافة عامة", q: "ما هو صوت الأسد؟", opts: ["صهيل", "زئير", "نهيق", "فحيح"], ans: "زئير" },
-        { cat: "علوم", q: "ما هو الغاز الذي ينبعث من سيارات الاحتراق؟", opts: ["الأكسجين", "ثاني أكسيد الكربون", "الهيدروجين", "الأرجون"], ans: "ثاني أكسيد الكربون" },
-        { cat: "تاريخ", q: "في أي عام انتهت الحرب العالمية الثانية؟", opts: ["1918م", "1945م", "1950م", "1939م"], ans: "1945م" },
-        { cat: "لغة عربية", q: "ما هو عكس كلمة 'سخاء'؟", opts: ["كرم", "بخل", "شجاعة", "خوف"], ans: "بخل" },
-        { cat: "جغرافيا", q: "أي دولة تشتهر بوجود برج إيفل؟", opts: ["إيطاليا", "فرنسا", "بريطانيا", "ألمانيا"], ans: "فرنسا" },
-        { cat: "ثقافة عامة", q: "كم عدد الأسنان لدى الإنسان البالغ؟", opts: ["28 سنّاً", "32 سنّاً", "30 سنّاً", "36 سنّاً"], ans: "32 سنّاً" },
-        { cat: "تاريخ إسلامي", q: "ما هي القبلة الأولى للمسلمين؟", opts: ["المسجد الحرام", "المسجد الأقصى", "المسجد النبوي", "مسجد قباء"], ans: "المسجد الأقصى" },
-        { cat: "علوم", q: "ما هو المكون الأساسي لزجاج النوافذ؟", opts: ["الرمل", "الخشب", "البلاستيك", "الحديد"], ans: "الرمل" },
-        { cat: "تقنية", q: "ما هو نظام التشغيل الشهير المطور من قبل شركة جوجل للواتف؟", opts: ["iOS", "Android", "Windows", "Linux"], ans: "Android" },
-        { cat: "جغرافيا", q: "ما هي عاصمة المملكة المتحدة (بريطانيا)؟", opts: ["باريس", "لندن", "مدريد", "برلين"], ans: "لندن" },
-        { cat: "ثقافة عامة", q: "ما هو طعام الدب الباندا المفضل؟", opts: ["الأسماك", "خيزران (البامبو)", "الأعشاب", "الفواكه"], ans: "خيزران (البامبو)" },
-        { cat: "علوم", q: "ما هي درجة غليان الماء بالسيليزيوس؟", opts: ["50 درجة", "100 درجة", "80 درجة", "120 درجة"], ans: "100 درجة" },
-        { cat: "تاريخ", q: "من هو مكتشف أمريكا؟", opts: ["كريستوفر كولومبوس", "ماجلان", "ابن بطوطة", "فاسكو دا جاما"], ans: "كريستوفر كولومبوس" },
-        { cat: "لغة عربية", q: "ما هو جمع كلمة 'مرأة'؟", opts: ["نساء", "مرآة", "امرؤ", "أمراء"], ans: "نساء" },
-        { cat: "جغرافيا", q: "ما هي أكبر قارة في العالم من حيث المساحة والسكان؟", opts: ["أفريقيا", "آسيا", "أوروبا", "أمريكا الشمالية"], ans: "آسيا" },
-        { cat: "تقنية", q: "ماذا يرمز له اختصار 'Wi-Fi'؟", opts: ["الاتصال اللاسلكي الفائق", "شبكة التلفزيون", "سلك التوصيل", "برنامج حماية"], ans: "الاتصال اللاسلكي الفائق" },
-        { cat: "ثقافة عامة", q: "ما هو الحيوان الذكي الملقب بـ 'صديق الإنسان في البحر'؟", opts: ["القرش", "الدلفين", "الحوت", "الأخطبوط"], ans: "الدلفين" },
-        { cat: "تاريخ إسلامي", q: "من هو الشاعر الملقب بـ 'شاعر الرسول'؟", opts: ["حسان بن ثابت", "أبو تمام", "المتنبي", "أحمد شوقي"], ans: "حسان بن ثابت" },
-        { cat: "علوم", q: "ما هي السلسلة الغذائية التي تبدأ دائماً بـ...؟", opts: ["المفترسات", "المنتجات (النباتات)", "المحللات", "الآكلات للحيوانات"], ans: "المنتجات (النباتات)" },
-        { cat: "جغرافيا", q: "ما هي الدولة التي تمتلك أكبر عدد من السكان في العالم؟", opts: ["الهند", "الصين", "روسيا", "إندونيسيا"], ans: "الهند" },
-        { cat: "ثقافة عامة", q: "ما هو أكبر حيوان على وجه الأرض؟", opts: ["الفيل الأفريقي", "الحوت الأزرق", "الزرافة", "القرش الأبيض"], ans: "الحوت الأزرق" },
-        { cat: "تقنية", q: "ما اسم الذكاء الاصطناعي المطور من شركة OpenAI؟", opts: ["ChatGPT", "Gemini", "Claude", "Copilot"], ans: "ChatGPT" },
-        { cat: "علوم", q: "أي عضو في جسم الإنسان يستهلك أكبر قدر من الأكسجين؟", opts: ["العضلات", "الدماغ", "القلب", "الرئتان"], ans: "الدماغ" },
-        { cat: "تاريخ", q: "ما هي الحضارة التي قامت بين نهري دجلة والفرات؟", opts: ["الحضارة الفرعونية", "حضارة بلاد الرافدين", "الحضارة الرومانية", "الحضارة الإغريقية"], ans: "حضارة بلاد الرافدين" },
-        { cat: "لغة عربية", q: "ما هي 'عاصمة الثقافة الإسلامية' في تاريخ الأندلس؟", opts: ["غرناطة", "قرطبة", "إشبيلية", "طليطلة"], ans: "قرطبة" },
-        { cat: "جغرافيا", q: "ما هو البحر الذي يفصل بين القارة الأفريقية والقارة الأوروبية؟", opts: ["البحر الأحمر", "البحر الأبيض المتوسط", "البحر الأسود", "بحر العرب"], ans: "البحر الأبيض المتوسط" },
-        { cat: "ثقافة عامة", q: "ما هي أكثر المشروبات استهلاكاً في العالم بعد الماء؟", opts: ["القهوة", "الشاي", "العصائر", "المشروبات الغازية"], ans: "الشاي" },
-        { cat: "تاريخ إسلامي", q: "ما هي الغزوة التي وقعت في شوال من السنة الثانية للهجرة؟", opts: ["غزوة أحد", "غزوة بدر الكبرى", "غزوة الخندق", "غزوة تبوك"], ans: "غزوة بدر الكبرى" },
-        { cat: "علوم", q: "ما هي المادة التي تعطي النباتات لونها الأخضر؟", opts: ["الكاروتين", "الكلوروفيل", "الهيموجلوبين", "الميلانين"], ans: "الكلوروفيل" },
-        { cat: "تقنية", q: "ماذا تعني كلمة 'URL' بالمتصفح؟", opts: ["عنوان الموقع الإلكتروني", "رمز الحماية", "اسم الخادم", "حجم الملف"], ans: "عنوان الموقع الإلكتروني" },
-        { cat: "جغرافيا", q: "في أي دولة يقع جبل إيفرست؟", opts: ["الهند", "نيبال", "الصين", "باكستان"], ans: "نيبال" },
-        { cat: "ثقافة عامة", q: "ما هي المدينة الملقبة بـ 'مدينة الضباب'؟", opts: ["لندن", "باريس", "نيويورك", "طوكيو"], ans: "لندن" },
-        { cat: "تاريخ", q: "من هو القائد المسلم الذي فتح الأندلس؟", opts: ["عقبة بن نافع", "طارق بن زياد", "خالد بن الوليد", "صلاح الدين الأيوبي"], ans: "طارق بن زياد" },
-        { cat: "علوم", q: "ما هو الغاز الأخف وزناً في الطبيعة؟", opts: ["الأكسجين", "الهيدروجين", "الهيليوم", "النيتروجين"], ans: "الهيدروجين" },
-        { cat: "لغة عربية", q: "ما هي الحروف التي تسمى 'حروف العطف'؟", opts: ["في، من، إلى", "الواو، الفاء، ثم", "أن، لن، كي", "إن، أن، كأن"], ans: "الواو، الفاء، ثم" },
-        { cat: "جغرافيا", q: "ما هي عاصمة دولة سلطنة عمان؟", opts: ["صلالة", "مسقط", "صحار", "نزوى"], ans: "مسقط" },
-        { cat: "ثقافة عامة", q: "ما هو أسرع كائن بحري؟", opts: ["سمك السيف (المارلين)", "دلفين", "سمك القرش", "قنديل البحر"], ans: "سمك السيف (المارلين)" },
-        { cat: "تقنية", q: "أي لغة برمجية تشتهر بتطوير الذكاء الاصطناعي وتحليل البيانات؟", opts: ["HTML", "Python", "CSS", "SQL"], ans: "Python" },
-        { cat: "تاريخ إسلامي", q: "من هو النبي الذي بنى السفينة بأمر الله؟", opts: ["إبراهيم عليه السلام", "نوح عليه السلام", "موسى عليه السلام", "سليمان عليه السلام"], ans: "نوح عليه السلام" },
-        { cat: "علوم", q: "ما هي قوة الجاذبية التي تبقي الكواكب في مداراتها؟", opts: ["الجاذبية المغناطيسية", "جاذبية الشمس", "الضغط الجوي", "الكهرباء الساكنة"], ans: "جاذبية الشمس" },
-        { cat: "جغرافيا", q: "ما هي أطول سلسلة جبال في العالم؟", opts: ["جبال الهيمالايا", "جبال الأنديز", "جبال الألب", "جبال أطلس"], ans: "جبال الأنديز" },
-        { cat: "ثقافة عامة", q: "كم عدد ساعات اليوم القياسي؟", opts: ["12 ساعة", "24 ساعة", "48 ساعة", "18 ساعة"], ans: "24 ساعة" },
-        { cat: "تاريخ", q: "من القائد الذي هزم الصليبيين واستعاد القدس في معركة حطين؟", opts: ["قطز", "صلاح الدين الأيوبي", "بيبرس", "نور الدين زنكي"], ans: "صلاح الدين الأيوبي" },
-        { cat: "علوم", q: "ما هي فصيلة الدم التي تسمى 'المنح العام'؟", opts: ["A+", "B+", "O-", "AB+"], ans: "O-" },
-        { cat: "لغة عربية", q: "ما معنى اسم 'هيثم' في اللغة العربية؟", opts: ["ابن الأسد", "فرخ الصقر", "ابن الجمل", "ولد الغزال"], ans: "فرخ الصقر" },
-        { cat: "جغرافيا", q: "ما هي عاصمة دولة الكويت؟", opts: ["الأحمدي", "الكويت", "الجهراء", "حولي"], ans: "الكويت" },
-        { cat: "تقنية", q: "ما هي الشركة المالكة لمحرك البحث الشهير ومحدد الخرائط؟", opts: ["ميكروسوفت", "جوجل", "أبل", "أمازون"], ans: "جوجل" },
-        { cat: "ثقافة عامة", q: "كم عدد لاعبين فريق كرة القدم في الملعب أثناء المباراة؟", opts: ["9 لاعبين", "11 لاعباً", "10 لاعبين", "12 لاعباً"], ans: "11 لاعباً" },
-        { cat: "تاريخ إسلامي", q: "من هي أول أم المؤمنين زوجة للرسول صلى الله عليه وسلم؟", opts: ["عائشة بنت أبي بكر", "خديجة بنت خويلد", "حفصة بنت عمر", "زينب بنت خزيمة"], ans: "خديجة بنت خويلد" },
-        { cat: "علوم", q: "ما هي الوحدة التي تقاس بها درجة الصوت؟", opts: ["الديسيبل", "الفولت", "الواط", "الأمبير"], ans: "الديسيبل" },
-        { cat: "جغرافيا", q: "ما هو البحر المحيط بدولة البحرين؟", opts: ["البحر الأحمر", "الخليج العربي", "بحر العرب", "المحيط الهندي"], ans: "الخليج العربي" },
-        { cat: "ثقافة عامة", q: "ما هي أثقل مادة سائلة على الأرض؟", opts: ["الماء", "الزئبق", "الزيت", "البنزين"], ans: "الزئبق" },
-        { cat: "لغة عربية", q: "ما هي لغة أستراليا الرسمية؟", opts: ["الإسبانية", "الإنجليزية", "الفرنسية", "الألمانية"], ans: "الإنجليزية" },
-        { cat: "تقنية", q: "ما هي التقنية المستخدمة لتخزين البيانات بشكل موزع وآمن كالبلوكشين؟", opts: ["Blockchain", "Bluetooth", "Cloud Storage", "RAM"], ans: "Blockchain" },
-        { cat: "تاريخ", q: "من بنى سور الصين العظيم؟", opts: ["الصينيون القدماء", "المغول", "الفرس", "الرومان"], ans: "الصينيون القدماء" },
-        { cat: "علوم", q: "ما العضو الداخلي الوحيد في جسم الإنسان القادر على إعادة النمو والتجدد؟", opts: ["القلب", "الكبد", "المعدة", "الرئة"], ans: "الكبد" },
-        { cat: "جغرافيا", q: "ما هي عاصمة جمهورية تركيا؟", opts: ["إسطنبول", "أنقرة", "بورصة", "أنطاليا"], ans: "أنقرة" },
-        { cat: "ثقافة عامة", q: "ما هي الدولة التي تمتلك أكبر عدد من الأهرامات في العالم؟", opts: ["مصر", "السودان", "المكسيك", "بيرو"], ans: "السودان" },
-        { cat: "تاريخ إسلامي", q: "من هو الملقب بـ 'سيف الله المسلول'؟", opts: ["حمزة بن عبد المطلب", "خالد بن الوليد", "سعد بن أبي وقاص", "علي بن أبي طالب"], ans: "خالد بن الوليد" },
-        { cat: "علوم", q: "ما هو الهرمون المسؤول عن تنظيم مستوى السكر في الدم؟", opts: ["الأدرينالين", "الأنسولين", "الكورتيزول", "الثايروكسين"], ans: "الأنسولين" },
-        { cat: "لغة عربية", q: "ما هو جمع كلمة 'حسام' (والذي يعني السيف)؟", opts: ["أحسمة", "حسامون", "حسوم", "حسامين"], ans: "حسوم" },
-        { cat: "جغرافيا", q: "ما هي الدولة الواقعة في جنوب قارة أفريقيا بنفس الاسم؟", opts: ["ناميبيا", "جنوب أفريقيا", "بوتسوانا", "زيمبابوي"], ans: "جنوب أفريقيا" },
-        { cat: "تقنية", q: "ماذا يقصد بالرمز 'AI'؟", opts: ["الذكاء الاصطناعي", "الواجهة البرمجية", "الاتصال اللاسلكي", "الأمن السيبراني"], ans: "الذكاء الاصطناعي" },
-        { cat: "ثقافة عامة", q: "ما هو كائن البحر الذي يمتلك 3 قلوب و8 أذرع؟", opts: ["قنديل البحر", "الأخطبوط", "الحوت", "نجم البحر"], ans: "الأخطبوط" },
-        { cat: "علوم", q: "ما هو أبرد كوكب في المجموعة الشمسية؟", opts: ["زحل", "أورانوس", "المريخ", "بلوتو"], ans: "أورانوس" },
-        { cat: "تاريخ إسلامي", q: "من هو الخليفة المعنون بالعدل وفاروق الأمة؟", opts: ["أبو بكر الصديق", "عمر بن الخطاب", "عثمان بن عفان", "علي بن أبي طالب"], ans: "عمر بن الخطاب" },
-        { cat: "جغرافيا", q: "ما هي أضخم جزيرة في العالم من حيث المساحة؟", opts: ["مدغشقر", "جرينلاند", "بورنيو", "سومطرة"], ans: "جرينلاند" }
-    ];
+    const daysOfWeek = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    const ordinalNames = ['', 'اليوم الأول', 'اليوم الثاني', 'اليوم الثالث', 'اليوم الرابع', 'اليوم الخامس'];
+    const hijriMonths = ["محرم", "صفر", "ربيع الأول", "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
 
-    let score = 0;
-    let streak = 0;
-    let currentQ = null;
-    let usedIndices = [];
+    let isSyncing = false;
 
-    function toggleGame() {
-        const wrapper = document.getElementById('gameWrapper');
-        wrapper.classList.toggle('active');
-        if (wrapper.classList.contains('active') && !currentQ) {
-            nextQuestion();
-        }
+    function hijriToJulianDay(year, month, day) {
+        return Math.floor((11 * year + 3) / 30) + 354 * year + 30 * month - Math.floor((month - 1) / 2) + day + 1948440 - 385;
     }
 
-    // دالة خلط المصفوفة عشوائياً (Fisher-Yates Shuffle)
-    function shuffleArray(array) {
-        let shuffled = [...array];
-        for (let i = shuffled.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-        }
-        return shuffled;
+    function julianDayToGregorian(jd) {
+        let z = jd + 0.5;
+        let w = Math.floor((z - 1867216.25) / 36524.25);
+        let x = Math.floor(w / 4);
+        let a = z + 1 + w - x;
+        let b = a + 1524;
+        let c = Math.floor((b - 122.1) / 365.25);
+        let d = Math.floor(365.25 * c);
+        let e = Math.floor((b - d) / 30.6001);
+        
+        let day = Math.floor(b - d - Math.floor(30.6001 * e));
+        let month = (e < 14) ? e - 1 : e - 13;
+        let year = (month > 2) ? c - 4716 : c - 4715;
+
+        return new Date(Date.UTC(year, month - 1, day));
     }
 
-    function nextQuestion() {
-        if (usedIndices.length === questionsBank.length) {
-            usedIndices = [];
+    function convertHijriToGregorianDate(hYear, hMonth, hDay) {
+        let jd = hijriToJulianDay(hYear, hMonth, hDay);
+        return julianDayToGregorian(jd);
+    }
+
+    function getHijriDateStr(dateObj) {
+        return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        }).format(dateObj);
+    }
+
+    function initHijriDropdowns() {
+        const daySelect = document.getElementById('hijriDay');
+        const monthSelect = document.getElementById('hijriMonth');
+        const yearSelect = document.getElementById('hijriYear');
+
+        daySelect.innerHTML = '';
+        monthSelect.innerHTML = '';
+        yearSelect.innerHTML = '';
+
+        for (let i = 1; i <= 30; i++) {
+            daySelect.innerHTML += `<option value="${i}">${i}</option>`;
         }
-
-        let randomIndex;
-        do {
-            randomIndex = Math.floor(Math.random() * questionsBank.length);
-        } while (usedIndices.includes(randomIndex));
-
-        usedIndices.push(randomIndex);
-        currentQ = questionsBank[randomIndex];
-
-        document.getElementById('qCategory').innerText = `${currentQ.cat} (${usedIndices.length}/100)`;
-        document.getElementById('qText').innerText = currentQ.q;
-
-        const grid = document.getElementById('optionsGrid');
-        grid.innerHTML = '';
-
-        // خلط الخيارات الأربعة عشوائياً في كل مرة ينزل فيها السؤال
-        const shuffledOptions = shuffleArray(currentQ.opts);
-
-        shuffledOptions.forEach(optText => {
-            const btn = document.createElement('button');
-            btn.className = 'btn-opt';
-            btn.innerText = optText;
-            btn.onclick = () => checkAnswer(optText, btn);
-            grid.appendChild(btn);
+        hijriMonths.forEach((m, idx) => {
+            monthSelect.innerHTML += `<option value="${idx + 1}">${m}</option>`;
         });
+        for (let y = 1440; y <= 1460; y++) {
+            yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
+        }
     }
 
-    function checkAnswer(selectedText, selectedBtn) {
-        const allBtns = document.querySelectorAll('.btn-opt');
-        allBtns.forEach(btn => btn.disabled = true);
+    window.onload = function() {
+        initHijriDropdowns();
 
-        const chat = document.getElementById('aiChat');
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('startDate').value = today;
+        document.getElementById('queryDate').value = today;
 
-        if (selectedText === currentQ.ans) {
-            selectedBtn.classList.add('correct');
-            score += 10 + (streak * 2);
-            streak++;
-            chat.innerText = getFunnyEncouragement();
-            chat.style.borderRightColor = "var(--color-emerald)";
-        } else {
-            selectedBtn.classList.add('wrong');
-            // إبراز الزر الصحيح بغض النظر عن موقعه
-            allBtns.forEach(btn => {
-                if (btn.innerText === currentQ.ans) {
-                    btn.classList.add('correct');
-                }
-            });
-            streak = 0;
-            chat.innerText = "خيرها بغيرها! الإجابة الصحيحة تم تحديدها بالأخضر 👍";
-            chat.style.borderRightColor = "var(--color-rose)";
-        }
-
-        updateStats();
+        syncGregToHijri();
+        calculateAll();
+        querySpecificDate();
 
         setTimeout(() => {
-            chat.style.borderRightColor = "var(--color-primary)";
-            nextQuestion();
-        }, 1800);
+            const splashScreen = document.getElementById('splash-screen');
+            const mainContainer = document.getElementById('mainContainer');
+            
+            splashScreen.classList.add('fade-out');
+            document.body.classList.remove('splash-active');
+            mainContainer.classList.add('visible');
+        }, 2000);
+    };
+
+    function syncGregToHijri() {
+        if (isSyncing) return;
+        isSyncing = true;
+
+        const gregVal = document.getElementById('queryDate').value;
+        if (gregVal) {
+            const parts = gregVal.split('-');
+            const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
+            
+            const formatter = new Intl.DateTimeFormat('en-US-u-ca-islamic-uma', {
+                day: 'numeric',
+                month: 'numeric',
+                year: 'numeric'
+            });
+            const p = formatter.formatToParts(dateObj);
+            
+            let d, m, y;
+            p.forEach(item => {
+                if (item.type === 'day') d = parseInt(item.value);
+                if (item.type === 'month') m = parseInt(item.value);
+                if (item.type === 'year') y = parseInt(item.value);
+            });
+
+            if (d && m && y) {
+                document.getElementById('hijriDay').value = d;
+                document.getElementById('hijriMonth').value = m;
+                document.getElementById('hijriYear').value = y;
+            }
+        }
+        isSyncing = false;
     }
 
-    function updateStats() {
-        document.getElementById('score').innerText = score;
-        document.getElementById('streak').innerText = streak;
+    function syncHijriToGreg() {
+        if (isSyncing) return;
+        isSyncing = true;
 
-        let rank = "مبتدئ 🐣";
-        if (score >= 100) rank = "باحث 📖";
-        if (score >= 300) rank = "مثقف 📚";
-        if (score >= 600) rank = "خبير 🧠";
-        if (score >= 900) rank = "علامة 🌟";
-        if (score >= 1200) rank = "أسطورة المعرفة 👑";
+        const d = parseInt(document.getElementById('hijriDay').value);
+        const m = parseInt(document.getElementById('hijriMonth').value);
+        const y = parseInt(document.getElementById('hijriYear').value);
 
-        document.getElementById('rank').innerText = rank;
+        const targetGregDate = convertHijriToGregorianDate(y, m, d);
+
+        if (targetGregDate) {
+            const yyyy = targetGregDate.getUTCFullYear();
+            const mm = String(targetGregDate.getUTCMonth() + 1).padStart(2, '0');
+            const dd = String(targetGregDate.getUTCDate()).padStart(2, '0');
+            document.getElementById('queryDate').value = `${yyyy}-${mm}-${dd}`;
+        }
+
+        isSyncing = false;
     }
 
-    function getFunnyEncouragement() {
-        const msgs = [
-            "كفووو! إجابة صحيحة وفي السليم 👏",
-            "ما شاء الله عليك، مخزون معلومات رهيب! 🌟",
-            "إجابة نموذجية! استمر يا بطل 🔥",
-            "ذكاء خارق! شكل الصيانة بتخلص وأنت لسه تبغى أسئلة 😉",
-            "يا سلام عليك! النقاط تزيد بسرعة ما شاء الله 📈"
-        ];
-        return msgs[Math.floor(Math.random() * msgs.length)];
+    function getShiftInfo(dayIndex) {
+        const cycleDay = ((dayIndex % 25) + 25) % 25; 
+
+        if (cycleDay < 5) {
+            const dayNum = cycleDay + 1;
+            return { title: 'شفت صباح 🌅', sub: ordinalNames[dayNum], bgClass: 'bg-morning', icon: 'fa-sun' };
+        } else if (cycleDay < 8) {
+            const dayNum = cycleDay - 4;
+            return { title: 'راحة / أوف 🌿', sub: ordinalNames[dayNum], bgClass: 'bg-off', icon: 'fa-mug-hot' };
+        } else if (cycleDay < 13) {
+            const dayNum = cycleDay - 7;
+            return { title: 'شفت ظهر ☀️', sub: ordinalNames[dayNum], bgClass: 'bg-afternoon', icon: 'fa-cloud-sun' };
+        } else if (cycleDay < 16) {
+            const dayNum = cycleDay - 12;
+            return { title: 'راحة / أوف 🌿', sub: ordinalNames[dayNum], bgClass: 'bg-off', icon: 'fa-mug-hot' };
+        } else if (cycleDay < 21) {
+            const dayNum = cycleDay - 15;
+            return { title: 'شفت ليل 🌙', sub: ordinalNames[dayNum], bgClass: 'bg-night', icon: 'fa-moon' };
+        } else {
+            const dayNum = cycleDay - 20;
+            return { title: 'راحة / أوف 🌿', sub: ordinalNames[dayNum], bgClass: 'bg-off', icon: 'fa-bed' };
+        }
+    }
+
+    function calculateAll() {
+        const startDateInput = document.getElementById('startDate').value;
+        if (!startDateInput) return;
+
+        const startParts = startDateInput.split('-');
+        const startDate = new Date(startParts[0], startParts[1] - 1, startParts[2]);
+
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        
+        const diffTimeCurrent = today - startDate;
+        const diffDaysCurrent = Math.floor(diffTimeCurrent / (1000 * 60 * 60 * 24));
+        
+        const currentInfo = getShiftInfo(diffDaysCurrent);
+        
+        const heroCard = document.getElementById('heroCard');
+        heroCard.className = `hero-card ${currentInfo.bgClass}`;
+        
+        const todayHijri = getHijriDateStr(today);
+        document.getElementById('liveDateBadge').innerHTML = `${daysOfWeek[now.getDay()]}، ${today.toISOString().split('T')[0]} م<br>الموافق: ${todayHijri}`;
+        
+        document.getElementById('liveShiftTitle').innerText = currentInfo.title;
+        document.getElementById('liveShiftSub').innerText = currentInfo.sub;
+
+        const tableBody = document.getElementById('scheduleTableBody');
+        tableBody.innerHTML = '';
+
+        for (let i = 0; i < 150; i++) {
+            const currentDate = new Date(startDate);
+            currentDate.setDate(startDate.getDate() + i);
+
+            const shiftInfo = getShiftInfo(i);
+            const dayName = daysOfWeek[currentDate.getDay()];
+            const formattedDate = currentDate.toISOString().split('T')[0];
+            const hijriDate = getHijriDateStr(currentDate);
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${dayName}</td>
+                <td>${formattedDate}</td>
+                <td class="hijri-text">${hijriDate}</td>
+                <td>
+                    <span class="pill ${shiftInfo.bgClass}">
+                        <i class="fa-solid ${shiftInfo.icon}"></i> ${shiftInfo.title} (${shiftInfo.sub})
+                    </span>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        }
+    }
+
+    function querySpecificDate() {
+        const startDateInput = document.getElementById('startDate').value;
+        const queryDateInput = document.getElementById('queryDate').value;
+
+        if (!startDateInput || !queryDateInput) return;
+
+        const sParts = startDateInput.split('-');
+        const startDate = new Date(Date.UTC(sParts[0], sParts[1] - 1, sParts[2]));
+
+        const qParts = queryDateInput.split('-');
+        const queryDate = new Date(Date.UTC(qParts[0], qParts[1] - 1, qParts[2]));
+
+        const diffTime = queryDate - startDate;
+        const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+        const shiftInfo = getShiftInfo(diffDays);
+        const dayName = daysOfWeek[queryDate.getUTCDay()];
+        
+        const localQueryDate = new Date(qParts[0], qParts[1] - 1, qParts[2]);
+        const hijriDate = getHijriDateStr(localQueryDate);
+
+        const resultCard = document.getElementById('queryResultCard');
+        resultCard.style.display = 'block';
+        resultCard.className = `query-result-card ${shiftInfo.bgClass}`;
+        resultCard.innerHTML = `يوم ${dayName} (${queryDateInput} م - ${hijriDate}):<br><span style="font-size: 1.4rem;">${shiftInfo.title}</span><br>(${shiftInfo.sub})`;
     }
 </script>
 
