@@ -445,7 +445,7 @@
 
     <div class="welcome-banner">
         <i class="fa-solid fa-sparkles"></i>
-        <span>أهلاً بك يا أبو مرزوق في حاسبة دوامك الذكية[span_2](start_span)[span_2](end_span)!</span>
+        <span>أهلاً بك في حاسبة الدوام الذكية!</span>
     </div>
     
     <div class="header">
@@ -511,7 +511,7 @@
     </div>
 
     <footer>
-        <p><span class="rights-text">جميع الحقوق محفوظة © 2026</span> | تصميم <span class="designer">أبو مرزوق</span>[span_3](start_span)[span_3](end_span)</p>
+        <p><span class="rights-text">جميع الحقوق محفوظة © 2026</span> | تصميم <span class="designer">أبو مرزوق</span></p>
         <div class="version-badge">الإصدار v3.8 - مع خاصية الحفظ التلقائي المحلي</div>
     </footer>
 
@@ -583,7 +583,6 @@
     window.onload = function() {
         initHijriDropdowns();
 
-        // استرجاع التاريخ المحفوظ تلقائياً من المتصفح أو ضبط تاريخ اليوم افتراضياً
         const savedStartDate = localStorage.getItem('abumarzook_shift_start');
         const todayStr = new Date().toISOString().split('T')[0];
         
@@ -604,7 +603,6 @@
         }, 1500);
     };
 
-    // دالة الحفظ التلقائي عند تغيير تاريخ البداية
     function saveAndCalculate() {
         const startDateInput = document.getElementById('startDate').value;
         if (startDateInput) {
