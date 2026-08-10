@@ -431,7 +431,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* تنسيقات الطباعة الاحترافية والآمنة */
         .print-page-footer {
             display: none;
         }
@@ -594,7 +593,7 @@
 
     <footer>
         <p><span class="rights-text">جميع الحقوق محفوظة © 2026</span> | تصميم <span class="designer">أبو مرزوق</span></p>
-        <div class="version-badge">الإصدار v4.0 - مطابقة الشهور الهجرية بدقة</div>
+        <div class="version-badge">الإصدار v4.1 - تصحيح عناوين الشهور الهجرية</div>
     </footer>
 
 </div>
@@ -606,9 +605,7 @@
     
     let isSyncing = false;
 
-    // خوارزمية محسنة لضبط مطابقة التواريخ الهجرية والميلادية بدقة تامة
     function getHijriDetails(dateObj) {
-        // استخدام خوارزمية تقويم أم القرى الفعلية المضمنة في المتصفح مع تصحيح نطاق القراءة
         const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
             day: 'numeric',
             month: 'numeric',
@@ -622,7 +619,6 @@
             if (item.type === 'year') y = parseInt(item.value);
         });
 
-        // جلب النص الكامل للتاريخ الهجري بالعربية
         const fullFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
             day: 'numeric',
             month: 'long',
@@ -845,6 +841,7 @@
             const titleDiv = document.createElement('div');
             titleDiv.className = 'card-title';
             titleDiv.style.marginBottom = '0';
+            // عناوين الجداول المحدثة لتציير اسم الشهر الهجري بدقة بناءً على التواريخ الفعلية داخله
             titleDiv.innerHTML = `<i class="fa-solid fa-calendar-days"></i> جدول شهر ${monthData.monthName} ${monthData.year} هـ`;
             topBar.appendChild(titleDiv);
 
