@@ -841,7 +841,6 @@
             const titleDiv = document.createElement('div');
             titleDiv.className = 'card-title';
             titleDiv.style.marginBottom = '0';
-            // عناوين الجداول المحدثة لتציير اسم الشهر الهجري بدقة بناءً على التواريخ الفعلية داخله
             titleDiv.innerHTML = `<i class="fa-solid fa-calendar-days"></i> جدول شهر ${monthData.monthName} ${monthData.year} هـ`;
             topBar.appendChild(titleDiv);
 
@@ -898,7 +897,7 @@
 
             const pageFooter = document.createElement('div');
             pageFooter.className = 'print-page-footer';
-            pageFooter.innerText = 'تم إعداده بنظام المطور فهد المخلفي - جميع الحقوق محفوظة';
+            pageFooter.innerText = 'تم إعداد هذا الجدول بنظام مطور أبو مرزوق وجميع الحقوق محفوظة © 2020';
             card.appendChild(pageFooter);
 
             wrapper.appendChild(card);
