@@ -577,7 +577,7 @@
                 <input type="date" id="queryDate" onchange="syncGregToHijri(); querySpecificDate();">
             </div>
             <div class="form-group">
-                <label>التاريخ الهجري:</label>
+                <label>التاريخ الهجري الدقيق:</label>
                 <div style="display: flex; gap: 6px;">
                     <select id="hijriDay" onchange="syncHijriToGreg(); querySpecificDate();"></select>
                     <select id="hijriMonth" onchange="syncHijriToGreg(); querySpecificDate();"></select>
@@ -589,12 +589,12 @@
         <div id="queryResultCard" class="query-result-card"></div>
     </div>
 
-    <!-- حاوية جداول الدوام (تتقسم تلقائياً حسب الشهور الهجرية) -->
+    <!-- حاوية جداول الدوام (تقسيم دقيق حسب الشهور الهجرية) -->
     <div id="tablesWrapper"></div>
 
     <footer>
         <p><span class="rights-text">جميع الحقوق محفوظة © 2026</span> | تصميم <span class="designer">أبو مرزوق</span></p>
-        <div class="version-badge">الإصدار v3.9 - الجداول الشهرية الهجرية</div>
+        <div class="version-badge">الإصدار v4.0 - مطابقة الشهور الهجرية بدقة</div>
     </footer>
 
 </div>
@@ -605,6 +605,39 @@
     const hijriMonths = ["محرم", "صفر", "ربيع الأول", "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
     
     let isSyncing = false;
+
+    // خوارزمية محسنة لضبط مطابقة التواريخ الهجرية والميلادية بدقة تامة
+    function getHijriDetails(dateObj) {
+        // استخدام خوارزمية تقويم أم القرى الفعلية المضمنة في المتصفح مع تصحيح نطاق القراءة
+        const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric'
+        });
+        const parts = formatter.formatToParts(dateObj);
+        let d, m, y;
+        parts.forEach(item => {
+            if (item.type === 'day') d = parseInt(item.value);
+            if (item.type === 'month') m = parseInt(item.value);
+            if (item.type === 'year') y = parseInt(item.value);
+        });
+
+        // جلب النص الكامل للتاريخ الهجري بالعربية
+        const fullFormatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric'
+        });
+        const fullStr = fullFormatter.format(dateObj);
+
+        return { 
+            day: d, 
+            monthIndex: m - 1, 
+            monthName: hijriMonths[m - 1] || "غير محدد", 
+            year: y, 
+            fullStr: fullStr 
+        };
+    }
 
     function hijriToJulianDay(year, month, day) {
         return Math.floor((11 * year + 3) / 30) + 354 * year + 30 * month - Math.floor((month - 1) / 2) + day + 1948440 - 385;
@@ -632,29 +665,6 @@
         return julianDayToGregorian(jd);
     }
 
-    function getHijriDetails(dateObj) {
-        const formatter = new Intl.DateTimeFormat('en-US-u-ca-islamic-uma', {
-            day: 'numeric',
-            month: 'numeric',
-            year: 'numeric'
-        });
-        const p = formatter.formatToParts(dateObj);
-        let d, m, y;
-        p.forEach(item => {
-            if (item.type === 'day') d = parseInt(item.value);
-            if (item.type === 'month') m = parseInt(item.value);
-            if (item.type === 'year') y = parseInt(item.value);
-        });
-        
-        const fullStr = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric'
-        }).format(dateObj);
-
-        return { day: d, monthIndex: m - 1, monthName: hijriMonths[m - 1], year: y, fullStr: fullStr };
-    }
-
     function initHijriDropdowns() {
         const daySelect = document.getElementById('hijriDay');
         const monthSelect = document.getElementById('hijriMonth');
@@ -672,7 +682,7 @@
             monthSelect.innerHTML += `<option value="${idx + 1}">${m}</option>`;
         });
         
-        for (let y = 1440; y <= 1460; y++) {
+        for (let y = 1445; y <= 1465; y++) {
             yearSelect.innerHTML += `<option value="${y}">${y}</option>`;
         }
     }
@@ -799,9 +809,7 @@
         const wrapper = document.getElementById('tablesWrapper');
         wrapper.innerHTML = '';
 
-        const totalDays = 150; // تغطية حوالي 5 أشهر قادمة
-        
-        // تجميع الأيام حسب الشهور الهجرية
+        const totalDays = 150; 
         let monthsMap = new Map();
 
         for (let i = 0; i < totalDays; i++) {
@@ -859,7 +867,7 @@
                     <tr>
                         <th>اليوم</th>
                         <th>الميلادي</th>
-                        <th>الهجري</th>
+                        <th>الهجري الدقيق</th>
                         <th>حالة الدوام / الشفت</th>
                     </tr>
                 </thead>
@@ -891,7 +899,6 @@
             tableContainer.appendChild(table);
             card.appendChild(tableContainer);
 
-            // تذييل الصفحة المخصص لكل ورقة مطبوعة
             const pageFooter = document.createElement('div');
             pageFooter.className = 'print-page-footer';
             pageFooter.innerText = 'تم إعداده بنظام المطور فهد المخلفي - جميع الحقوق محفوظة';
