@@ -589,12 +589,12 @@
         <div id="queryResultCard" class="query-result-card"></div>
     </div>
 
-    <!-- حاوية جداول الدوام (تتقسم تلقائياً إلى صفحات كل منها 30 يوماً) -->
+    <!-- حاوية جداول الدوام (تتقسم تلقائياً حسب الشهور الهجرية) -->
     <div id="tablesWrapper"></div>
 
     <footer>
         <p><span class="rights-text">جميع الحقوق محفوظة © 2026</span> | تصميم <span class="designer">أبو مرزوق</span></p>
-        <div class="version-badge">الإصدار v3.8 - مع خاصية الحفظ التلقائي المحلي</div>
+        <div class="version-badge">الإصدار v3.9 - الجداول الشهرية الهجرية</div>
     </footer>
 
 </div>
@@ -632,12 +632,27 @@
         return julianDayToGregorian(jd);
     }
 
-    function getHijriDateStr(dateObj) {
-        return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma', {
+    function getHijriDetails(dateObj) {
+        const formatter = new Intl.DateTimeFormat('en-US-u-ca-islamic-uma', {
+            day: 'numeric',
+            month: 'numeric',
+            year: 'numeric'
+        });
+        const p = formatter.formatToParts(dateObj);
+        let d, m, y;
+        p.forEach(item => {
+            if (item.type === 'day') d = parseInt(item.value);
+            if (item.type === 'month') m = parseInt(item.value);
+            if (item.type === 'year') y = parseInt(item.value);
+        });
+        
+        const fullStr = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-uma', {
             day: 'numeric',
             month: 'long',
             year: 'numeric'
         }).format(dateObj);
+
+        return { day: d, monthIndex: m - 1, monthName: hijriMonths[m - 1], year: y, fullStr: fullStr };
     }
 
     function initHijriDropdowns() {
@@ -701,25 +716,12 @@
         if (gregVal) {
             const parts = gregVal.split('-');
             const dateObj = new Date(parts[0], parts[1] - 1, parts[2]);
-            
-            const formatter = new Intl.DateTimeFormat('en-US-u-ca-islamic-uma', {
-                day: 'numeric',
-                month: 'numeric',
-                year: 'numeric'
-            });
-            const p = formatter.formatToParts(dateObj);
-            
-            let d, m, y;
-            p.forEach(item => {
-                if (item.type === 'day') d = parseInt(item.value);
-                if (item.type === 'month') m = parseInt(item.value);
-                if (item.type === 'year') y = parseInt(item.value);
-            });
+            const hInfo = getHijriDetails(dateObj);
 
-            if (d && m && y) {
-                document.getElementById('hijriDay').value = d;
-                document.getElementById('hijriMonth').value = m;
-                document.getElementById('hijriYear').value = y;
+            if (hInfo.day && hInfo.monthIndex !== undefined && hInfo.year) {
+                document.getElementById('hijriDay').value = hInfo.day;
+                document.getElementById('hijriMonth').value = hInfo.monthIndex + 1;
+                document.getElementById('hijriYear').value = hInfo.year;
             }
         }
         isSyncing = false;
@@ -788,7 +790,7 @@
         const heroCard = document.getElementById('heroCard');
         heroCard.className = `hero-card ${currentInfo.bgClass}`;
         
-        const todayHijri = getHijriDateStr(today);
+        const todayHijri = getHijriDetails(today).fullStr;
         document.getElementById('liveDateBadge').innerHTML = `${daysOfWeek[adjustedNow.getDay()]}، ${today.toISOString().split('T')[0]} م<br>الموافق: ${todayHijri}`;
         
         document.getElementById('liveShiftTitle').innerText = currentInfo.title;
@@ -797,11 +799,35 @@
         const wrapper = document.getElementById('tablesWrapper');
         wrapper.innerHTML = '';
 
-        const totalDays = 150; // 5 أشهر تقريباً
-        const pageSize = 30;
-        const totalPages = Math.ceil(totalDays / pageSize);
+        const totalDays = 150; // تغطية حوالي 5 أشهر قادمة
+        
+        // تجميع الأيام حسب الشهور الهجرية
+        let monthsMap = new Map();
 
-        for (let p = 0; p < totalPages; p++) {
+        for (let i = 0; i < totalDays; i++) {
+            const currentDate = new Date(startDate);
+            currentDate.setDate(startDate.getDate() + i);
+
+            const hInfo = getHijriDetails(currentDate);
+            const monthKey = `${hInfo.year}-${hInfo.monthIndex}`;
+
+            if (!monthsMap.has(monthKey)) {
+                monthsMap.set(monthKey, {
+                    monthName: hInfo.monthName,
+                    year: hInfo.year,
+                    days: []
+                });
+            }
+
+            monthsMap.get(monthKey).days.push({
+                dayIndex: i,
+                dateObj: currentDate,
+                shiftInfo: getShiftInfo(i)
+            });
+        }
+
+        let tableCounter = 0;
+        monthsMap.forEach((monthData) => {
             const card = document.createElement('div');
             card.className = 'glass-card schedule-page-card';
 
@@ -811,10 +837,10 @@
             const titleDiv = document.createElement('div');
             titleDiv.className = 'card-title';
             titleDiv.style.marginBottom = '0';
-            titleDiv.innerHTML = `<i class="fa-solid fa-table-list"></i> جدول الدوام (الصفحة ${p + 1} - 30 يوماً)`;
+            titleDiv.innerHTML = `<i class="fa-solid fa-calendar-days"></i> جدول شهر ${monthData.monthName} ${monthData.year} هـ`;
             topBar.appendChild(titleDiv);
 
-            if (p === 0) {
+            if (tableCounter === 0) {
                 const printBtn = document.createElement('button');
                 printBtn.className = 'btn';
                 printBtn.style.cssText = 'width: auto; margin-top: 0; padding: 8px 16px; font-size: 0.9rem;';
@@ -841,17 +867,12 @@
             `;
             const tbody = table.querySelector('tbody');
 
-            const startIdx = p * pageSize;
-            const endIdx = Math.min(startIdx + pageSize, totalDays);
-
-            for (let i = startIdx; i < endIdx; i++) {
-                const currentDate = new Date(startDate);
-                currentDate.setDate(startDate.getDate() + i);
-
-                const shiftInfo = getShiftInfo(i);
+            monthData.days.forEach(item => {
+                const currentDate = item.dateObj;
+                const shiftInfo = item.shiftInfo;
                 const dayName = daysOfWeek[currentDate.getDay()];
                 const formattedDate = currentDate.toISOString().split('T')[0];
-                const hijriDate = getHijriDateStr(currentDate);
+                const hijriDate = getHijriDetails(currentDate).fullStr;
 
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -865,7 +886,7 @@
                     </td>
                 `;
                 tbody.appendChild(row);
-            }
+            });
 
             tableContainer.appendChild(table);
             card.appendChild(tableContainer);
@@ -877,7 +898,8 @@
             card.appendChild(pageFooter);
 
             wrapper.appendChild(card);
-        }
+            tableCounter++;
+        });
     }
 
     function querySpecificDate() {
@@ -899,7 +921,7 @@
         const dayName = daysOfWeek[queryDate.getUTCDay()];
         
         const localQueryDate = new Date(qParts[0], qParts[1] - 1, qParts[2]);
-        const hijriDate = getHijriDateStr(localQueryDate);
+        const hijriDate = getHijriDetails(localQueryDate).fullStr;
 
         const resultCard = document.getElementById('queryResultCard');
         resultCard.style.display = 'block';
