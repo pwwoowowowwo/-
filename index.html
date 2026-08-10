@@ -431,7 +431,11 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* تنسيقات الطباعة الاحترافية */
+        /* تنسيقات الطباعة الاحترافية والآمنة */
+        .print-page-footer {
+            display: none;
+        }
+
         @media print {
             body {
                 background: white !important;
@@ -443,7 +447,7 @@
             .welcome-banner, 
             .header, 
             .hero-card, 
-            .glass-card:not(:has(#scheduleTableBody)), 
+            .glass-card:not(.schedule-page-card), 
             .btn, 
             footer {
                 display: none !important;
@@ -452,16 +456,18 @@
             .container {
                 max-width: 100% !important;
                 margin: 0 !important;
+                padding: 0 !important;
                 opacity: 1 !important;
             }
 
-            .glass-card {
+            .schedule-page-card {
                 background: white !important;
                 border: none !important;
                 box-shadow: none !important;
                 padding: 0 !important;
                 margin: 0 !important;
                 page-break-after: always;
+                break-after: page;
             }
 
             .table-container {
@@ -486,7 +492,7 @@
                 color: #ffffff !important;
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
-                position: static !important; /* حل مشكلة تداخل رأس الجدول */
+                position: static !important;
             }
 
             td {
@@ -519,10 +525,6 @@
                 size: A4;
                 margin: 15mm 10mm 20mm 10mm;
             }
-        }
-
-        .print-page-footer {
-            display: none;
         }
     </style>
 </head>
@@ -801,7 +803,7 @@
 
         for (let p = 0; p < totalPages; p++) {
             const card = document.createElement('div');
-            card.className = 'glass-card';
+            card.className = 'glass-card schedule-page-card';
 
             const topBar = document.createElement('div');
             topBar.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;';
