@@ -431,7 +431,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        .print-page-footer {
+        .print-page-header {
             display: none;
         }
 
@@ -505,19 +505,15 @@
                 border: 1px solid #999;
             }
 
-            .print-page-footer {
+            .print-page-header {
                 display: block !important;
-                position: fixed;
-                bottom: 0;
-                left: 0;
-                right: 0;
                 text-align: center;
-                font-size: 0.85rem;
+                font-size: 0.9rem;
                 font-weight: 700;
                 color: #333;
-                border-top: 1px solid #ccc;
-                padding-top: 6px;
-                background: white;
+                border-bottom: 1px solid #ccc;
+                padding-bottom: 6px;
+                margin-bottom: 10px;
             }
 
             @page {
@@ -545,9 +541,9 @@
     </div>
     
     <div class="header">
-        <h1><i class="fa-solid fa-calendar-check" style="color: #38bdf8;"></i> جدول الشفتات الذكي</h1>
+        <h1><i class="fa-solid fa-calendar-check" style="color: #38bdf8;"></i> حاسبة الشفتات الذكي</h1>
         <div class="system-desc-box">
-            <i class="fa-solid fa-arrows-rotate"></i> نظام حاسبة الدوام الخاص بك، الحفظ التلقائي مفعل لبياناتك بالكامل
+            <i class="fa-solid fa-arrows-rotate"></i> نظام حاسبة الدوام 
         </div>
     </div>
 
@@ -559,7 +555,7 @@
     </div>
 
     <div class="glass-card">
-        <div class="card-title"><i class="fa-solid fa-sliders"></i> ضبط بداية الدورة (الحفظ التلقائي نشط)</div>
+        <div class="card-title"><i class="fa-solid fa-sliders"></i> ضبط بداية الدورة (الحفظ التلقائي نشط)[span_2](start_span)[span_2](end_span)</div>
         <div class="grid-form">
             <div class="form-group">
                 <label for="startDate">تاريخ أول يوم (بداية أول شفت صباح):</label>
@@ -592,7 +588,7 @@
     <div id="tablesWrapper"></div>
 
     <footer>
-        <p><span class="rights-text">جميع الحقوق محفوظة © 2026</span> | تصميم <span class="designer">أبو مرزوق</span></p>
+        <p><span class="rights-text">جميع الحقوق محفوظة © 2026</span> | تصميم <span class="designer">أبو مرزوق</p>
         <div class="version-badge">الإصدار v4.1 - تصحيح عناوين الشهور الهجرية</div>
     </footer>
 
@@ -835,6 +831,11 @@
             const card = document.createElement('div');
             card.className = 'glass-card schedule-page-card';
 
+            const printHeader = document.createElement('div');
+            printHeader.className = 'print-page-header';
+            printHeader.innerText = ' جميع الحقوق محفوظة تم إعدادها و طباعة هذا الجدول من نظام حاسبة الشفتات تطوير أبو مرزوق';
+            card.appendChild(printHeader);
+
             const topBar = document.createElement('div');
             topBar.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;';
             
@@ -894,11 +895,6 @@
 
             tableContainer.appendChild(table);
             card.appendChild(tableContainer);
-
-            const pageFooter = document.createElement('div');
-            pageFooter.className = 'print-page-footer';
-            pageFooter.innerText = 'تم إعداد هذا الجدول بنظام مطور أبو مرزوق وجميع الحقوق محفوظة © 2026';
-            card.appendChild(pageFooter);
 
             wrapper.appendChild(card);
             tableCounter++;
