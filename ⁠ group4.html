@@ -2,98 +2,335 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>نظام متابعة الشفتات - المجموعة الرابعة</title>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { 
-            --primary-bg: #f1f5f9; --card-bg: #ffffff; --accent: #0284c7; --text-main: #0f172a; --text-sub: #64748b; --border: #cbd5e1; --shadow: rgba(0, 0, 0, 0.06);
-            --morning-bg: #fff7ed; --morning-border: #f97316; --morning-text: #c2410c; --morning-box: #ffedd5;
-            --afternoon-bg: #fefce8; --afternoon-border: #eab308; --afternoon-text: #854d0e; --afternoon-box: #fef08a;
-            --night-bg: #090d16; --night-border: #3b82f6; --night-text: #f8fafc; --night-box: #1e293b;
-            --off-bg: #f0fdf4; --off-border: #22c55e; --off-text: #15803d; --off-box: #dcfce7;
+            --primary-bg: #f8fafc; --card-bg: #ffffff; --accent: #0284c7; --accent-light: rgba(2, 132, 199, 0.1); 
+            --text-main: #0f172a; --text-sub: #64748b; --border: #e2e8f0; --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+            --morning-bg: linear-gradient(135deg, #fff7ed, #ffedd5); --morning-border: #ea580c; --morning-text: #9a3412; --morning-box: rgba(234, 88, 12, 0.12);
+            --afternoon-bg: linear-gradient(135deg, #fefce8, #fef9c3); --afternoon-border: #ca8a04; --afternoon-text: #854d0e; --afternoon-box: rgba(202, 138, 4, 0.12);
+            --night-bg: linear-gradient(135deg, #eef2ff, #e0e7ff); --night-border: #6366f1; --night-text: #3730a3; --night-box: rgba(99, 102, 241, 0.12);
+            --off-bg: linear-gradient(135deg, #f0fdf4, #dcfce7); --off-border: #16a34a; --off-text: #166534; --off-box: rgba(22, 163, 74, 0.12);
         }
-        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-        body { background: #f1f5f9; color: var(--text-main); padding: 12px 8px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; direction: rtl; }
-        .container { max-width: 500px; width: 100%; }
-        .welcome-header-bar { background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border-radius: 14px; padding: 10px 16px; margin-bottom: 12px; font-size: 0.83rem; font-weight: 800; text-align: center; }
-        .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--accent); padding: 6px 12px; border-radius: 12px; font-weight: 800; font-size: 0.78rem; text-decoration: none; }
-        .nav-title-box { background: #e0f2fe; border: 1px solid #0284c7; color: #0369a1; padding: 5px 12px; border-radius: 12px; font-weight: 800; font-size: 0.8rem; }
-        .ios-calendar-card, .ios-widget-card, .glass-card { background: #ffffff; border: 1px solid var(--border); border-radius: 18px; padding: 12px; margin-bottom: 12px; box-shadow: 0 2px 8px var(--shadow); }
-        .ios-cal-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; font-weight: 800; color: var(--text-sub); margin-bottom: 8px; }
-        .ios-week-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
-        .ios-day-item { display: flex; flex-direction: column; align-items: center; padding: 6px 2px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; cursor: pointer; }
+        * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; min-width: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
+        
+        html, body { width: 100%; height: 100%; overflow: hidden; background: var(--primary-bg); color: var(--text-main); }
+        body { display: flex; flex-direction: column; align-items: center; justify-content: center; direction: rtl; }
+
+        .app-container {
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            background: var(--primary-bg);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            position: relative;
+        }
+
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 750px;
+                max-height: 95vh;
+                border-radius: 32px;
+                border: 6px solid #cbd5e1;
+                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.12);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .app-container {
+                max-width: 880px;
+                max-height: 96vh;
+            }
+        }
+
+        #welcomeOverlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: #ffffff;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 9999; color: #0f172a; text-align: center; padding: 20px;
+            transition: opacity 0.4s ease;
+        }
+        .loader-box { background: #ffffff; color: var(--text-main); padding: 40px 32px; border-radius: 24px; width: 85%; max-width: 380px; box-shadow: var(--shadow); border: 1px solid var(--border); }
+        .loader-icon { font-size: 3.2rem; color: var(--accent); margin-bottom: 18px; animation: pulse 1.5s infinite; }
+        .loader-title { font-size: 1.25rem; font-weight: 900; margin-bottom: 8px; }
+        .loader-sub { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 22px; font-weight: 700; }
+        .progress-track { width: 100%; height: 10px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
+        .progress-fill { width: 0%; height: 100%; background: var(--accent); border-radius: 10px; transition: width 0.05s linear; }
+
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+
+        .app-header {
+            background: var(--card-bg);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .app-header-main { display: flex; align-items: center; gap: 12px; }
+        .app-header-icon { width: 38px; height: 38px; background: var(--accent-light); color: var(--accent); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+        .app-header-text { display: flex; flex-direction: column; }
+        .app-header-title { font-size: 1.05rem; font-weight: 900; color: var(--text-main); line-height: 1.2; }
+        .app-header-subtitle { font-size: 0.78rem; font-weight: 700; color: var(--text-sub); }
+        
+        .group-badge-highlight { background: var(--accent-light); color: var(--accent); padding: 5px 14px; border-radius: 10px; font-size: 0.85rem; font-weight: 900; border: 1px solid rgba(2, 132, 199, 0.2); }
+
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            scroll-behavior: smooth;
+        }
+        .app-content::-webkit-scrollbar { width: 6px; }
+        .app-content::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .tab-pane { display: none; flex-direction: column; gap: 20px; animation: fadeIn 0.3s ease; }
+        .tab-pane.active { display: flex; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+
+        .ios-calendar-card, .ios-widget-card, .glass-card { 
+            background: var(--card-bg); border: 1px solid var(--border); border-radius: 24px; padding: 24px; box-shadow: var(--shadow); width: 100%; overflow: hidden; 
+        }
+        .ios-cal-header { display: flex; justify-content: space-between; align-items: center; font-size: 1rem; font-weight: 800; color: var(--text-sub); margin-bottom: 16px; }
+        .ios-week-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 10px; text-align: center; }
+        .ios-day-item { display: flex; flex-direction: column; align-items: center; padding: 14px 4px; border-radius: 16px; background: #f8fafc; border: 1px solid var(--border); cursor: pointer; transition: all 0.2s; }
         .ios-day-item.active { background: var(--accent); color: #ffffff; border-color: var(--accent); }
-        .ios-day-name { font-size: 0.65rem; font-weight: 700; margin-bottom: 2px; }
-        .ios-day-num { font-size: 0.85rem; font-weight: 900; }
-        .ios-widget-card { border-radius: 26px; padding: 16px; border: 2px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
-        .ios-widget-top { display: flex; align-items: center; justify-content: space-between; }
-        .ios-widget-badge { background: rgba(255, 255, 255, 0.85); padding: 5px 12px; border-radius: 50px; font-size: 0.72rem; font-weight: 800; }
-        .ios-widget-body { display: flex; align-items: center; gap: 14px; }
-        .ios-widget-icon-box { width: 58px; height: 58px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; }
-        .ios-widget-title { font-size: 1.25rem; font-weight: 900; }
-        .ios-widget-sub-box { padding: 3px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; display: inline-block; }
-        .ios-theme-morning { background: linear-gradient(135deg, var(--morning-bg), #ffffff); border-color: var(--morning-border); color: var(--morning-text); }
-        .ios-theme-morning .ios-widget-icon-box { background: var(--morning-box); border-color: var(--morning-border); }
-        .ios-theme-afternoon { background: linear-gradient(135deg, var(--afternoon-bg), #ffffff); border-color: var(--afternoon-border); color: var(--afternoon-text); }
-        .ios-theme-afternoon .ios-widget-icon-box { background: var(--afternoon-box); border-color: var(--afternoon-border); }
-        .ios-theme-night { background: linear-gradient(135deg, #090d16, #111827); border-color: var(--night-border); color: var(--night-text); }
-        .ios-theme-night .ios-widget-icon-box { background: #1e293b; border-color: var(--night-border); color: #60a5fa; }
-        .ios-theme-off { background: linear-gradient(135deg, var(--off-bg), #ffffff); border-color: var(--off-border); color: var(--off-text); }
-        .ios-theme-off .ios-widget-icon-box { background: var(--off-box); border-color: var(--off-border); }
-        .card-title-box { background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155; padding: 6px 10px; border-radius: 10px; font-size: 0.82rem; font-weight: 800; margin-bottom: 10px; }
-        input[type="date"] { padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.82rem; background: #f8fafc; font-weight: 700; width: 100%; }
-        .btn { background: linear-gradient(135deg, #0284c7, #38bdf8); color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.82rem; font-weight: 800; cursor: pointer; width: 100%; margin-top: 8px; }
-        .query-result-card { display: none; margin-top: 10px; padding: 10px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 0.8rem; }
-        .month-header-box { background: #e0f2fe; color: #0369a1; padding: 6px 10px; border-radius: 10px; font-weight: 800; font-size: 0.8rem; margin-bottom: 8px; }
-        .mobile-table { width: 100%; border-collapse: collapse; }
-        .mobile-table th, .mobile-table td { padding: 7px 4px; font-size: 0.75rem; text-align: center; border: 1px solid var(--border); }
-        .mobile-table th { background: #f1f5f9; color: #334155; }
-        .hijri-sub { font-size: 0.65rem; color: var(--accent); font-weight: 700; }
-        .pill-compact { padding: 4px 6px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; }
-        footer { margin-top: 15px; text-align: center; font-size: 0.72rem; color: var(--text-sub); padding: 10px; }
-        .designer { color: var(--accent); font-weight: 800; }
+        .ios-day-name { font-size: 0.8rem; font-weight: 700; margin-bottom: 6px; color: var(--text-sub); }
+        .ios-day-item.active .ios-day-name { color: #e0f2fe; }
+        .ios-day-num { font-size: 1.15rem; font-weight: 900; }
+        
+        .ios-widget-card { border-radius: 24px; padding: 30px 24px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 16px; border-width: 1.5px; }
+        .ios-widget-badge { background: rgba(255, 255, 255, 0.7); padding: 6px 16px; border-radius: 50px; font-size: 0.9rem; font-weight: 800; backdrop-filter: blur(4px); }
+        .ios-widget-body { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; width: 100%; }
+        .ios-widget-icon-box { width: 72px; height: 72px; border-radius: 20px; display: flex; align-items: center; justify-content: center; font-size: 2.2rem; flex-shrink: 0; }
+        .ios-widget-title { font-size: 1.6rem; font-weight: 900; line-height: 1.3; }
+        .ios-widget-sub-box { padding: 6px 14px; border-radius: 10px; font-size: 0.95rem; font-weight: 800; display: inline-block; background: rgba(255, 255, 255, 0.6); }
+        
+        .ios-theme-morning { background: var(--morning-bg); border-color: var(--morning-border); color: var(--morning-text); }
+        .ios-theme-morning .ios-widget-icon-box { background: var(--morning-box); border: 1px solid var(--morning-border); }
+        .ios-theme-afternoon { background: var(--afternoon-bg); border-color: var(--afternoon-border); color: var(--afternoon-text); }
+        .ios-theme-afternoon .ios-widget-icon-box { background: var(--afternoon-box); border: 1px solid var(--afternoon-border); }
+        .ios-theme-night { background: var(--night-bg); border-color: var(--night-border); color: var(--night-text); }
+        .ios-theme-night .ios-widget-icon-box { background: var(--night-box); border: 1px solid var(--night-border); }
+        .ios-theme-off { background: var(--off-bg); border-color: var(--off-border); color: var(--off-text); }
+        .ios-theme-off .ios-widget-icon-box { background: var(--off-box); border: 1px solid var(--off-border); }
+        
+        .card-title-box { background: linear-gradient(135deg, #0284c7, #0369a1); border: 1px solid #0284c7; color: #ffffff; padding: 16px 20px; border-radius: 16px; font-size: 1.05rem; font-weight: 800; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(2, 132, 199, 0.2); }
+        
+        input[type="date"] { padding: 14px 16px; border: 1px solid var(--border); border-radius: 16px; font-size: 1.05rem; background: #f8fafc; color: var(--text-main); font-weight: 700; width: 100%; display: block; outline: none; }
+        .btn { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 16px; font-size: 1.05rem; font-weight: 800; cursor: pointer; width: 100%; margin-top: 14px; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3); }
+        .query-result-card { display: none; margin-top: 14px; padding: 16px; border-radius: 16px; text-align: center; font-weight: 800; font-size: 1rem; width: 100%; }
+        
+        .month-card-box { background: #ffffff; border: 2px solid #cbd5e1; border-radius: 20px; margin-bottom: 20px; overflow: hidden; box-shadow: var(--shadow); }
+        .table-scroll-box { max-height: 400px; overflow-y: auto; background: #ffffff; }
+        .month-header-box { background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; padding: 16px 20px; font-weight: 800; font-size: 1.05rem; position: sticky; top: 0; z-index: 2; border-bottom: 2px solid #0284c7; display: flex; justify-content: space-between; align-items: center; }
+        
+        .mobile-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
+        .mobile-table th, .mobile-table td { padding: 14px 12px; font-size: 0.98rem; text-align: center; border: 1px solid var(--border); word-break: break-word; }
+        .mobile-table th { background: #f1f5f9; color: var(--accent); position: sticky; top: 0; z-index: 1; font-weight: 800; }
+        .hijri-sub { font-size: 0.85rem; color: var(--accent); font-weight: 700; margin-top: 3px; display: inline-block; }
+        .pill-compact { padding: 7px 14px; border-radius: 10px; font-size: 0.9rem; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; border: 1px solid transparent; }
+        
+        .ios-theme-morning .pill-compact { border-color: #fdba74; }
+        .ios-theme-afternoon .pill-compact { border-color: #fde047; }
+        .ios-theme-night .pill-compact { border-color: #c7d2fe; }
+        .ios-theme-off .pill-compact { border-color: #86efac; }
+
+        .bottom-nav {
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            height: 76px;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-shrink: 0;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-item {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            background: none;
+            border: none;
+            color: var(--text-sub);
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+        .nav-item i { font-size: 1.4rem; transition: transform 0.25s ease; }
+        
+        .nav-item.active {
+            color: var(--accent);
+            background: var(--accent-light);
+        }
+        .nav-item.active i {
+            transform: scale(1.15);
+        }
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 20%;
+            right: 20%;
+            height: 4px;
+            background: var(--accent);
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 4px;
+        }
+
+        @media print {
+            body * { visibility: hidden; }
+            #printableTablesArea, #printableTablesArea * { visibility: visible; }
+            #printableTablesArea { position: absolute; top: 0; left: 0; width: 100%; background: white; color: black; }
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="welcome-header-bar"><i class="fa-solid fa-sparkles"></i><span>حاسبة الشفتات - المجموعة الرابعة</span></div>
-        <div class="nav-bar">
-            <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-right"></i> الرئيسية</a>
-            <div class="nav-title-box"><i class="fa-solid fa-layer-group"></i> المجموعة الرابعة</div>
-        </div>
-        <div class="ios-calendar-card">
-            <div class="ios-cal-header"><span>الأسبوع الحالي</span><span id="iosMonthName">---</span></div>
-            <div class="ios-week-days" id="iosWeekContainer"></div>
-        </div>
-        <div id="heroCard" class="ios-widget-card ios-theme-morning">
-            <div class="ios-widget-top"><div id="liveDateBadge" class="ios-widget-badge">جاري الحساب...</div></div>
-            <div class="ios-widget-body">
-                <div id="liveShiftIconBox" class="ios-widget-icon-box"><i class="fa-solid fa-sun"></i></div>
-                <div>
-                    <div id="liveShiftTitle" class="ios-widget-title">---</div>
-                    <div id="liveShiftSub" class="ios-widget-sub-box">---</div>
-                </div>
+
+    <div id="welcomeOverlay">
+        <div class="loader-box">
+            <div class="loader-icon"><i class="fa-solid fa-layer-group"></i></div>
+            <div class="loader-title">أهلاً بك - نظام الشفتات</div>
+            <div class="loader-sub">جاري توجيهك لصفحة المجموعة الرابعة...</div>
+            <div class="progress-track">
+                <div class="progress-fill" id="progressFill"></div>
             </div>
         </div>
-        <div class="glass-card">
-            <div class="card-title-box">استعلام عن تاريخ</div>
-            <input type="date" id="queryDate" onchange="querySpecificDate()">
-            <button class="btn" onclick="querySpecificDate()">استعلام</button>
-            <div id="queryResultCard" class="query-result-card"></div>
-        </div>
-        <div class="glass-card">
-            <div class="card-title-box">جدول الشفتات القادمة</div>
-            <div id="groupedTablesContainer"></div>
-        </div>
-        <footer>جميع الحقوق محفوظة © 2026 | تصميم <span class="designer">أبو مرزوق</span></footer>
     </div>
+
+    <div class="app-container">
+        <div class="app-header">
+            <div class="app-header-main">
+                <div class="app-header-icon"><i class="fa-solid fa-shield-halved"></i></div>
+                <div class="app-header-text">
+                    <span class="app-header-title">أهلاً بك</span>
+                    <span class="app-header-subtitle">نظام متابعة الشفتات</span>
+                </div>
+            </div>
+            <div class="group-badge-highlight">المجموعة الرابعة</div>
+        </div>
+
+        <div class="app-content">
+            
+            <div id="tab-home" class="tab-pane active">
+                <div class="ios-calendar-card">
+                    <div class="ios-cal-header"><span>الأسبوع الحالي</span><span id="iosMonthName">---</span></div>
+                    <div class="ios-week-days" id="iosWeekContainer"></div>
+                </div>
+                
+                <div id="heroCard" class="ios-widget-card ios-theme-morning">
+                    <div class="ios-widget-top"><div id="liveDateBadge" class="ios-widget-badge">جاري الحساب...</div></div>
+                    <div class="ios-widget-body">
+                        <div id="liveShiftIconBox" class="ios-widget-icon-box"><i class="fa-solid fa-sun"></i></div>
+                        <div id="liveShiftTitle" class="ios-widget-title">---</div>
+                        <div id="liveShiftSub" class="ios-widget-sub-box">---</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-schedule" class="tab-pane">
+                <div class="glass-card" style="padding: 18px;">
+                    <div class="card-title-box" style="margin-bottom: 14px;"><span>جدول الشفتات القادمة</span></div>
+                    <div id="printableTablesArea"></div>
+                </div>
+            </div>
+
+            <div id="tab-query" class="tab-pane">
+                <div class="glass-card">
+                    <div class="card-title-box">الاستعلام عن شفت تاريخ معين</div>
+                    <input type="date" id="queryDate" onchange="querySpecificDate()">
+                    <button class="btn" onclick="querySpecificDate()">إجراء الاستعلام</button>
+                    <div id="queryResultCard" class="query-result-card"></div>
+                </div>
+            </div>
+
+            <div id="tab-settings" class="tab-pane">
+                <div class="glass-card" style="text-align: center; padding: 30px 20px;">
+                    <div style="font-size: 2.5rem; color: var(--accent); margin-bottom: 12px;"><i class="fa-solid fa-circle-user"></i></div>
+                    <h3 style="font-size: 1.15rem; font-weight: 900; margin-bottom: 6px;">نظام متابعة الشفتات</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 16px;">مخصص للمجموعة الرابعة</p>
+                    
+                    <div style="background: var(--accent-light); border: 1px solid rgba(2, 132, 199, 0.2); padding: 16px; border-radius: 16px; font-size: 0.9rem; font-weight: 700; color: var(--accent); line-height: 1.6; margin-bottom: 16px; text-align: right;">
+                        تم تصميم هذا التطبيق البرمجي خصيصاً لتسهيل وتنظيم متابعة الشفتات وأوقات الراحة بدقة عالية للمجموعة الرابعة. يتيح لك النظام استعراض جدول الدوام الشهري، معرفة شفتك الحالي بشكل فوري، والاستعلام عن أي تاريخ قادم بكل سهولة.
+                    </div>
+
+                    <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-sub);">
+                        تصميم أبو مرزوق جميع الحقوق محفوظة © 2026
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <nav class="bottom-nav">
+            <button class="nav-item active" onclick="switchTab('home', this)">
+                <i class="fa-solid fa-house"></i>
+                <span>الرئيسية</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('schedule', this)">
+                <i class="fa-solid fa-calendar-days"></i>
+                <span>الجداول</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('query', this)">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span>استعلام</span>
+            </button>
+            <button class="nav-item" onclick="switchTab('settings', this)">
+                <i class="fa-solid fa-gear"></i>
+                <span>الإعدادات</span>
+            </button>
+        </nav>
+    </div>
+
     <script>
         const daysOfWeek = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
         const ordinalNames = ['', 'اليوم 1', 'اليوم 2', 'اليوم 3', 'اليوم 4', 'اليوم 5'];
-        const groupStartDate = '2026-08-05'; // تاريخ المجموعة الرابعة
+        const groupStartDate = '2026-08-05';
+
+        function initLoader() {
+            let elapsed = 0;
+            const fill = document.getElementById('progressFill');
+            const totalDuration = 2000;
+            const intervalTime = 30;
+            const timer = setInterval(() => {
+                elapsed += intervalTime;
+                let percent = (elapsed / totalDuration) * 100;
+                if (percent >= 100) { percent = 100; clearInterval(timer); dismissLoader(); }
+                fill.style.width = percent + '%';
+            }, intervalTime);
+        }
+
+        function dismissLoader() {
+            const overlay = document.getElementById('welcomeOverlay');
+            if (overlay) {
+                overlay.style.opacity = '0';
+                setTimeout(() => { overlay.style.display = 'none'; }, 400);
+            }
+        }
+
+        function switchTab(tabId, btnElement) {
+            document.querySelectorAll('.tab-pane').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById('tab-' + tabId).classList.add('active');
+            btnElement.classList.add('active');
+        }
 
         function getHijriDetails(d) { return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { day: 'numeric', month: 'long' }).format(d); }
         function getHijriMonthName(d) { return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { month: 'long', year: 'numeric' }).format(d); }
@@ -137,15 +374,22 @@
             document.getElementById('liveShiftSub').innerText = info.sub;
         }
 
-        window.onload = () => { document.getElementById('queryDate').value = new Date().toISOString().split('T')[0]; loadGroupData(); };
+        window.onload = () => { 
+            initLoader();
+            document.getElementById('queryDate').value = new Date().toISOString().split('T')[0]; 
+            loadGroupData(); 
+        };
 
         function loadGroupData() {
             const startParts = groupStartDate.split('-');
             const startDate = new Date(startParts[0], startParts[1] - 1, startParts[2]);
             const todayClean = new Date(); todayClean.setHours(0,0,0,0);
             renderIOSCalendar(todayClean); updateWidgetForDate(todayClean);
-            const container = document.getElementById('groupedTablesContainer'); container.innerHTML = '';
+            
+            const container = document.getElementById('printableTablesArea'); 
+            container.innerHTML = '';
             let monthsMap = {};
+            
             for (let i = 0; i < 180; i++) {
                 const d = new Date(todayClean); d.setDate(todayClean.getDate() + i);
                 const info = getShiftInfo(Math.floor((d - startDate) / (1000 * 60 * 60 * 24)));
@@ -153,13 +397,24 @@
                 if (!monthsMap[mName]) monthsMap[mName] = [];
                 monthsMap[mName].push({ d, info });
             }
+            
             for (let mName in monthsMap) {
-                let section = document.createElement('div');
-                let tHtml = `<div class="month-header-box">${mName}</div><table class="mobile-table"><thead><tr><th>اليوم</th><th>التاريخ</th><th>الدوام</th></tr></thead><tbody>`;
+                let monthCard = document.createElement('div');
+                monthCard.className = 'month-card-box';
+                
+                let scrollBox = document.createElement('div');
+                scrollBox.className = 'table-scroll-box';
+                
+                let tHtml = `<div class="month-header-box"><span>${mName}</span><span style="font-size:0.85rem; font-weight:normal;">المجموعة الرابعة</span></div>`;
+                tHtml += `<table class="mobile-table"><thead><tr><th>اليوم</th><th>التاريخ</th><th>الدوام</th></tr></thead><tbody>`;
+                
                 monthsMap[mName].forEach(item => {
                     tHtml += `<tr><td><b>${daysOfWeek[item.d.getDay()]}</b></td><td><span>${item.d.toISOString().split('T')[0].substring(5)}</span><br><span class="hijri-sub">${getHijriDetails(item.d)}</span></td><td><span class="pill-compact ${item.info.themeClass}"><i class="fa-solid ${item.info.icon}"></i> ${item.info.title}</span></td></tr>`;
                 });
-                section.innerHTML = tHtml + `</tbody></table><br>`; container.appendChild(section);
+                
+                scrollBox.innerHTML = tHtml + `</tbody></table>`;
+                monthCard.appendChild(scrollBox);
+                container.appendChild(monthCard);
             }
             querySpecificDate();
         }
@@ -171,7 +426,7 @@
             const diff = Math.floor((new Date(Date.UTC(qParts[0], qParts[1] - 1, qParts[2])) - new Date(Date.UTC(startParts[0], startParts[1]-1, startParts[2]))) / (1000 * 60 * 60 * 24));
             const info = getShiftInfo(diff);
             const res = document.getElementById('queryResultCard'); res.style.display = 'block'; res.className = `query-result-card ${info.themeClass}`;
-            res.innerHTML = `<div>${q}</div><div style="margin-top:4px;"><i class="fa-solid ${info.icon}"></i> ${info.title} (${info.sub})</div>`;
+            res.innerHTML = `<div>${q}</div><div style="margin-top:8px;"><i class="fa-solid ${info.icon}"></i> ${info.title} (${info.sub})</div>`;
         }
     </script>
 </body>
