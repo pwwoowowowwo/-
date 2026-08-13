@@ -15,26 +15,26 @@
             --off-bg: #f0fdf4; --off-border: #22c55e; --off-text: #15803d; --off-box: #dcfce7;
         }
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; min-width: 0; }
-        body { background: #f1f5f9; color: var(--text-main); padding: 12px 8px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; direction: rtl; }
-        .container { max-width: 500px; width: 100%; overflow: hidden; }
-        .welcome-header-bar { background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border-radius: 14px; padding: 10px 16px; margin-bottom: 12px; font-size: 0.83rem; font-weight: 800; text-align: center; }
+        body { background: #f1f5f9; color: var(--text-main); padding: 12px 10px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; direction: rtl; }
+        .container { width: 100%; max-width: 700px; margin: 0 auto; overflow: hidden; }
+        .welcome-header-bar { background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border-radius: 14px; padding: 10px 16px; margin-bottom: 12px; font-size: 0.85rem; font-weight: 800; text-align: center; }
         .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--accent); padding: 6px 12px; border-radius: 12px; font-weight: 800; font-size: 0.78rem; text-decoration: none; }
         .nav-title-box { background: #e0f2fe; border: 1px solid #0284c7; color: #0369a1; padding: 5px 12px; border-radius: 12px; font-weight: 800; font-size: 0.8rem; }
-        .ios-calendar-card, .ios-widget-card, .glass-card { background: #ffffff; border: 1px solid var(--border); border-radius: 18px; padding: 12px; margin-bottom: 12px; box-shadow: 0 2px 8px var(--shadow); width: 100%; overflow: hidden; }
-        .ios-cal-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; font-weight: 800; color: var(--text-sub); margin-bottom: 8px; }
-        .ios-week-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
-        .ios-day-item { display: flex; flex-direction: column; align-items: center; padding: 6px 2px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; cursor: pointer; }
+        .ios-calendar-card, .ios-widget-card, .glass-card { background: #ffffff; border: 1px solid var(--border); border-radius: 18px; padding: 14px; margin-bottom: 12px; box-shadow: 0 2px 8px var(--shadow); width: 100%; overflow: hidden; }
+        .ios-cal-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; font-weight: 800; color: var(--text-sub); margin-bottom: 8px; }
+        .ios-week-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; text-align: center; }
+        .ios-day-item { display: flex; flex-direction: column; align-items: center; padding: 8px 2px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; cursor: pointer; }
         .ios-day-item.active { background: var(--accent); color: #ffffff; border-color: var(--accent); }
-        .ios-day-name { font-size: 0.65rem; font-weight: 700; margin-bottom: 2px; }
-        .ios-day-num { font-size: 0.85rem; font-weight: 900; }
-        .ios-widget-card { border-radius: 26px; padding: 16px; border: 2px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+        .ios-day-name { font-size: 0.68rem; font-weight: 700; margin-bottom: 2px; }
+        .ios-day-num { font-size: 0.9rem; font-weight: 900; }
+        .ios-widget-card { border-radius: 22px; padding: 16px; border: 2px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
         .ios-widget-top { display: flex; align-items: center; justify-content: space-between; }
-        .ios-widget-badge { background: rgba(255, 255, 255, 0.85); padding: 5px 12px; border-radius: 50px; font-size: 0.72rem; font-weight: 800; }
+        .ios-widget-badge { background: rgba(255, 255, 255, 0.85); padding: 5px 12px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; }
         .ios-widget-body { display: flex; align-items: center; gap: 14px; }
-        .ios-widget-icon-box { width: 58px; height: 58px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; flex-shrink: 0; }
-        .ios-widget-title { font-size: 1.25rem; font-weight: 900; }
-        .ios-widget-sub-box { padding: 3px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; display: inline-block; }
+        .ios-widget-icon-box { width: 60px; height: 60px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; flex-shrink: 0; }
+        .ios-widget-title { font-size: 1.3rem; font-weight: 900; }
+        .ios-widget-sub-box { padding: 4px 10px; border-radius: 8px; font-size: 0.78rem; font-weight: 800; display: inline-block; }
         .ios-theme-morning { background: linear-gradient(135deg, var(--morning-bg), #ffffff); border-color: var(--morning-border); color: var(--morning-text); }
         .ios-theme-morning .ios-widget-icon-box { background: var(--morning-box); border-color: var(--morning-border); }
         .ios-theme-afternoon { background: linear-gradient(135deg, var(--afternoon-bg), #ffffff); border-color: var(--afternoon-border); color: var(--afternoon-text); }
@@ -44,16 +44,16 @@
         .ios-theme-off { background: linear-gradient(135deg, var(--off-bg), #ffffff); border-color: var(--off-border); color: var(--off-text); }
         .ios-theme-off .ios-widget-icon-box { background: var(--off-box); border-color: var(--off-border); }
         .card-title-box { background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155; padding: 6px 10px; border-radius: 10px; font-size: 0.82rem; font-weight: 800; margin-bottom: 10px; }
-        input[type="date"] { padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.82rem; background: #f8fafc; font-weight: 700; width: 100%; max-width: 100%; display: block; }
-        .btn { background: linear-gradient(135deg, #0284c7, #38bdf8); color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.82rem; font-weight: 800; cursor: pointer; width: 100%; margin-top: 8px; }
-        .query-result-card { display: none; margin-top: 10px; padding: 10px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 0.8rem; width: 100%; }
-        .month-header-box { background: #e0f2fe; color: #0369a1; padding: 6px 10px; border-radius: 10px; font-weight: 800; font-size: 0.8rem; margin-bottom: 8px; width: 100%; }
+        input[type="date"] { padding: 9px 10px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.85rem; background: #f8fafc; font-weight: 700; width: 100%; display: block; }
+        .btn { background: linear-gradient(135deg, #0284c7, #38bdf8); color: white; border: none; padding: 10px; border-radius: 10px; font-size: 0.85rem; font-weight: 800; cursor: pointer; width: 100%; margin-top: 8px; }
+        .query-result-card { display: none; margin-top: 10px; padding: 10px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 0.82rem; width: 100%; }
+        .month-header-box { background: #e0f2fe; color: #0369a1; padding: 6px 10px; border-radius: 10px; font-weight: 800; font-size: 0.82rem; margin-bottom: 8px; width: 100%; }
         .mobile-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        .mobile-table th, .mobile-table td { padding: 7px 4px; font-size: 0.75rem; text-align: center; border: 1px solid var(--border); word-break: break-word; }
+        .mobile-table th, .mobile-table td { padding: 8px 6px; font-size: 0.78rem; text-align: center; border: 1px solid var(--border); word-break: break-word; }
         .mobile-table th { background: #f1f5f9; color: #334155; }
-        .hijri-sub { font-size: 0.65rem; color: var(--accent); font-weight: 700; }
-        .pill-compact { padding: 4px 6px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; max-width: 100%; }
-        footer { margin-top: 15px; text-align: center; font-size: 0.72rem; color: var(--text-sub); padding: 10px; }
+        .hijri-sub { font-size: 0.68rem; color: var(--accent); font-weight: 700; }
+        .pill-compact { padding: 4px 8px; border-radius: 8px; font-size: 0.72rem; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; max-width: 100%; }
+        footer { margin-top: 15px; text-align: center; font-size: 0.75rem; color: var(--text-sub); padding: 10px; }
         .designer { color: var(--accent); font-weight: 800; }
     </style>
 </head>
