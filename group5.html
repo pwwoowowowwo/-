@@ -8,485 +8,95 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root { 
-            --primary-bg: #f1f5f9;
-            --card-bg: #ffffff;
-            --accent: #0284c7; 
-            --text-main: #0f172a;
-            --text-sub: #64748b;
-            --border: #cbd5e1;
-            --shadow: rgba(0, 0, 0, 0.06);
-
-            /* 🎨 الألوان المخصصة لشفتات اليوم */
-            --morning-bg: #fff7ed;
-            --morning-border: #f97316;
-            --morning-text: #c2410c;
-            --morning-box: #ffedd5;
-
-            --afternoon-bg: #fefce8;
-            --afternoon-border: #eab308;
-            --afternoon-text: #854d0e;
-            --afternoon-box: #fef08a;
-
-            --night-bg: #090d16;
-            --night-border: #3b82f6;
-            --night-text: #f8fafc;
-            --night-box: #1e293b;
-
-            --off-bg: #f0fdf4;
-            --off-border: #22c55e;
-            --off-text: #15803d;
-            --off-box: #dcfce7;
+            --primary-bg: #f1f5f9; --card-bg: #ffffff; --accent: #0284c7; --text-main: #0f172a; --text-sub: #64748b; --border: #cbd5e1; --shadow: rgba(0, 0, 0, 0.06);
+            --morning-bg: #fff7ed; --morning-border: #f97316; --morning-text: #c2410c; --morning-box: #ffedd5;
+            --afternoon-bg: #fefce8; --afternoon-border: #eab308; --afternoon-text: #854d0e; --afternoon-box: #fef08a;
+            --night-bg: #090d16; --night-border: #3b82f6; --night-text: #f8fafc; --night-box: #1e293b;
+            --off-bg: #f0fdf4; --off-border: #22c55e; --off-text: #15803d; --off-box: #dcfce7;
         }
-
         * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-
-        body { 
-            background: #f1f5f9; 
-            color: var(--text-main); 
-            padding: 12px 8px; 
-            min-height: 100vh;
-            display: flex; 
-            flex-direction: column; 
-            align-items: center;
-            direction: rtl;
-        }
-
+        body { background: #f1f5f9; color: var(--text-main); padding: 12px 8px; min-height: 100vh; display: flex; flex-direction: column; align-items: center; direction: rtl; }
         .container { max-width: 500px; width: 100%; }
-
-        /* 🌟 الترويسة الثابتة مع وميض خفيف وهادئ */
-        .welcome-header-bar {
-            background: linear-gradient(135deg, #0284c7, #0369a1);
-            color: #ffffff;
-            border-radius: 14px;
-            padding: 10px 16px;
-            margin-bottom: 12px;
-            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            text-align: center;
-            font-size: 0.83rem;
-            font-weight: 800;
-            position: relative;
-
-            /* تطبيق تأثير الوميض/النبض الخفيف غير السريع */
-            animation: softPulse 4s infinite ease-in-out;
-        }
-
-        .welcome-header-bar i {
-            color: #fde047;
-            font-size: 0.95rem;
-            /* وميض أسرع للأيقونة بشكل متناسق */
-            animation: iconSparkle 3s infinite ease-in-out;
-        }
-
-        /* أنيميشن الوميض الهادئ للترويسة */
-        @keyframes softPulse {
-            0%, 100% {
-                opacity: 1;
-                box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.92;
-                box-shadow: 0 6px 18px rgba(2, 132, 199, 0.45);
-                transform: scale(1.005);
-            }
-        }
-
-        /* بريق خفيف للأيقونة */
-        @keyframes iconSparkle {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.6; transform: scale(1.15); }
-        }
-
-        /* شريط التنقل */
+        .welcome-header-bar { background: linear-gradient(135deg, #0284c7, #0369a1); color: #ffffff; border-radius: 14px; padding: 10px 16px; margin-bottom: 12px; font-size: 0.83rem; font-weight: 800; text-align: center; }
         .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        .back-btn { 
-            background: var(--card-bg); 
-            border: 1px solid var(--border); 
-            color: var(--accent); 
-            padding: 6px 12px; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            font-weight: 800; 
-            font-size: 0.78rem;
-            display: inline-flex; 
-            align-items: center; 
-            gap: 5px; 
-            text-decoration: none;
-        }
-
-        .nav-title-box {
-            background: #e0f2fe;
-            border: 1px solid #0284c7;
-            color: #0369a1;
-            padding: 5px 12px;
-            border-radius: 12px;
-            font-weight: 800;
-            font-size: 0.8rem;
-        }
-
-        /* 📅 تقويم الأسبوع التفاعلي */
-        .ios-calendar-card {
-            background: #ffffff;
-            border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 10px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 8px var(--shadow);
-        }
-
-        .ios-cal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            font-size: 0.78rem;
-            font-weight: 800;
-            color: var(--text-sub);
-            margin-bottom: 8px;
-            padding: 0 4px;
-        }
-
-        .ios-week-days {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 4px;
-            text-align: center;
-        }
-
-        .ios-day-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 6px 2px;
-            border-radius: 12px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .ios-day-item:active { transform: scale(0.95); }
-
-        .ios-day-item.active {
-            background: var(--accent);
-            color: #ffffff;
-            border-color: var(--accent);
-            box-shadow: 0 3px 8px rgba(2, 132, 199, 0.3);
-        }
-
+        .back-btn { background: var(--card-bg); border: 1px solid var(--border); color: var(--accent); padding: 6px 12px; border-radius: 12px; font-weight: 800; font-size: 0.78rem; text-decoration: none; }
+        .nav-title-box { background: #e0f2fe; border: 1px solid #0284c7; color: #0369a1; padding: 5px 12px; border-radius: 12px; font-weight: 800; font-size: 0.8rem; }
+        .ios-calendar-card, .ios-widget-card, .glass-card { background: #ffffff; border: 1px solid var(--border); border-radius: 18px; padding: 12px; margin-bottom: 12px; box-shadow: 0 2px 8px var(--shadow); }
+        .ios-cal-header { display: flex; justify-content: space-between; align-items: center; font-size: 0.78rem; font-weight: 800; color: var(--text-sub); margin-bottom: 8px; }
+        .ios-week-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; text-align: center; }
+        .ios-day-item { display: flex; flex-direction: column; align-items: center; padding: 6px 2px; border-radius: 12px; background: #f8fafc; border: 1px solid #e2e8f0; cursor: pointer; }
+        .ios-day-item.active { background: var(--accent); color: #ffffff; border-color: var(--accent); }
         .ios-day-name { font-size: 0.65rem; font-weight: 700; margin-bottom: 2px; }
         .ios-day-num { font-size: 0.85rem; font-weight: 900; }
-
-        /* 📱 بطاقة الحالة الرئيسية (iOS Widget) */
-        .ios-widget-card { 
-            position: relative;
-            border-radius: 26px; 
-            padding: 16px; 
-            margin-bottom: 14px; 
-            border: 2px solid var(--border);
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.08);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            overflow: hidden;
-            transition: all 0.3s ease;
-        }
-
-        .ios-widget-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-        }
-
-        .ios-widget-badge { 
-            background: rgba(255, 255, 255, 0.85); 
-            border: 1px solid rgba(0, 0, 0, 0.08);
-            padding: 5px 12px; 
-            border-radius: 50px; 
-            font-size: 0.72rem; 
-            font-weight: 800; 
-            backdrop-filter: blur(8px);
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .ios-widget-body {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            margin-top: 2px;
-        }
-
-        .ios-widget-icon-box {
-            width: 58px;
-            height: 58px;
-            border-radius: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6rem;
-            flex-shrink: 0;
-            border: 1.5px solid transparent;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
-        }
-
-        .ios-widget-details {
-            display: flex;
-            flex-direction: column;
-            gap: 3px;
-        }
-
-        .ios-widget-title { 
-            font-size: 1.25rem; 
-            font-weight: 900; 
-            line-height: 1.2;
-        }
-
-        .ios-widget-sub-box { 
-            padding: 3px 10px;
-            border-radius: 8px;
-            font-size: 0.75rem; 
-            font-weight: 800; 
-            display: inline-block;
-            width: fit-content;
-            margin-top: 2px;
-            border: 1px solid transparent;
-        }
-
-        /* أنماط ألوان الثيمات */
-        .ios-theme-morning { 
-            background: linear-gradient(135deg, var(--morning-bg), #ffffff); 
-            border-color: var(--morning-border); 
-            color: var(--morning-text); 
-            box-shadow: 0 8px 20px rgba(249, 115, 22, 0.15);
-        }
-        .ios-theme-morning .ios-widget-icon-box { background: var(--morning-box); border-color: var(--morning-border); color: var(--morning-text); }
-        .ios-theme-morning .ios-widget-sub-box { background: #ffffff; border-color: var(--morning-border); color: var(--morning-text); }
-
-        .ios-theme-afternoon { 
-            background: linear-gradient(135deg, var(--afternoon-bg), #ffffff); 
-            border-color: var(--afternoon-border); 
-            color: var(--afternoon-text); 
-            box-shadow: 0 8px 20px rgba(234, 179, 8, 0.2);
-        }
-        .ios-theme-afternoon .ios-widget-icon-box { background: var(--afternoon-box); border-color: var(--afternoon-border); color: var(--afternoon-text); }
-        .ios-theme-afternoon .ios-widget-sub-box { background: #ffffff; border-color: var(--afternoon-border); color: var(--afternoon-text); }
-
-        .ios-theme-night { 
-            background: linear-gradient(135deg, #090d16, #111827); 
-            border-color: var(--night-border); 
-            color: var(--night-text); 
-            box-shadow: 0 8px 25px rgba(15, 23, 42, 0.4);
-        }
-        .ios-theme-night .ios-widget-badge { background: rgba(255, 255, 255, 0.12); color: #ffffff; border-color: rgba(255,255,255,0.2); }
+        .ios-widget-card { border-radius: 26px; padding: 16px; border: 2px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
+        .ios-widget-top { display: flex; align-items: center; justify-content: space-between; }
+        .ios-widget-badge { background: rgba(255, 255, 255, 0.85); padding: 5px 12px; border-radius: 50px; font-size: 0.72rem; font-weight: 800; }
+        .ios-widget-body { display: flex; align-items: center; gap: 14px; }
+        .ios-widget-icon-box { width: 58px; height: 58px; border-radius: 18px; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; }
+        .ios-widget-title { font-size: 1.25rem; font-weight: 900; }
+        .ios-widget-sub-box { padding: 3px 10px; border-radius: 8px; font-size: 0.75rem; font-weight: 800; display: inline-block; }
+        .ios-theme-morning { background: linear-gradient(135deg, var(--morning-bg), #ffffff); border-color: var(--morning-border); color: var(--morning-text); }
+        .ios-theme-morning .ios-widget-icon-box { background: var(--morning-box); border-color: var(--morning-border); }
+        .ios-theme-afternoon { background: linear-gradient(135deg, var(--afternoon-bg), #ffffff); border-color: var(--afternoon-border); color: var(--afternoon-text); }
+        .ios-theme-afternoon .ios-widget-icon-box { background: var(--afternoon-box); border-color: var(--afternoon-border); }
+        .ios-theme-night { background: linear-gradient(135deg, #090d16, #111827); border-color: var(--night-border); color: var(--night-text); }
         .ios-theme-night .ios-widget-icon-box { background: #1e293b; border-color: var(--night-border); color: #60a5fa; }
-        .ios-theme-night .ios-widget-sub-box { background: #1e293b; border-color: var(--night-border); color: #ffffff; }
-
-        .ios-theme-off { 
-            background: linear-gradient(135deg, var(--off-bg), #ffffff); 
-            border-color: var(--off-border); 
-            color: var(--off-text); 
-            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.15);
-        }
-        .ios-theme-off .ios-widget-icon-box { background: var(--off-box); border-color: var(--off-border); color: var(--off-text); }
-        .ios-theme-off .ios-widget-sub-box { background: #ffffff; border-color: var(--off-border); color: var(--off-text); }
-
-        /* الكروت العامة */
-        .glass-card { 
-            background: var(--card-bg); 
-            border: 1px solid var(--border); 
-            border-radius: 18px; 
-            padding: 12px; 
-            margin-bottom: 12px; 
-            box-shadow: 0 2px 8px var(--shadow);
-        }
-
-        .card-title-box { 
-            background: #f1f5f9;
-            border: 1px solid #cbd5e1;
-            color: #334155;
-            padding: 6px 10px;
-            border-radius: 10px;
-            font-size: 0.82rem; 
-            font-weight: 800; 
-            margin-bottom: 10px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: space-between; 
-        }
-
-        /* الاستعلام */
-        .form-group { display: flex; flex-direction: column; gap: 4px; }
-        input[type="date"] { 
-            padding: 8px 10px; 
-            border: 1px solid var(--border); 
-            border-radius: 10px; 
-            font-size: 0.82rem; 
-            outline: none; 
-            background: #f8fafc; 
-            color: var(--text-main); 
-            font-weight: 700; 
-            width: 100%; 
-        }
-
-        .btn { 
-            background: linear-gradient(135deg, #0284c7, #38bdf8); 
-            color: white; 
-            border: none; 
-            padding: 9px; 
-            border-radius: 10px; 
-            font-size: 0.82rem; 
-            font-weight: 800; 
-            cursor: pointer; 
-            width: 100%; 
-            margin-top: 8px; 
-        }
-
-        .query-result-card { 
-            display: none; 
-            margin-top: 10px; 
-            padding: 10px; 
-            border-radius: 12px; 
-            text-align: center; 
-            font-weight: 800; 
-            font-size: 0.8rem;
-        }
-
-        /* الجدول */
-        .month-section { margin-bottom: 14px; }
-        .month-header-box { 
-            background: #e0f2fe; 
-            color: #0369a1; 
-            padding: 6px 10px; 
-            border-radius: 10px; 
-            font-weight: 800; 
-            font-size: 0.8rem; 
-            margin-bottom: 8px; 
-            border: 1px solid #bae6fd; 
-        }
-
-        .mobile-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
-        .mobile-table th, .mobile-table td {
-            padding: 7px 4px;
-            font-size: 0.75rem;
-            text-align: center;
-            border: 1px solid var(--border);
-            word-wrap: break-word;
-        }
-        .mobile-table th { background: #f1f5f9; color: #334155; font-weight: 800; }
-        .date-cell { display: flex; flex-direction: column; gap: 1px; line-height: 1.1; }
+        .ios-theme-off { background: linear-gradient(135deg, var(--off-bg), #ffffff); border-color: var(--off-border); color: var(--off-text); }
+        .ios-theme-off .ios-widget-icon-box { background: var(--off-box); border-color: var(--off-border); }
+        .card-title-box { background: #f1f5f9; border: 1px solid #cbd5e1; color: #334155; padding: 6px 10px; border-radius: 10px; font-size: 0.82rem; font-weight: 800; margin-bottom: 10px; }
+        input[type="date"] { padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; font-size: 0.82rem; background: #f8fafc; font-weight: 700; width: 100%; }
+        .btn { background: linear-gradient(135deg, #0284c7, #38bdf8); color: white; border: none; padding: 9px; border-radius: 10px; font-size: 0.82rem; font-weight: 800; cursor: pointer; width: 100%; margin-top: 8px; }
+        .query-result-card { display: none; margin-top: 10px; padding: 10px; border-radius: 12px; text-align: center; font-weight: 800; font-size: 0.8rem; }
+        .month-header-box { background: #e0f2fe; color: #0369a1; padding: 6px 10px; border-radius: 10px; font-weight: 800; font-size: 0.8rem; margin-bottom: 8px; }
+        .mobile-table { width: 100%; border-collapse: collapse; }
+        .mobile-table th, .mobile-table td { padding: 7px 4px; font-size: 0.75rem; text-align: center; border: 1px solid var(--border); }
+        .mobile-table th { background: #f1f5f9; color: #334155; }
         .hijri-sub { font-size: 0.65rem; color: var(--accent); font-weight: 700; }
-
-        .pill-compact { 
-            padding: 4px 6px; 
-            border-radius: 8px; 
-            font-size: 0.7rem; 
-            font-weight: 800; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            gap: 4px; 
-            border: 1px solid transparent;
-        }
-
-        footer { 
-            margin-top: 15px; 
-            text-align: center; 
-            font-size: 0.72rem;
-            color: var(--text-sub);
-            padding: 10px;
-        }
+        .pill-compact { padding: 4px 6px; border-radius: 8px; font-size: 0.7rem; font-weight: 800; display: inline-flex; align-items: center; gap: 4px; }
+        footer { margin-top: 15px; text-align: center; font-size: 0.72rem; color: var(--text-sub); padding: 10px; }
         .designer { color: var(--accent); font-weight: 800; }
     </style>
 </head>
 <body>
     <div class="container">
-        
-        <!-- 🌟 الترويسة الثابتة مع النبض/الوميض الهادئ -->
-        <div class="welcome-header-bar">
-            <i class="fa-solid fa-sparkles"></i>
-            <span>أهلاً بك في نظام حاسبة الشفتات ✨ نتمنى لك يومًا موفقًا!</span>
-        </div>
-
-        <!-- شريط التنقل العلوي -->
+        <div class="welcome-header-bar"><i class="fa-solid fa-sparkles"></i><span>حاسبة الشفتات - المجموعة الخامسة</span></div>
         <div class="nav-bar">
             <a href="index.html" class="back-btn"><i class="fa-solid fa-arrow-right"></i> الرئيسية</a>
             <div class="nav-title-box"><i class="fa-solid fa-layer-group"></i> المجموعة الخامسة</div>
         </div>
-
-        <!-- 📅 تقويم الأسبوع التفاعلي -->
         <div class="ios-calendar-card">
-            <div class="ios-cal-header">
-                <span><i class="fa-solid fa-calendar-week" style="color:var(--accent);"></i> الأسبوع الحالي (اضغط للتعيين)</span>
-                <span id="iosMonthName" style="color:var(--text-main);">---</span>
-            </div>
+            <div class="ios-cal-header"><span>الأسبوع الحالي</span><span id="iosMonthName">---</span></div>
             <div class="ios-week-days" id="iosWeekContainer"></div>
         </div>
-        
-        <!-- 📱 بطاقة الحالة الرئيسية (iOS Widget) -->
         <div id="heroCard" class="ios-widget-card ios-theme-morning">
-            <div class="ios-widget-top">
-                <div id="liveDateBadge" class="ios-widget-badge">
-                    <i class="fa-regular fa-clock"></i> جاري الحساب...
-                </div>
-                <span style="font-size: 0.68rem; font-weight: 800; opacity: 0.8;">ودجت اليوم</span>
-            </div>
-            
+            <div class="ios-widget-top"><div id="liveDateBadge" class="ios-widget-badge">جاري الحساب...</div></div>
             <div class="ios-widget-body">
-                <div id="liveShiftIconBox" class="ios-widget-icon-box">
-                    <i class="fa-solid fa-sun"></i>
-                </div>
-                <div class="ios-widget-details">
+                <div id="liveShiftIconBox" class="ios-widget-icon-box"><i class="fa-solid fa-sun"></i></div>
+                <div>
                     <div id="liveShiftTitle" class="ios-widget-title">---</div>
                     <div id="liveShiftSub" class="ios-widget-sub-box">---</div>
                 </div>
             </div>
         </div>
-        
-        <!-- بطاقة الاستعلام السريع -->
         <div class="glass-card">
-            <div class="card-title-box">
-                <span><i class="fa-solid fa-magnifying-glass"></i> استعلام عن تاريخ</span>
-            </div>
-            <div class="form-group">
-                <input type="date" id="queryDate" onchange="querySpecificDate()">
-            </div>
-            <button class="btn" onclick="querySpecificDate()"><i class="fa-solid fa-search"></i> استعلام</button>
+            <div class="card-title-box">استعلام عن تاريخ</div>
+            <input type="date" id="queryDate" onchange="querySpecificDate()">
+            <button class="btn" onclick="querySpecificDate()">استعلام</button>
             <div id="queryResultCard" class="query-result-card"></div>
         </div>
-        
-        <!-- الجدول التكيفي للجوال -->
         <div class="glass-card">
-            <div class="card-title-box">
-                <span><i class="fa-solid fa-calendar-days"></i> جدول الشفتات القادمة</span>
-            </div>
+            <div class="card-title-box">جدول الشفتات القادمة</div>
             <div id="groupedTablesContainer"></div>
         </div>
-        
-        <footer>
-            جميع الحقوق محفوظة © 2026 | تصميم <span class="designer">أبو مرزوق</span>
-        </footer>
+        <footer>جميع الحقوق محفوظة © 2026 | تصميم <span class="designer">أبو مرزوق</span></footer>
     </div>
-
     <script>
         const daysOfWeek = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
         const ordinalNames = ['', 'اليوم 1', 'اليوم 2', 'اليوم 3', 'اليوم 4', 'اليوم 5'];
-        
-        const groupStartDate = '2026-08-12';
+        const groupStartDate = '2026-07-31'; // تاريخ بداية المجموعة الخامسة (يوم 31)
 
-        function getHijriDetails(dateObj) {
-            const formatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { day: 'numeric', month: 'long' });
-            return formatter.format(dateObj);
-        }
-        function getHijriMonthName(dateObj) {
-            const formatter = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { month: 'long', year: 'numeric' });
-            return formatter.format(dateObj);
-        }
+        function getHijriDetails(d) { return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { day: 'numeric', month: 'long' }).format(d); }
+        function getHijriMonthName(d) { return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { month: 'long', year: 'numeric' }).format(d); }
         
         function getShiftInfo(dayIndex) {
             const cycleDay = ((dayIndex % 25) + 25) % 25; 
@@ -502,29 +112,14 @@
             const container = document.getElementById('iosWeekContainer');
             container.innerHTML = '';
             document.getElementById('iosMonthName').innerText = new Intl.DateTimeFormat('ar-SA', { month: 'long', year: 'numeric' }).format(today);
-
             const activeDate = selectedDate || today;
-            const currentDayOfWeek = today.getDay(); 
-            const sunday = new Date(today);
-            sunday.setDate(today.getDate() - currentDayOfWeek);
-
+            const sunday = new Date(today); sunday.setDate(today.getDate() - today.getDay());
             for (let i = 0; i < 7; i++) {
-                const d = new Date(sunday);
-                d.setDate(sunday.getDate() + i);
-                
-                const isSelected = d.toDateString() === activeDate.toDateString();
+                const d = new Date(sunday); d.setDate(sunday.getDate() + i);
                 const dayItem = document.createElement('div');
-                dayItem.className = `ios-day-item ${isSelected ? 'active' : ''}`;
-                dayItem.innerHTML = `
-                    <span class="ios-day-name">${daysOfWeek[d.getDay()]}</span>
-                    <span class="ios-day-num">${d.getDate()}</span>
-                `;
-                
-                dayItem.onclick = function() {
-                    updateWidgetForDate(d);
-                    renderIOSCalendar(today, d);
-                };
-
+                dayItem.className = `ios-day-item ${d.toDateString() === activeDate.toDateString() ? 'active' : ''}`;
+                dayItem.innerHTML = `<span class="ios-day-name">${daysOfWeek[d.getDay()]}</span><span class="ios-day-num">${d.getDate()}</span>`;
+                dayItem.onclick = () => { updateWidgetForDate(d); renderIOSCalendar(today, d); };
                 container.appendChild(dayItem);
             }
         }
@@ -533,111 +128,50 @@
             const startParts = groupStartDate.split('-');
             const startDate = new Date(startParts[0], startParts[1] - 1, startParts[2]);
             const targetClean = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
-            
             const diffDays = Math.floor((targetClean - startDate) / (1000 * 60 * 60 * 24));
             const info = getShiftInfo(diffDays);
-            
-            const heroCard = document.getElementById('heroCard');
-            heroCard.className = `ios-widget-card ${info.themeClass}`;
-            
-            document.getElementById('liveDateBadge').innerHTML = `<i class="fa-regular fa-calendar-check"></i> ${daysOfWeek[targetClean.getDay()]} ${targetClean.toISOString().split('T')[0]}م (${getHijriDetails(targetClean)})`;
+            document.getElementById('heroCard').className = `ios-widget-card ${info.themeClass}`;
+            document.getElementById('liveDateBadge').innerText = `${daysOfWeek[targetClean.getDay()]} ${targetClean.toISOString().split('T')[0]}`;
             document.getElementById('liveShiftIconBox').innerHTML = `<i class="fa-solid ${info.icon}"></i>`;
             document.getElementById('liveShiftTitle').innerText = info.title;
             document.getElementById('liveShiftSub').innerText = info.sub;
         }
 
-        window.onload = function() {
-            document.getElementById('queryDate').value = new Date().toISOString().split('T')[0];
-            loadGroupData();
-        };
+        window.onload = () => { document.getElementById('queryDate').value = new Date().toISOString().split('T')[0]; loadGroupData(); };
 
         function loadGroupData() {
             const startParts = groupStartDate.split('-');
             const startDate = new Date(startParts[0], startParts[1] - 1, startParts[2]);
-            const today = new Date();
-            const todayClean = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-            
-            renderIOSCalendar(todayClean);
-            updateWidgetForDate(todayClean);
-
-            const container = document.getElementById('groupedTablesContainer');
-            container.innerHTML = '';
+            const todayClean = new Date(); todayClean.setHours(0,0,0,0);
+            renderIOSCalendar(todayClean); updateWidgetForDate(todayClean);
+            const container = document.getElementById('groupedTablesContainer'); container.innerHTML = '';
             let monthsMap = {};
-
             for (let i = 0; i < 180; i++) {
-                const d = new Date(todayClean);
-                d.setDate(todayClean.getDate() + i);
-
-                const dayDiffFromStart = Math.floor((d - startDate) / (1000 * 60 * 60 * 24));
-                const info = getShiftInfo(dayDiffFromStart);
-                
-                const hijriMonthStr = getHijriMonthName(d);
-                if (!monthsMap[hijriMonthStr]) monthsMap[hijriMonthStr] = [];
-                monthsMap[hijriMonthStr].push({ d, info });
+                const d = new Date(todayClean); d.setDate(todayClean.getDate() + i);
+                const info = getShiftInfo(Math.floor((d - startDate) / (1000 * 60 * 60 * 24)));
+                const mName = getHijriMonthName(d);
+                if (!monthsMap[mName]) monthsMap[mName] = [];
+                monthsMap[mName].push({ d, info });
             }
-
-            for (let monthName in monthsMap) {
+            for (let mName in monthsMap) {
                 let section = document.createElement('div');
-                section.className = 'month-section';
-                let headerHtml = `
-                    <div class="month-header-box">
-                        <span><i class="fa-solid fa-calendar"></i> ${monthName}</span>
-                    </div>
-                `;
-                let tableHtml = `
-                    <table class="mobile-table">
-                        <thead>
-                            <tr>
-                                <th style="width: 22%;">اليوم</th>
-                                <th style="width: 38%;">التاريخ</th>
-                                <th style="width: 40%;">حالة الدوام</th>
-                            </tr>
-                        </thead>
-                        <tbody>`;
-                
-                monthsMap[monthName].forEach(item => {
-                    let d = item.d;
-                    let info = item.info;
-                    tableHtml += `
-                        <tr>
-                            <td><b>${daysOfWeek[d.getDay()]}</b></td>
-                            <td>
-                                <div class="date-cell">
-                                    <span>${d.toISOString().split('T')[0].substring(5)}</span>
-                                    <span class="hijri-sub">${getHijriDetails(d)}</span>
-                                </div>
-                            </td>
-                            <td>
-                                <span class="pill-compact ${info.themeClass}">
-                                    <i class="fa-solid ${info.icon}"></i> ${info.title}
-                                </span>
-                            </td>
-                        </tr>`;
+                let tHtml = `<div class="month-header-box">${mName}</div><table class="mobile-table"><thead><tr><th>اليوم</th><th>التاريخ</th><th>الدوام</th></tr></thead><tbody>`;
+                monthsMap[mName].forEach(item => {
+                    tHtml += `<tr><td><b>${daysOfWeek[item.d.getDay()]}</b></td><td><span>${item.d.toISOString().split('T')[0].substring(5)}</span><br><span class="hijri-sub">${getHijriDetails(item.d)}</span></td><td><span class="pill-compact ${item.info.themeClass}"><i class="fa-solid ${item.info.icon}"></i> ${item.info.title}</span></td></tr>`;
                 });
-                
-                tableHtml += `</tbody></table>`;
-                section.innerHTML = headerHtml + tableHtml;
-                container.appendChild(section);
+                section.innerHTML = tHtml + `</tbody></table><br>`; container.appendChild(section);
             }
             querySpecificDate();
         }
 
         function querySpecificDate() {
             const startParts = groupStartDate.split('-');
-            const queryInput = document.getElementById('queryDate').value;
-            if (!queryInput) return;
-            const qParts = queryInput.split('-');
-            const queryDate = new Date(Date.UTC(qParts[0], qParts[1] - 1, qParts[2]));
-            const diffDays = Math.floor((queryDate - new Date(Date.UTC(startParts[0], startParts[1]-1, startParts[2]))) / (1000 * 60 * 60 * 24));
-            const info = getShiftInfo(diffDays);
-            const localQueryDate = new Date(qParts[0], qParts[1] - 1, qParts[2]);
-            const res = document.getElementById('queryResultCard');
-            res.style.display = 'block';
-            res.className = `query-result-card ${info.themeClass}`;
-            res.innerHTML = `
-                <div>${queryInput} (${getHijriDetails(localQueryDate)})</div>
-                <div style="font-size:0.95rem; margin-top:4px;"><i class="fa-solid ${info.icon}"></i> ${info.title} (${info.sub})</div>
-            `;
+            const q = document.getElementById('queryDate').value; if (!q) return;
+            const qParts = q.split('-');
+            const diff = Math.floor((new Date(Date.UTC(qParts[0], qParts[1] - 1, qParts[2])) - new Date(Date.UTC(startParts[0], startParts[1]-1, startParts[2]))) / (1000 * 60 * 60 * 24));
+            const info = getShiftInfo(diff);
+            const res = document.getElementById('queryResultCard'); res.style.display = 'block'; res.className = `query-result-card ${info.themeClass}`;
+            res.innerHTML = `<div>${q}</div><div style="margin-top:4px;"><i class="fa-solid ${info.icon}"></i> ${info.title} (${info.sub})</div>`;
         }
     </script>
 </body>
