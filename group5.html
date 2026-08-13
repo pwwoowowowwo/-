@@ -61,7 +61,7 @@
         .loader-title { font-size: 1.25rem; font-weight: 900; margin-bottom: 8px; }
         .loader-sub { font-size: 0.9rem; color: var(--text-sub); margin-bottom: 22px; font-weight: 700; }
         .progress-track { width: 100%; height: 10px; background: #e2e8f0; border-radius: 10px; overflow: hidden; }
-        .progress-fill { width: 0%; height: 100%; background: var(--accent); border-radius: 10px; transition: width 0.1s linear; }
+        .progress-fill { width: 0%; height: 100%; background: var(--accent); border-radius: 10px; transition: width 0.05s linear; }
 
         @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
 
@@ -126,19 +126,19 @@
         .ios-theme-off { background: var(--off-bg); border-color: var(--off-border); color: var(--off-text); }
         .ios-theme-off .ios-widget-icon-box { background: var(--off-box); border: 1px solid var(--off-border); }
         
-        /* تعديل مربعات العناوين لدرجات اللون الكحلي */
         .card-title-box { background: linear-gradient(135deg, #1e3a8a, #1d4ed8); border: 1px solid #1e40af; color: #ffffff; padding: 16px 20px; border-radius: 16px; font-size: 1.05rem; font-weight: 800; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 12px rgba(30, 58, 138, 0.2); }
         
         input[type="date"] { padding: 14px 16px; border: 1px solid var(--border); border-radius: 16px; font-size: 1.05rem; background: #f8fafc; color: var(--text-main); font-weight: 700; width: 100%; display: block; outline: none; }
         .btn { background: var(--accent); color: white; border: none; padding: 15px; border-radius: 16px; font-size: 1.05rem; font-weight: 800; cursor: pointer; width: 100%; margin-top: 14px; box-shadow: 0 4px 15px rgba(30, 58, 138, 0.3); }
         .query-result-card { display: none; margin-top: 14px; padding: 16px; border-radius: 16px; text-align: center; font-weight: 800; font-size: 1rem; width: 100%; }
         
-        .table-scroll-box { max-height: 440px; overflow-y: auto; border: 1px solid var(--border); border-radius: 18px; background: #ffffff; margin-bottom: 16px; }
-        .month-header-box { background: #1e3a8a; color: #ffffff; padding: 14px 20px; font-weight: 800; font-size: 1.05rem; position: sticky; top: 0; z-index: 2; border-bottom: 1px solid #1e40af; display: flex; justify-content: space-between; align-items: center; }
+        .month-card-box { background: #ffffff; border: 2px solid #cbd5e1; border-radius: 20px; margin-bottom: 20px; overflow: hidden; box-shadow: var(--shadow); }
+        .table-scroll-box { max-height: 400px; overflow-y: auto; background: #ffffff; }
+        .month-header-box { background: linear-gradient(135deg, #1e3a8a, #1d4ed8); color: #ffffff; padding: 16px 20px; font-weight: 800; font-size: 1.05rem; position: sticky; top: 0; z-index: 2; border-bottom: 2px solid #1e40af; display: flex; justify-content: space-between; align-items: center; }
         
         .mobile-table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         .mobile-table th, .mobile-table td { padding: 14px 12px; font-size: 0.98rem; text-align: center; border: 1px solid var(--border); word-break: break-word; }
-        .mobile-table th { background: #f1f5f9; color: var(--accent); position: sticky; top: 51px; z-index: 1; font-weight: 800; }
+        .mobile-table th { background: #f1f5f9; color: var(--accent); position: sticky; top: 0; z-index: 1; font-weight: 800; }
         .hijri-sub { font-size: 0.85rem; color: var(--accent); font-weight: 700; margin-top: 3px; display: inline-block; }
         .pill-compact { padding: 7px 14px; border-radius: 10px; font-size: 0.9rem; font-weight: 800; display: inline-flex; align-items: center; gap: 8px; border: 1px solid transparent; }
         
@@ -176,7 +176,6 @@
         }
         .nav-item i { font-size: 1.4rem; transition: transform 0.25s ease; }
         
-        /* تميز واختيار الأيقونة السفلى بوضوح تام مع تأثير بصري جذاب */
         .nav-item.active {
             color: var(--accent);
             background: var(--accent-light);
@@ -209,7 +208,7 @@
         <div class="loader-box">
             <div class="loader-icon"><i class="fa-solid fa-layer-group"></i></div>
             <div class="loader-title">أهلاً بك - نظام الشفتات</div>
-            <div class="loader-sub">جاري تهيئة بيئة التطبيق...</div>
+            <div class="loader-sub">جاري توجيهك لصفحة المجموعة الخامسة...</div>
             <div class="progress-track">
                 <div class="progress-fill" id="progressFill"></div>
             </div>
@@ -263,12 +262,17 @@
             </div>
 
             <div id="tab-settings" class="tab-pane">
-                <div class="glass-card" style="text-align: center; padding: 40px 24px;">
-                    <div style="font-size: 3rem; color: var(--accent); margin-bottom: 16px;"><i class="fa-solid fa-circle-user"></i></div>
-                    <h3 style="font-size: 1.25rem; font-weight: 900; margin-bottom: 8px;">أهلاً بك - نظام متابعة الشفتات</h3>
-                    <p style="font-size: 0.95rem; color: var(--text-sub); margin-bottom: 20px;">مخصص للمجموعة الخامسة</p>
-                    <div style="background: #f8fafc; padding: 16px; border-radius: 16px; border: 1px solid var(--border); font-size: 0.95rem; font-weight: 800;">
-                        تصميم وتطوير: <span style="color: var(--accent);">أبو مرزوق</span> © 2026
+                <div class="glass-card" style="text-align: center; padding: 30px 20px;">
+                    <div style="font-size: 2.5rem; color: var(--accent); margin-bottom: 12px;"><i class="fa-solid fa-circle-user"></i></div>
+                    <h3 style="font-size: 1.15rem; font-weight: 900; margin-bottom: 6px;">نظام متابعة الشفتات</h3>
+                    <p style="font-size: 0.85rem; color: var(--text-sub); margin-bottom: 16px;">مخصص للمجموعة الخامسة</p>
+                    
+                    <div style="background: var(--accent-light); border: 1px solid rgba(30, 58, 138, 0.2); padding: 16px; border-radius: 16px; font-size: 0.9rem; font-weight: 700; color: var(--accent); line-height: 1.6; margin-bottom: 16px; text-align: right;">
+                        تم تصميم هذا التطبيق البرمجي خصيصاً لتسهيل وتنظيم متابعة الشفتات وأوقات الراحة بدقة عالية للمجموعة الخامسة. يتيح لك النظام استعراض جدول الدوام الشهري، معرفة شفتك الحالي بشكل فوري، والاستعلام عن أي تاريخ قادم بكل سهولة.
+                    </div>
+
+                    <div style="font-size: 0.8rem; font-weight: 800; color: var(--text-sub);">
+                        المطور فهد المخلفي جميع الحقوق محفوظة © 2026
                     </div>
                 </div>
             </div>
@@ -303,12 +307,14 @@
         function initLoader() {
             let elapsed = 0;
             const fill = document.getElementById('progressFill');
+            const totalDuration = 2000;
+            const intervalTime = 30;
             const timer = setInterval(() => {
-                elapsed += 50;
-                let percent = (elapsed / 3000) * 100;
+                elapsed += intervalTime;
+                let percent = (elapsed / totalDuration) * 100;
                 if (percent >= 100) { percent = 100; clearInterval(timer); dismissLoader(); }
                 fill.style.width = percent + '%';
-            }, 50);
+            }, intervalTime);
         }
 
         function dismissLoader() {
@@ -393,6 +399,9 @@
             }
             
             for (let mName in monthsMap) {
+                let monthCard = document.createElement('div');
+                monthCard.className = 'month-card-box';
+                
                 let scrollBox = document.createElement('div');
                 scrollBox.className = 'table-scroll-box';
                 
@@ -403,8 +412,9 @@
                     tHtml += `<tr><td><b>${daysOfWeek[item.d.getDay()]}</b></td><td><span>${item.d.toISOString().split('T')[0].substring(5)}</span><br><span class="hijri-sub">${getHijriDetails(item.d)}</span></td><td><span class="pill-compact ${item.info.themeClass}"><i class="fa-solid ${item.info.icon}"></i> ${item.info.title}</span></td></tr>`;
                 });
                 
-                scrollBox.innerHTML = tHtml + `</tbody></table>`; 
-                container.appendChild(scrollBox);
+                scrollBox.innerHTML = tHtml + `</tbody></table>`;
+                monthCard.appendChild(scrollBox);
+                container.appendChild(monthCard);
             }
             querySpecificDate();
         }
