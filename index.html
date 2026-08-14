@@ -145,9 +145,7 @@
             transition: all 0.2s ease;
         }
 
-        .theme-btn:active {
-            transform: scale(0.9);
-        }
+        .theme-btn:active { transform: scale(0.9); }
 
         /* Search & Info */
         .search-box { position: relative; margin-bottom: 15px; }
@@ -167,11 +165,7 @@
         }
 
         /* Group Cards Section */
-        .groups-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
+        .groups-list { display: flex; flex-direction: column; gap: 12px; }
 
         .group-card { 
             background: var(--surface); 
@@ -198,11 +192,7 @@
             background: var(--primary-light);
         }
 
-        .group-card-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+        .group-card-left { display: flex; align-items: center; gap: 15px; }
 
         .icon-box { 
             width: 50px; 
@@ -217,19 +207,8 @@
             flex-shrink: 0;
         }
 
-        .group-title {
-            margin: 0; 
-            font-size: 1.05rem; 
-            font-weight: 800;
-            color: var(--text-main);
-        }
-
-        .group-desc {
-            margin-top: 3px;
-            color: var(--text-sub);
-            font-size: 0.85rem;
-            display: block;
-        }
+        .group-title { margin: 0; font-size: 1.05rem; font-weight: 800; color: var(--text-main); }
+        .group-desc { margin-top: 3px; color: var(--text-sub); font-size: 0.85rem; display: block; }
 
         .arrow-icon {
             color: var(--text-sub);
@@ -297,7 +276,7 @@
         <i class="fa-solid fa-heart" style="color: #ef4444; font-size: 2.8rem; margin-bottom: 12px;"></i>
         <h2 style="color:var(--primary); margin-top: 0;">رسالة من المطور</h2>
         <p style="line-height: 1.6; color: var(--text-main); font-size: 0.95rem;">
-            "إلى جميع الزملاء ،بناء على رغبتكم تم تطوير هذا البرنامج يساعدكم في معرفة الاستلامات وايام الراحه ،والاستعلام عن اي يوم بالتاريخ المحدد لتسهيل اموركم ومعرفة حالة دوامك ، شكراً لكم على دعمكم وتحفيزكم .."<br><br>
+            "إلى زملائي الأعزاء، شكراً لكم على دعمكم المستمر. هذا النظام هو ثمرة تعاوننا، وأنا فخور جداً بكوني جزءاً من هذا الفريق المميز."<br><br>
             <strong>- أخوكم أبو مرزوق</strong>
         </p>
         <button onclick="closePopup()" style="background:var(--primary); color:white; border:none; padding:12px; border-radius:12px; cursor:pointer; width: 100%; font-weight:700; margin-bottom: 8px;">إغلاق</button>
@@ -314,7 +293,7 @@
 
         <div class="header-badge">
             <i class="fa-solid fa-bolt" style="color: #fde047;"></i>
-            <span>نظام الجداول المطور v2.0</span>
+            <span>نظام المناوبات المطور v2.0</span>
         </div>
 
         <div class="header-title-wrapper">
@@ -347,12 +326,16 @@
 
 <script>
     // Data Structure
+    // ملاحظة: لفتح أي مجموعة مقفلة، فقط احذف السطر [ type: 'maintenance' ]
     const groups = [
         { title: 'المجموعة الأولى', desc: 'الوردية الأولى', icon: 'fa-users', link: 'group1.html' },
         { title: 'المجموعة الثانية', desc: 'الوردية الثانية', icon: 'fa-users', link: 'group2.html' },
         { title: 'المجموعة الثالثة', desc: 'الوردية الثالثة', icon: 'fa-users', link: 'group3.html' },
-        { title: 'المجموعة الرابعة', desc: 'الوردية الرابعة', icon: 'fa-users', link: 'group4.html' },
-        { title: 'المجموعة الخامسة', desc: 'الوردية الخامسة', icon: 'fa-users', link: 'group5.html' },
+        
+        // تم قفل المجموعة الرابعة والخامسة بـ type: 'maintenance'
+        { title: 'المجموعة الرابعة', desc: 'الوردية الرابعة (تحت الصيانة)', icon: 'fa-users', link: 'group4.html', type: 'maintenance' },
+        { title: 'المجموعة الخامسة', desc: 'الوردية الخامسة (تحت الصيانة)', icon: 'fa-users', link: 'group5.html', type: 'maintenance' },
+        
         { title: 'مناوب التموين', desc: 'تحت الصيانة الدورية', icon: 'fa-boxes-packing', type: 'maintenance' },
         { title: 'الشؤون الإدارية', desc: 'تحت الصيانة والتحديث', icon: 'fa-briefcase', type: 'maintenance' }
     ];
@@ -390,7 +373,7 @@
         }
 
         container.innerHTML = data.map(g => `
-            <div class="group-card" onclick="${g.type ? "alert('هذا القسم تحت الصيانة')" : "window.location.href='" + g.link + "'"}">
+            <div class="group-card" onclick="${g.type ? "alert('هذا القسم تحت الصيانة حالياً')" : "window.location.href='" + g.link + "'"}">
                 <div class="group-card-left">
                     <div class="icon-box"><i class="fa-solid ${g.icon}"></i></div>
                     <div>
