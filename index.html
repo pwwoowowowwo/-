@@ -3,10 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <!-- وسم لجعل الصفحة تعمل كـ تطبيق في الآيفون -->
+    
+    <!-- إعدادات تطبيق الجوال والعمل أوفلاين (PWA) -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="نظام شفتك">
+    <meta name="theme-color" content="#0284c7">
+    
+    <!-- ربط إعدادات التطبيق المدمجة (Manifest) -->
+    <link rel="manifest" href="data:application/manifest+json;utf8,{\"name\":\"نظام شفتك المطور\",\"short_name\":\"شفتك\",\"start_url\":\".\",\"display\":\"standalone\",\"background_color\":\"#0284c7\",\"theme_color\":\"#0284c7\",\"orientation\":\"portrait\",\"icons\":[{\"src\":\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/svgs/solid/calendar-check.svg\",\"sizes\":\"192x192\",\"type\":\"image/svg+xml\"}]}">
+
     <title>نظام شفتك المطور</title>
     
     <!-- Fonts & Icons -->
@@ -65,7 +71,7 @@
             padding: 28px 20px 22px 20px; 
             border-radius: 24px; 
             text-align: center; 
-            margin-bottom: 22px; 
+            margin-bottom: 18px; 
             box-shadow: 0 12px 25px -5px rgba(2, 132, 199, 0.35); 
             position: relative;
             overflow: hidden;
@@ -151,6 +157,47 @@
         }
 
         .theme-btn:active { transform: scale(0.9); }
+
+        /* Banner Install App (شريط التثبيت التفاعلي المباشر) */
+        .install-banner {
+            background: linear-gradient(90deg, #16a34a, #22c55e);
+            color: white;
+            border-radius: 16px;
+            padding: 14px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.25);
+            animation: slideDown 0.4s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { transform: translateY(-10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .install-banner-text {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .install-btn-action {
+            background: white;
+            color: #16a34a;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+
+        .install-btn-action:active { transform: scale(0.95); }
 
         /* Search & Info */
         .search-box { position: relative; margin-bottom: 15px; }
@@ -248,13 +295,35 @@
             position: fixed; inset: 0; background: rgba(0,0,0,0.6); 
             backdrop-filter: blur(4px); display: none; align-items: center; 
             justify-content: center; padding: 20px; z-index: 2000; 
+            cursor: pointer;
         }
         .popup-content { 
             background: var(--surface); padding: 28px; border-radius: 24px; 
-            text-align: center; max-width: 380px; width: 100%; border: 1px solid var(--border);
+            text-align: center; max-width: 400px; width: 100%; border: 1px solid var(--border);
             animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: default;
         }
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        /* السطر السفلي الخاص بالحقوق والمطور */
+        .about-footer-line {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 18px;
+            padding-top: 14px;
+            border-top: 1px solid var(--border);
+            font-size: 0.85rem;
+            color: var(--text-sub);
+            font-weight: 700;
+        }
+        .about-footer-line .vertical-separator {
+            width: 1px;
+            height: 14px;
+            background-color: var(--text-sub);
+            opacity: 0.5;
+        }
 
         .install-guide-item {
             display: flex;
@@ -287,25 +356,41 @@
     <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
 </div>
 
-<!-- Modal: Developer Message -->
-<div id="popup" class="modal-overlay" onclick="if(event.target === this) closePopup()">
-    <div class="popup-content">
+<!-- Modal: Developer Message & About App (يغلق عند الضغط في أي مكان بالشاشة) -->
+<div id="popup" class="modal-overlay" onclick="closePopup()">
+    <div class="popup-content" onclick="event.stopPropagation()">
         <i class="fa-solid fa-heart" style="color: #ef4444; font-size: 2.8rem; margin-bottom: 12px;"></i>
-        <h2 style="color:var(--primary); margin-top: 0;">رسالة من المطور</h2>
-        <p style="line-height: 1.6; color: var(--text-main); font-size: 0.95rem;">
-            "إلى زملائي الأعزاء، شكراً لكم على دعمكم المستمر. هذا النظام اجتهاد شخصي تم تطويرة بناء على رغبت بعض الزملاء ، وهو برنامج يسهل عليك حسبة دوامك ومعرفة ايام الاستلام وايام التسليم ليسهل عليك امورك ، ونعتذر على التقصير  ."<br><br>
-            <strong>- أخوكم أبو مرزوق</strong>
+        <h2 style="color:var(--primary); margin-top: 0;">عن التطبيق</h2>
+        <p style="line-height: 1.6; color: var(--text-main); font-size: 0.95rem; margin-bottom: 15px;">
+            "إلى زملائي الأعزاء، شكراً لكم على دعمكم المستمر. هذا النظام اجتهاد شخصي تم تطويره بناءً على رغبت بعض الزملاء، وهو برنامج يسهل عليك حسبت دوامك ومعرفة أيام الاستلام وأيام التسليم ليسهل عليك أمورك، ونعتذر عن التقصير."<br><br>
+            <strong>- أخوكم فهد المخلفي</strong>
         </p>
-        <button onclick="closePopup()" style="background:var(--primary); color:white; border:none; padding:12px; border-radius:12px; cursor:pointer; width: 100%; font-weight:700;">إغلاق</button>
+
+        <!-- السطر السفلي المدمج: المطور فهد مرزوق | جميع الحقوق محفوظة © 2026 -->
+        <div class="about-footer-line">
+            <span>المطور فهد مرزوق</span>
+            <span class="vertical-separator"></span>
+            <span>جميع الحقوق محفوظة © 2026</span>
+        </div>
+
+        <button onclick="closePopup()" style="background:var(--primary); color:white; border:none; padding:12px; border-radius:12px; cursor:pointer; width: 100%; font-weight:700; margin-top: 16px;">إغلاق</button>
     </div>
 </div>
 
 <!-- Modal: Install App Guide -->
-<div id="installModal" class="modal-overlay" onclick="if(event.target === this) closeInstallModal()">
-    <div class="popup-content">
+<div id="installModal" class="modal-overlay" onclick="closeInstallModal()">
+    <div class="popup-content" onclick="event.stopPropagation()">
         <i class="fa-solid fa-mobile-screen-button" style="color: var(--primary); font-size: 2.8rem; margin-bottom: 12px;"></i>
-        <h3 style="color:var(--text-main); margin-top: 0;">إضافة للتطبيقات للشاشة الرئيسية</h3>
+        <h3 style="color:var(--text-main); margin-top: 0;">تثبيت التطبيق على الشاشة</h3>
         
+        <div id="autoInstallSection" style="display:none; margin-bottom: 15px;">
+            <p style="font-size: 0.9rem; color: var(--text-sub);">اضغط على الزر أدناه لتثبيت التطبيق فوراً على شاشة جوالك:</p>
+            <button onclick="triggerPWAInstall()" style="background:#22c55e; color:white; border:none; padding:12px; border-radius:12px; cursor:pointer; width: 100%; font-weight:800; font-size: 1rem;">
+                <i class="fa-solid fa-plus-circle"></i> تثبيت التطبيق الآن
+            </button>
+            <hr style="border:0; border-top:1px dashed var(--border); margin: 15px 0;">
+        </div>
+
         <div class="install-guide-item">
             <i class="fa-brands fa-apple" style="font-size: 1.4rem; color: #64748b;"></i>
             <div><strong>للآيفون (Safari):</strong> اضغط زر المشاركة <i class="fa-solid fa-share-from-square"></i> ثم اختر <b>"إضافة إلى الشاشة الرئيسية"</b>.</div>
@@ -316,11 +401,7 @@
             <div><strong>للأندرويد (Chrome):</strong> اضغط خيارات المتصفح <i class="fa-solid fa-ellipsis-vertical"></i> ثم اختر <b>"تثبيت التطبيق"</b> أو <b>"الإضافة إلى الشاشة"</b>.</div>
         </div>
 
-        <button id="pwaInstallBtn" onclick="triggerPWAInstall()" style="display:none; background:#22c55e; color:white; border:none; padding:12px; border-radius:12px; cursor:pointer; width: 100%; font-weight:700; margin-bottom: 8px;">
-            <i class="fa-solid fa-download"></i> تثبيت فوري الآن
-        </button>
-
-        <button onclick="closeInstallModal()" style="background:var(--primary); color:white; border:none; padding:10px; border-radius:12px; cursor:pointer; width: 100%; font-weight:700;">تم / إغلاق</button>
+        <button onclick="closeInstallModal()" style="background:var(--primary); color:white; border:none; padding:10px; border-radius:12px; cursor:pointer; width: 100%; font-weight:700; margin-top: 10px;">إغلاق</button>
     </div>
 </div>
 
@@ -345,6 +426,15 @@
         </div>
     </div>
 
+    <!-- شريط التثبيت التفاعلي المباشر -->
+    <div id="topInstallBanner" class="install-banner" style="display: none;">
+        <div class="install-banner-text">
+            <i class="fa-solid fa-mobile-screen" style="font-size: 1.3rem;"></i>
+            <span>ثبّت التطبيق على شاشتك للعمل بدون إنترنت</span>
+        </div>
+        <button class="install-btn-action" onclick="triggerPWAInstall()">تثبيت</button>
+    </div>
+
     <!-- Search Box -->
     <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
@@ -362,8 +452,8 @@
 <!-- Bottom Navigation -->
 <nav class="bottom-nav">
     <div class="nav-item active"><i class="fa-solid fa-house"></i><br>الرئيسية</div>
-    <div class="nav-item" onclick="openInstallModal()"><i class="fa-solid fa-download"></i><br>تثبيت كتطبيق</div>
-    <div class="nav-item" onclick="openPopup()"><i class="fa-solid fa-envelope-open-text"></i><br>عن التطبيق </div>
+    <div class="nav-item" onclick="openInstallModal()"><i class="fa-solid fa-circle-plus"></i><br>إضافة للشاشة</div>
+    <div class="nav-item" onclick="openPopup()"><i class="fa-solid fa-envelope-open-text"></i><br>عن التطبيق</div>
 </nav>
 
 <script>
@@ -377,15 +467,34 @@
         { title: 'الشؤون الإدارية', desc: 'تحت الصيانة والتحديث', icon: 'fa-briefcase', type: 'maintenance' }
     ];
 
-    let deferredPrompt;
+    let deferredPrompt = null;
 
-    // Capture Native PWA Install Prompt for Android/Chrome
+    // التقاط حدث التثبيت بضغطة زر
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
-        const btn = document.getElementById('pwaInstallBtn');
-        if(btn) btn.style.display = 'block';
+        
+        const banner = document.getElementById('topInstallBanner');
+        if(banner) banner.style.display = 'flex';
+
+        const autoSec = document.getElementById('autoInstallSection');
+        if(autoSec) autoSec.style.display = 'block';
     });
+
+    // تفعيل وضع الأوفلاين الشامل (Service Worker)
+    if ('serviceWorker' in navigator) {
+        const swCode = `
+            const CACHE_NAME = 'shiftak-v2';
+            self.addEventListener('install', (e) => {
+                e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
+            });
+            self.addEventListener('fetch', (e) => {
+                e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+            });
+        `;
+        const blob = new Blob([swCode], { type: 'application/javascript' });
+        navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
+    }
 
     window.onload = () => {
         if (localStorage.getItem('theme') === 'dark') {
@@ -401,7 +510,8 @@
             splash.style.opacity = '0'; 
             setTimeout(() => { 
                 splash.style.display = 'none'; 
-                if (!localStorage.getItem('welcomed_abu_marzouq')) {
+                // إظهار النافذة في أول زيارة فقط تلقائياً
+                if (!localStorage.getItem('has_seen_about_dialog_2026')) {
                     openPopup();
                 }
             }, 500); 
@@ -436,33 +546,42 @@
         `).join('');
     }
 
+    function normalizeArabic(text) {
+        return text.replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
+    }
+
     function filterGroups() {
-        const query = document.getElementById('searchInput').value.toLowerCase();
-        const filtered = groups.filter(g => g.title.toLowerCase().includes(query) || g.desc.toLowerCase().includes(query));
+        const query = normalizeArabic(document.getElementById('searchInput').value.toLowerCase());
+        const filtered = groups.filter(g => 
+            normalizeArabic(g.title.toLowerCase()).includes(query) || 
+            normalizeArabic(g.desc.toLowerCase()).includes(query)
+        );
         renderGroups(filtered);
     }
 
-    // Modal Control
+    // التحكم بالرسالة المنبثقة وحفظ رؤيتها
     function openPopup() { document.getElementById('popup').style.display = 'flex'; }
     function closePopup() { 
         document.getElementById('popup').style.display = 'none'; 
-        localStorage.setItem('welcomed_abu_marzouq', 'true');
+        localStorage.setItem('has_seen_about_dialog_2026', 'true');
     }
 
     function openInstallModal() { document.getElementById('installModal').style.display = 'flex'; }
     function closeInstallModal() { document.getElementById('installModal').style.display = 'none'; }
 
-    // Trigger PWA Installation if supported
+    // زر التثبيت السريع
     function triggerPWAInstall() {
         if (deferredPrompt) {
             deferredPrompt.prompt();
             deferredPrompt.userChoice.then((choiceResult) => {
                 if (choiceResult.outcome === 'accepted') {
-                    console.log('User accepted the install prompt');
+                    document.getElementById('topInstallBanner').style.display = 'none';
                 }
                 deferredPrompt = null;
                 closeInstallModal();
             });
+        } else {
+            openInstallModal();
         }
     }
 
@@ -481,7 +600,13 @@
             icon.className = 'fa-solid fa-sun';
         }
     }
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+            closePopup();
+            closeInstallModal();
+        }
+    });
 </script>
 </body>
 </html>
-
