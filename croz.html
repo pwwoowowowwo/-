@@ -1,0 +1,1390 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>إدارة الشاليه الملكي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- مكتبة تصدير الإكسل الملون المنظم -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <style>
+        :root {
+            --primary: #c5a059;         /* ذهبي دافئ فاخر */
+            --primary-light: #e6c587;   /* ذهبي فاتح */
+            --success: rgba(40, 167, 69, 0.2);
+            --success-border: #28a745;
+            --warning: rgba(217, 119, 6, 0.2);
+            --warning-border: #d97706;
+            --danger: rgba(220, 53, 69, 0.2);
+            --danger-border: #dc3545;
+            --dark-bg: #1a1a1a;        /* خلفية داكنة فخمة تناسب العيون */
+            --app-bg: #222222;
+            --glass-bg: rgba(255, 255, 255, 0.04);
+            --glass-border: rgba(197, 160, 89, 0.2); /* حدود ذهبية خفيفة */
+        }
+        
+        * {
+            box-sizing: border-box;
+            font-family: 'Tajawal', sans-serif;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            background: linear-gradient(135deg, #1f1f1f, #282828);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.7);
+        }
+
+        @media (min-width: 421px) {
+            .app-container {
+                height: 90vh;
+                border-radius: 30px;
+                border: 8px solid #111;
+            }
+        }
+
+        header {
+            padding: 15px 20px;
+            text-align: center;
+            background: rgba(26, 26, 26, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+            z-index: 10;
+        }
+
+        header h1 {
+            font-size: 1.15rem;
+            color: var(--primary-light);
+            margin: 0;
+            font-weight: 700;
+        }
+
+        main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            padding-bottom: 95px; /* مساحة كافية لتجنب تداخل المحتوى مع شريط الحقوق والتنقل */
+        }
+
+        .view {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        .view.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+
+        .stat-row { display: flex; gap: 10px; margin-bottom: 10px; }
+        .stat-box {
+            flex: 1;
+            background: rgba(197, 160, 89, 0.08);
+            border: 1px solid rgba(197, 160, 89, 0.25);
+            border-radius: 12px;
+            padding: 12px 8px;
+            text-align: center;
+        }
+        .stat-box h3 { font-size: 0.75rem; color: var(--primary-light); margin-bottom: 4px; }
+        .stat-box .value { font-size: 1.05rem; font-weight: bold; color: #fff; }
+
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-size: 0.82rem; color: #d1d5db; margin-bottom: 4px; }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: white;
+            outline: none;
+            font-size: 0.92rem;
+            color-scheme: dark;
+        }
+        input:focus, select:focus, textarea:focus { border-color: var(--primary); }
+        select option { background-color: var(--dark-bg); }
+
+        button.btn-primary {
+            background: linear-gradient(135deg, var(--primary), #b89246);
+            color: #111;
+            border: none;
+            padding: 12px;
+            border-radius: 10px;
+            width: 100%;
+            font-size: 0.95rem;
+            font-weight: bold;
+            margin-top: 5px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        button.btn-primary:active { opacity: 0.85; }
+
+        /* شريط التنبيهات السريعة (اليوم وبكره) */
+        .quick-alert-bar {
+            background: rgba(197, 160, 89, 0.12);
+            border: 1px solid var(--primary);
+            border-radius: 14px;
+            padding: 12px;
+            margin-bottom: 15px;
+            font-size: 0.82rem;
+        }
+        .quick-alert-bar h4 { color: var(--primary-light); font-size: 0.88rem; margin-bottom: 6px; }
+
+        /* تقويم الآيفون */
+        .month-selector {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .iphone-calendar {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 10px;
+        }
+
+        .weekdays-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            text-align: center;
+            font-weight: bold;
+            font-size: 0.75rem;
+            color: var(--primary-light);
+            margin-bottom: 8px;
+        }
+
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+
+        .cal-day-cell {
+            aspect-ratio: 0.85;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .cal-day-cell.empty { background: transparent; border: none; cursor: default; }
+
+        .cal-day-cell.status-free { background: rgba(255, 255, 255, 0.04); border-color: var(--glass-border); }
+        .cal-day-cell.status-green { background: var(--success); border-color: var(--success-border); }
+        .cal-day-cell.status-yellow { background: var(--warning); border-color: var(--warning-border); }
+        .cal-day-cell.status-red { background: var(--danger); border-color: var(--danger-border); }
+
+        .cal-day-cell .day-gregorian { font-size: 0.95rem; font-weight: bold; color: #ffffff; line-height: 1.1; }
+        .cal-day-cell .day-hijri { font-size: 0.6rem; color: #bbbbbb; margin-top: 2px; }
+
+        .selected-day-details {
+            margin-top: 12px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 10px;
+        }
+        .selected-day-details h3 {
+            font-size: 0.9rem; color: var(--primary-light); margin-bottom: 6px;
+            border-bottom: 1px solid var(--glass-border); padding-bottom: 4px;
+        }
+        .detail-slot {
+            font-size: 0.78rem; background: rgba(0,0,0,0.3); padding: 6px 8px; border-radius: 6px; margin-bottom: 4px;
+        }
+
+        /* السجل وبطاقات الحجز والمصروفات والصيانة */
+        .booking-card, .expense-card, .maintenance-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(0,0,0,0.3));
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 12px;
+            margin-bottom: 12px;
+        }
+        .booking-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 8px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;
+        }
+        .booking-title { font-size: 1rem; font-weight: bold; color: var(--primary-light); }
+        .booking-date { font-size: 0.78rem; color: #aaa; }
+        .booking-details {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.85rem; margin-bottom: 10px;
+        }
+        .detail-item span { display: block; color: #aaa; font-size: 0.7rem; }
+        .booking-actions { display: flex; justify-content: space-between; align-items: center; gap: 4px; flex-wrap: wrap; }
+        
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
+        .badge-success { background: rgba(40, 167, 69, 0.2); color: #2ecc71; }
+        .badge-danger { background: rgba(220, 53, 69, 0.2); color: #e74c3c; }
+        .badge-warning { background: rgba(217, 119, 6, 0.2); color: #f39c12; }
+        .badge-cancelled { background: rgba(120, 120, 120, 0.2); color: #95a5a6; }
+
+        .btn-action { background: transparent; padding: 4px 8px; border-radius: 6px; font-size: 0.78rem; cursor: pointer; }
+        .btn-edit { color: var(--primary-light); border: 1px solid var(--primary-light); }
+        .btn-receipt { color: #2ecc71; border: 1px solid #2ecc71; }
+        .btn-delete { color: #e74c3c; border: 1px solid #e74c3c; }
+
+        /* النوافذ المنبثقة وسند القبض */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
+            display: none; justify-content: center; align-items: center; z-index: 100;
+            padding: 15px;
+        }
+        .modal-content {
+            background: #222222; border: 1px solid var(--glass-border);
+            border-radius: 20px; width: 100%; max-width: 380px; max-height: 90vh;
+            overflow-y: auto; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 12px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;
+        }
+        .modal-header h3 { color: var(--primary-light); font-size: 1rem; }
+        .close-modal { background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; }
+
+        .receipt-box {
+            background: #ffffff; color: #13131f; border-radius: 12px; padding: 15px; font-family: 'Tajawal', sans-serif;
+        }
+        .receipt-header { text-align: center; border-bottom: 2px dashed #ccc; padding-bottom: 8px; margin-bottom: 10px; }
+        .receipt-header h2 { font-size: 1.1rem; color: #333; margin-bottom: 2px; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem; border-bottom: 1px solid #eee; padding-bottom: 4px; }
+        .receipt-row span { font-weight: bold; color: #555; }
+
+        /* شريط حقوق التطوير السفلي */
+        .developer-footer {
+            position: absolute;
+            bottom: 65px;
+            width: 100%;
+            background: rgba(20, 20, 20, 0.95);
+            border-top: 1px solid rgba(197, 160, 89, 0.15);
+            text-align: center;
+            padding: 5px 10px;
+            font-size: 0.72rem;
+            color: #b89246;
+            z-index: 9;
+            letter-spacing: 0.3px;
+        }
+
+        /* شريط التنقل السفلي */
+        nav {
+            position: absolute; bottom: 0; width: 100%;
+            background: rgba(26, 26, 26, 0.98); backdrop-filter: blur(10px);
+            border-top: 1px solid var(--glass-border); display: flex;
+            justify-content: space-around; padding: 6px 0 14px 0; z-index: 10;
+        }
+        .nav-item {
+            text-align: center; color: #9ca3af; font-size: 0.68rem;
+            cursor: pointer; flex: 1; transition: 0.3s;
+        }
+        .nav-item.active { color: var(--primary-light); }
+        .nav-icon { font-size: 1.05rem; margin-bottom: 2px; display: block; }
+
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1 id="header-title">الرئيسية</h1>
+    </header>
+
+    <main>
+        <!-- 1. الشاشة الرئيسية -->
+        <section id="view-dashboard" class="view active">
+            <!-- تنبيهات سريعة لحجوزات اليوم وغداً -->
+            <div class="quick-alert-bar" id="quick-alerts-container">
+                <h4>🔔 تنبيهات الحجوزات السريعة:</h4>
+                <div id="quick-alerts-text" style="color: #e5e7eb;">جاري التحقق من حجوزات اليوم وغداً...</div>
+            </div>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <h2 id="dashboard-subtitle" style="font-size:0.95rem; color:var(--primary-light);">حسبة الشهر الحالي</h2>
+                <input type="month" id="dashboard-period" style="width: auto; padding: 5px 8px; font-size:0.85rem;" onchange="updateStats()">
+            </div>
+
+            <div class="stat-row">
+                <div class="stat-box"><h3>الحجوزات النشطة</h3><div class="value" id="stat-count">0</div></div>
+                <div class="stat-box"><h3>الإيرادات المتوقعة</h3><div class="value" id="stat-total">0</div></div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-box" style="border-color: rgba(40, 167, 69, 0.3);">
+                    <h3 style="color: #2ecc71;">المحصل الفعلي</h3><div class="value" id="stat-paid">0</div>
+                </div>
+                <div class="stat-box" style="border-color: rgba(220, 53, 69, 0.3);">
+                    <h3 style="color: #e74c3c;">المتبقي للدفع</h3><div class="value" id="stat-remaining">0</div>
+                </div>
+            </div>
+            <div class="stat-row">
+                <div class="stat-box" style="border-color: rgba(217, 119, 6, 0.3);">
+                    <h3 style="color: #f39c12;">إجمالي المصروفات</h3><div class="value" id="stat-expenses">0</div>
+                </div>
+                <div class="stat-box" style="border-color: rgba(197, 160, 89, 0.3);">
+                    <h3 style="color: var(--primary-light);">الصافي النهائي</h3><div class="value" id="stat-net">0</div>
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-top: 10px;">
+                <label>طريقة العرض:</label>
+                <select id="dashboard-mode" onchange="updateStats()">
+                    <option value="month">عرض الشهر المحدد فقط</option>
+                    <option value="year">عرض إجمالي السنة كاملة (2026)</option>
+                </select>
+            </div>
+
+            <div style="display: flex; gap: 8px; margin-top: 5px;">
+                <button type="button" class="btn-primary" style="flex: 1; background: #2ecc71; color:#fff;" onclick="openReportModal()">📊 التقرير المالي</button>
+                <button type="button" class="btn-primary" style="flex: 1; background: #333; color:var(--primary-light); border: 1px solid var(--primary);" onclick="openBackupModal()">💾 النسخ الاحتياطي</button>
+            </div>
+        </section>
+
+        <!-- 2. شاشة التقويم -->
+        <section id="view-calendar" class="view">
+            <div class="month-selector">
+                <label style="margin:0;">الشهر:</label>
+                <input type="month" id="calendar-month" style="width: auto;" onchange="generateCalendar()">
+            </div>
+
+            <div class="iphone-calendar">
+                <div class="weekdays-grid">
+                    <div>أحد</div>
+                    <div>إثنين</div>
+                    <div>ثلاثاء</div>
+                    <div>أربعاء</div>
+                    <div>خميس</div>
+                    <div>جمعة</div>
+                    <div>سبت</div>
+                </div>
+                <div class="days-grid" id="days-grid-container"></div>
+            </div>
+
+            <div class="selected-day-details" id="day-details-box">
+                <h3 id="selected-date-title">اختر يوماً من التقويم</h3>
+                <div id="selected-date-content" style="color: #aaa; font-size: 0.78rem;">انقر على أي مربع يوم لمعرفة تفاصيل الحجوزات الخاصة به.</div>
+            </div>
+        </section>
+
+        <!-- 3. شاشة إضافة حجز -->
+        <section id="view-add" class="view">
+            <div class="card">
+                <form id="booking-form">
+                    <div class="form-group">
+                        <label>اسم المستأجر</label>
+                        <input type="text" id="renterName" required placeholder="أدخل اسم المستأجر">
+                    </div>
+                    <div class="form-group">
+                        <label>رقم جوال العميل</label>
+                        <input type="tel" id="renterPhone" required placeholder="مثال: 0551234567">
+                    </div>
+                    <div class="stat-row" style="margin-bottom:0;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>تاريخ الحجز</label>
+                            <input type="date" id="bookingDate" required>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>الفترة</label>
+                            <select id="shift" required>
+                                <option value="مساء">مساء</option>
+                                <option value="صباح">صباح</option>
+                                <option value="يوم كامل">يوم كامل</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="stat-row" style="margin-bottom:0;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>القسم</label>
+                            <select id="section" required>
+                                <option value="نساء">نساء</option>
+                                <option value="رجال">رجال</option>
+                                <option value="قسمين">قسمين</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>طريقة الدفع</label>
+                            <select id="paymentMethod" required>
+                                <option value="تحويل">تحويل</option>
+                                <option value="كاش">كاش</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="stat-row" style="margin-bottom:0;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>قيمة الإيجار</label>
+                            <input type="number" id="totalRent" required min="0" placeholder="مثال: 600">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>الواصل (المدفوع)</label>
+                            <input type="number" id="paidAmount" required min="0" placeholder="عربون أو كامل">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-top: 8px;">
+                        <label>مصاريف تسويق أو عمولة تطبيق (إن وجدت)</label>
+                        <input type="number" id="commissionAmount" min="0" value="0" placeholder="مثال: عمولة تطبيق حجز 50 ريال">
+                    </div>
+                    <button type="submit" class="btn-primary">حفظ الحجز الجديد</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 4. شاشة السجل -->
+        <section id="view-history" class="view">
+            <div class="form-group" style="margin-bottom: 12px; display: flex; gap: 6px;">
+                <input type="text" id="search-history" placeholder="🔍 ابحث بالاسم أو رقم الجوال أو التاريخ..." oninput="renderBookings()" style="flex:1;">
+                <button type="button" class="btn-primary" style="width: auto; margin-top:0; background: #217346; color:#fff; padding: 0 12px; font-size:0.8rem;" onclick="exportToExcel()" title="تصدير الحجوزات إلى ملف إكسل ملون">📊 تصدير Excel</button>
+            </div>
+            <div id="bookings-list"></div>
+        </section>
+
+        <!-- 5. شاشة المصروفات والصيانة -->
+        <section id="view-expenses" class="view">
+            <div class="card">
+                <h3 style="font-size:0.95rem; color: var(--primary-light); margin-bottom: 10px;">إضافة مصروف جديد</h3>
+                <form id="expense-form">
+                    <div class="form-group">
+                        <label>بند المصروف</label>
+                        <select id="expenseCategory" required>
+                            <option value="صابون ومستلزمات نظافة">صابون ومستلزمات نظافة</option>
+                            <option value="كهرباء">كهرباء</option>
+                            <option value="ماء">ماء</option>
+                            <option value="صيانة عامة">صيانة عامة</option>
+                            <option value="صيانة المسبح">صيانة المسبح</option>
+                            <option value="راتب عامل">راتب عامل</option>
+                            <option value="أخرى">أخرى</option>
+                        </select>
+                    </div>
+                    <div class="stat-row" style="margin-bottom:0;">
+                        <div class="form-group" style="flex: 1;">
+                            <label>المبلغ (ريال)</label>
+                            <input type="number" id="expenseAmount" required min="0" placeholder="مثال: 150">
+                        </div>
+                        <div class="form-group" style="flex: 1;">
+                            <label>التاريخ</label>
+                            <input type="date" id="expenseDate" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>ملاحظات إضافية</label>
+                        <input type="text" id="expenseNotes" placeholder="تفاصيل المصروف...">
+                    </div>
+                    <button type="submit" class="btn-primary">حفظ المصروف</button>
+                </form>
+            </div>
+
+            <div class="card" style="margin-top: 15px; border-color: rgba(217, 119, 6, 0.3);">
+                <h3 style="font-size:0.95rem; color: #f39c12; margin-bottom: 10px;">🛠️ سجل ملاحظات الصيانة العاجلة</h3>
+                <form id="maintenance-form">
+                    <div class="form-group">
+                        <label>وصف المشكلة / طلب الصيانة</label>
+                        <input type="text" id="maintIssue" required placeholder="مثال: تصليح لمبة الإنارة الخارجية">
+                    </div>
+                    <button type="submit" class="btn-primary" style="background: #f39c12; color:#111;">إضافة لملاحظات الصيانة</button>
+                </form>
+                <div id="maintenance-list" style="margin-top: 10px;"></div>
+            </div>
+
+            <h3 style="font-size:0.95rem; margin: 15px 0 10px 0; color: var(--primary-light);">سجل المصروفات</h3>
+            <div id="expenses-list"></div>
+        </section>
+    </main>
+
+    <!-- نافذة تعديل الحجز (Modal) -->
+    <div class="modal-overlay" id="edit-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>تعديل تفاصيل الحجز</h3>
+                <button class="close-modal" onclick="closeModal('edit-modal')">&times;</button>
+            </div>
+            <form id="edit-form">
+                <input type="hidden" id="edit-index">
+                <div class="form-group">
+                    <label>اسم المستأجر</label>
+                    <input type="text" id="edit-name" required>
+                </div>
+                <div class="form-group">
+                    <label>رقم جوال العميل</label>
+                    <input type="tel" id="edit-phone" required>
+                </div>
+                <div class="stat-row" style="margin-bottom:0;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>التاريخ</label>
+                        <input type="date" id="edit-date" required>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>الفترة</label>
+                        <select id="edit-shift" required>
+                            <option value="مساء">مساء</option>
+                            <option value="صباح">صباح</option>
+                            <option value="يوم كامل">يوم كامل</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="stat-row" style="margin-bottom:0;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>القسم</label>
+                        <select id="edit-section" required>
+                            <option value="نساء">نساء</option>
+                            <option value="رجال">رجال</option>
+                            <option value="قسمين">قسمين</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>طريقة الدفع</label>
+                        <select id="edit-paymentMethod" required>
+                            <option value="تحويل">تحويل</option>
+                            <option value="كاش">كاش</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="stat-row" style="margin-bottom:0;">
+                    <div class="form-group" style="flex: 1;">
+                        <label>قيمة الإيجار</label>
+                        <input type="number" id="edit-totalRent" required min="0">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label>الواصل (المدفوع)</label>
+                        <input type="number" id="edit-paidAmount" required min="0">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 8px;">
+                    <label>عمولة التطبيق / المسوق</label>
+                    <input type="number" id="edit-commission" min="0" value="0">
+                </div>
+
+                <div class="form-group">
+                    <label>حالة الحجز</label>
+                    <select id="edit-status" onchange="handleStatusChange()">
+                        <option value="active">حجز نشط (مؤكد / عربون)</option>
+                        <option value="cancelled">إلغاء الحجز</option>
+                    </select>
+                </div>
+
+                <div class="form-group" id="refund-box" style="display: none; background: rgba(220,53,69,0.1); padding: 8px; border-radius: 8px;">
+                    <label style="color: #e74c3c;">كم تم استرداده من العربون؟</label>
+                    <input type="number" id="edit-refunded" min="0" value="0">
+                </div>
+
+                <button type="submit" class="btn-primary">حفظ التعديلات</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- نافذة سند القبض (Modal) -->
+    <div class="modal-overlay" id="receipt-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>سند حجز / قبض شاليه</h3>
+                <button class="close-modal" onclick="closeModal('receipt-modal')">&times;</button>
+            </div>
+            <div class="receipt-box" id="receipt-printable-area">
+                <div class="receipt-header">
+                    <h2>إدارة الشاليه الملكي</h2>
+                    <p style="font-size: 0.75rem; color: #666;">سند قبض حجز رسمي</p>
+                </div>
+                <div class="receipt-row"><span>اسم المستأجر:</span> <span id="r-name">-</span></div>
+                <div class="receipt-row"><span>رقم الجوال:</span> <span id="r-phone">-</span></div>
+                <div class="receipt-row"><span>تاريخ الحجز:</span> <span id="r-date">-</span></div>
+                <div class="receipt-row"><span>الفترة:</span> <span id="r-shift">-</span></div>
+                <div class="receipt-row"><span>القسم:</span> <span id="r-section">-</span></div>
+                <div class="receipt-row"><span>قيمة الإيجار:</span> <span id="r-total">-</span></div>
+                <div class="receipt-row"><span>المبلغ المدفوع (الواصل):</span> <span id="r-paid">-</span></div>
+                <div class="receipt-row"><span>المتبقي:</span> <span id="r-remaining">-</span></div>
+                <div class="receipt-row"><span>طريقة الدفع:</span> <span id="r-method">-</span></div>
+                <div style="text-align: center; margin-top: 15px; font-size: 0.75rem; color: #777;">
+                    شكراً لتعاملكم معنا، نسعد بخدمتكم!
+                </div>
+            </div>
+            <div style="display: flex; gap: 8px; margin-top: 12px;">
+                <button type="button" class="btn-primary" style="flex: 1; background: #2ecc71; color:#fff; margin-top: 0;" onclick="printReceipt()">طباعة السند</button>
+                <button type="button" class="btn-primary" style="flex: 1; background: #25d366; color:#fff; margin-top: 0;" onclick="shareOnWhatsApp()">إرسال واتساب</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- نافذة التقرير المالي (Modal) -->
+    <div class="modal-overlay" id="report-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>التقرير المالي الشامل</h3>
+                <button class="close-modal" onclick="closeModal('report-modal')">&times;</button>
+            </div>
+            <div class="receipt-box" id="report-printable-area">
+                <div class="receipt-header">
+                    <h2>تقرير أرباح الشاليه الملكي</h2>
+                    <p id="rep-period-title" style="font-size: 0.75rem; color: #666;">الفترة: الحالي</p>
+                </div>
+                <div class="receipt-row"><span>إجمالي الحجوزات النشطة:</span> <span id="rep-count">0</span></div>
+                <div class="receipt-row"><span>إجمالي الإيرادات المتوقعة:</span> <span id="rep-total">0</span></div>
+                <div class="receipt-row"><span>المحصل الفعلي:</span> <span id="rep-paid">0</span></div>
+                <div class="receipt-row"><span>المتبقي للدفع:</span> <span id="rep-remaining">0</span></div>
+                <div class="receipt-row"><span>إجمالي المصروفات:</span> <span id="rep-expenses">0</span></div>
+                <div class="receipt-row"><span>إجمالي عمولات التطبيقات:</span> <span id="rep-commission">0</span></div>
+                <div class="receipt-row" style="border-bottom: 2px solid #333; font-weight: bold;"><span>الصافي النهائي للأرباح:</span> <span id="rep-net">0</span></div>
+            </div>
+            <button type="button" class="btn-primary" style="margin-top: 12px; background: #2ecc71; color:#fff;" onclick="printReport()">طباعة التقرير</button>
+        </div>
+    </div>
+
+    <!-- نافذة النسخ الاحتياطي واستعادة البيانات (Modal) -->
+    <div class="modal-overlay" id="backup-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>النسخ الاحتياطي للبيانات</h3>
+                <button class="close-modal" onclick="closeModal('backup-modal')">&times;</button>
+            </div>
+            <div style="font-size: 0.85rem; color: #d1d5db; margin-bottom: 12px;">
+                يمكنك حفظ نسخة من بيانات حجوزاتك ومصروفاتك في ملف على جهازك، أو استعادتها في أي وقت لضمان عدم ضياعها.
+            </div>
+            <button type="button" class="btn-primary" style="background: var(--primary); color:#111; margin-bottom: 10px;" onclick="exportDataFile()">📥 تصدير وحفظ البيانات كملف</button>
+            
+            <div class="form-group" style="margin-top: 15px;">
+                <label>استعادة البيانات من ملف سابق:</label>
+                <input type="file" id="importFile" accept=".json" onchange="importDataFile(event)">
+            </div>
+        </div>
+    </div>
+
+    <!-- شريط حقوق التطوير -->
+    <div class="developer-footer">
+        المطور فهد المخلفي | أخوكم أبو مرزوق
+    </div>
+
+    <!-- شريط التنقل السفلي -->
+    <nav>
+        <div class="nav-item active" onclick="switchTab('dashboard', 'الرئيسية', this)">
+            <span class="nav-icon">📊</span> الرئيسية
+        </div>
+        <div class="nav-item" onclick="switchTab('calendar', 'تقويم الشاليه', this)">
+            <span class="nav-icon">📅</span> التقويم
+        </div>
+        <div class="nav-item" onclick="switchTab('add', 'إضافة حجز', this)">
+            <span class="nav-icon">➕</span> حجز
+        </div>
+        <div class="nav-item" onclick="switchTab('history', 'سجل الحجوزات', this)">
+            <span class="nav-icon">📜</span> السجل
+        </div>
+        <div class="nav-item" onclick="switchTab('expenses', 'المصروفات', this)">
+            <span class="nav-icon">💸</span> المصروفات والصيانة
+        </div>
+    </nav>
+</div>
+
+<script>
+    let bookings = JSON.parse(localStorage.getItem('chalet_bookings')) || [];
+    let expenses = JSON.parse(localStorage.getItem('chalet_expenses')) || [];
+    let maintenance = JSON.parse(localStorage.getItem('chalet_maintenance')) || [];
+    let currentReceiptBooking = null;
+
+    const form = document.getElementById('booking-form');
+    const expenseForm = document.getElementById('expense-form');
+    const maintenanceForm = document.getElementById('maintenance-form');
+    const bookingsList = document.getElementById('bookings-list');
+    const expensesList = document.getElementById('expenses-list');
+    const maintenanceList = document.getElementById('maintenance-list');
+    const daysGridContainer = document.getElementById('days-grid-container');
+    const monthInput = document.getElementById('calendar-month');
+    const dashboardPeriodInput = document.getElementById('dashboard-period');
+
+    const today = new Date();
+    const currentMonthStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
+    monthInput.value = currentMonthStr;
+    dashboardPeriodInput.value = currentMonthStr;
+    document.getElementById('bookingDate').valueAsDate = today;
+    document.getElementById('expenseDate').valueAsDate = today;
+
+    function switchTab(tabId, title, element) {
+        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('view-' + tabId).classList.add('active');
+        element.classList.add('active');
+        document.getElementById('header-title').innerText = title;
+
+        if(tabId === 'calendar') generateCalendar();
+    }
+
+    function updateUI() {
+        renderBookings();
+        renderExpenses();
+        renderMaintenance();
+        updateStats();
+        checkQuickAlerts();
+        generateCalendar();
+        localStorage.setItem('chalet_bookings', JSON.stringify(bookings));
+        localStorage.setItem('chalet_expenses', JSON.stringify(expenses));
+        localStorage.setItem('chalet_maintenance', JSON.stringify(maintenance));
+    }
+
+    function getFormattedDate(d) {
+        return d.toISOString().split('T')[0];
+    }
+
+    function checkQuickAlerts() {
+        const todayStr = getFormattedDate(new Date());
+        const tomorrowObj = new Date();
+        tomorrowObj.setDate(tomorrowObj.getDate() + 1);
+        const tomorrowStr = getFormattedDate(tomorrowObj);
+
+        const todayBookings = bookings.filter(b => b.date === todayStr && b.status !== 'cancelled');
+        const tomBookings = bookings.filter(b => b.date === tomorrowStr && b.status !== 'cancelled');
+
+        let textHtml = '';
+        if (todayBookings.length > 0) {
+            textHtml += `⚡ <b>حجوزات اليوم (${todayStr}):</b> `;
+            todayBookings.forEach(b => {
+                const rem = b.totalRent - b.paidAmount;
+                textHtml += `[${b.name} - ${b.shift} (متبقي: ${rem} ر.س)] `;
+            });
+            textHtml += '<br>';
+        }
+        if (tomBookings.length > 0) {
+            textHtml += `📌 <b>حجوزات الغد (${tomorrowStr}):</b> `;
+            tomBookings.forEach(b => {
+                textHtml += `[${b.name} - ${b.shift}] `;
+            });
+        }
+
+        if (todayBookings.length === 0 && tomBookings.length === 0) {
+            document.getElementById('quick-alerts-text').innerHTML = 'لا توجد حجوزات مسجلة ليوم اليوم أو الغد.';
+        } else {
+            document.getElementById('quick-alerts-text').innerHTML = textHtml;
+        }
+    }
+
+    function getHijriDate(dateObj) {
+        try {
+            const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { day: 'numeric', month: 'numeric' });
+            const parts = formatter.formatToParts(dateObj);
+            const day = parts.find(p => p.type === 'day')?.value || '';
+            const month = parts.find(p => p.type === 'month')?.value || '';
+            return `${day}/${month}`;
+        } catch (e) {
+            return '';
+        }
+    }
+
+    function generateCalendar() {
+        daysGridContainer.innerHTML = '';
+        if(!monthInput.value) return;
+
+        const [year, month] = monthInput.value.split('-');
+        const firstDayIndex = new Date(year, month - 1, 1).getDay();
+        const totalDays = new Date(year, month, 0).getDate();
+
+        for (let i = 0; i < firstDayIndex; i++) {
+            const emptyCell = document.createElement('div');
+            emptyCell.className = 'cal-day-cell empty';
+            daysGridContainer.appendChild(emptyCell);
+        }
+
+        for (let day = 1; day <= totalDays; day++) {
+            const dateStr = `${year}-${month}-${String(day).padStart(2, '0')}`;
+            const dateObj = new Date(dateStr);
+            const dayBookings = bookings.filter(b => b.date === dateStr && b.status !== 'cancelled');
+            const hijriStr = getHijriDate(dateObj);
+
+            const cell = document.createElement('div');
+            let statusClass = 'status-free';
+            if (dayBookings.length > 0) {
+                let hasUnconfirmed = dayBookings.some(b => b.paidAmount === 0);
+                let hasDeposit = dayBookings.some(b => b.paidAmount > 0 && b.paidAmount < b.totalRent);
+                let allPaid = dayBookings.every(b => b.paidAmount >= b.totalRent);
+
+                if (hasUnconfirmed) statusClass = 'status-red';
+                else if (hasDeposit) statusClass = 'status-yellow';
+                else if (allPaid) statusClass = 'status-green';
+            }
+
+            cell.className = `cal-day-cell ${statusClass}`;
+            cell.innerHTML = `
+                <span class="day-gregorian">${day}</span>
+                <span class="day-hijri">${hijriStr}</span>
+            `;
+
+            const allDayBookings = bookings.filter(b => b.date === dateStr);
+            cell.onclick = () => showDayDetails(dateStr, hijriStr, allDayBookings);
+            daysGridContainer.appendChild(cell);
+        }
+    }
+
+    function showDayDetails(dateStr, hijriStr, dayBookings) {
+        const titleEl = document.getElementById('selected-date-title');
+        const contentEl = document.getElementById('selected-date-content');
+
+        titleEl.innerText = `حجوزات يوم: ${dateStr} (هجري: ${hijriStr})`;
+        
+        if (dayBookings.length === 0) {
+            contentEl.innerHTML = `<div style="color: #2ecc71; font-weight: bold; padding: 4px;">✨ هذا اليوم متاح تماماً للحجز.</div>`;
+            return;
+        }
+
+        let html = '';
+        dayBookings.forEach(b => {
+            if (b.status === 'cancelled') {
+                html += `
+                    <div class="detail-slot" style="opacity: 0.6;">
+                        <strong>${b.name}</strong> (${b.phone || 'بدون جوال'}) - ${b.shift} (${b.section})<br>
+                        <span style="color: #95a5a6; font-weight:bold;">الحالة: ملغى (مسترد: ${b.refundedAmount || 0} ر.س)</span>
+                    </div>
+                `;
+            } else {
+                let statusText = 'مؤكد (خالص)';
+                let colorStyle = 'color: #2ecc71;';
+                if (b.paidAmount === 0) {
+                    statusText = 'غير مؤكد';
+                    colorStyle = 'color: #e74c3c;';
+                } else if (b.paidAmount < b.totalRent) {
+                    statusText = 'عربون (' + b.paidAmount + ' ر.س)';
+                    colorStyle = 'color: #f39c12;';
+                }
+
+                html += `
+                    <div class="detail-slot">
+                        <strong>${b.name}</strong> (${b.phone || 'بدون جوال'}) - ${b.shift} (${b.section})<br>
+                        <span style="${colorStyle} font-weight:bold;">الحالة: ${statusText}</span>
+                    </div>
+                `;
+            }
+        });
+        contentEl.innerHTML = html;
+    }
+
+    function renderBookings() {
+        bookingsList.innerHTML = '';
+        const searchQuery = document.getElementById('search-history').value.trim().toLowerCase();
+
+        const filtered = bookings.filter(b => {
+            if (!searchQuery) return true;
+            return (b.name && b.name.toLowerCase().includes(searchQuery)) ||
+                   (b.phone && b.phone.includes(searchQuery)) ||
+                   (b.date && b.date.includes(searchQuery));
+        });
+
+        if (filtered.length === 0) {
+            bookingsList.innerHTML = '<div class="card" style="text-align:center; color:#aaa;">لا توجد حجوزات مطابقة للبحث</div>';
+            return;
+        }
+
+        [...filtered].reverse().forEach((booking) => {
+            const originalIndex = bookings.indexOf(booking);
+            const remaining = booking.totalRent - booking.paidAmount;
+            
+            let statusBadge = '';
+            if (booking.status === 'cancelled') {
+                statusBadge = `<span class="badge badge-cancelled">ملغى (مسترد: ${booking.refundedAmount || 0})</span>`;
+            } else if (remaining === 0) {
+                statusBadge = '<span class="badge badge-success">خالص / مؤكد</span>';
+            } else if (booking.paidAmount === 0) {
+                statusBadge = '<span class="badge badge-danger">غير مؤكد</span>';
+            } else {
+                statusBadge = '<span class="badge badge-warning">عربون مدفوع (متبقي: ' + remaining + ')</span>';
+            }
+
+            const card = document.createElement('div');
+            card.className = 'booking-card';
+            card.innerHTML = `
+                <div class="booking-header">
+                    <div class="booking-title">${booking.name}</div>
+                    <div class="booking-date">${booking.date}</div>
+                </div>
+                <div style="font-size: 0.8rem; color: var(--primary-light); margin-bottom: 8px;">
+                    📱 الجوال: ${booking.phone || 'غير مسجل'} ${booking.commission > 0 ? '| عمولة: ' + booking.commission + ' ر.س' : ''}
+                </div>
+                <div class="booking-details">
+                    <div class="detail-item"><span>الإيجار</span>${booking.totalRent} ر.س</div>
+                    <div class="detail-item"><span>المدفوع</span>${booking.paidAmount} ر.س</div>
+                    <div class="detail-item"><span>الفترة</span>${booking.shift}</div>
+                    <div class="detail-item"><span>القسم</span>${booking.section}</div>
+                </div>
+                <div class="booking-actions">
+                    ${statusBadge}
+                    <div style="display: flex; gap: 4px;">
+                        <button class="btn-action btn-receipt" onclick="openReceiptModal(${originalIndex})">السند</button>
+                        <button class="btn-action btn-edit" onclick="openEditModal(${originalIndex})">تعديل</button>
+                        <button class="btn-action btn-delete" onclick="deleteBooking(${originalIndex})">حذف</button>
+                    </div>
+                </div>
+            `;
+            bookingsList.appendChild(card);
+        });
+    }
+
+    // دالة تصدير الحجوزات إلى ملف Excel منظم وملون بالألوان والتفاصيل
+    function exportToExcel() {
+        if (bookings.length === 0) {
+            alert("لا توجد حجوزات لتصديرها!");
+            return;
+        }
+
+        const excelData = bookings.map((b, index) => {
+            let statusDesc = 'نشط (مؤكد)';
+            let remaining = b.totalRent - b.paidAmount;
+            if (b.status === 'cancelled') {
+                statusDesc = `ملغى (مسترد: ${b.refundedAmount || 0} ر.س)`;
+            } else if (remaining === 0) {
+                statusDesc = 'خالص بالكامل';
+            } else if (b.paidAmount === 0) {
+                statusDesc = 'غير مؤكد (بدون عربون)';
+            } else {
+                statusDesc = `عربون مدفوع (متبقي: ${remaining} ر.س)`;
+            }
+
+            return {
+                "م": index + 1,
+                "اسم المستأجر": b.name,
+                "رقم الجوال": b.phone || '-',
+                "تاريخ الحجز": b.date,
+                "الفترة": b.shift,
+                "القسم": b.section,
+                "قيمة الإيجار (ر.س)": b.totalRent,
+                "المبلغ المدفوع (ر.س)": b.paidAmount,
+                "المتبقي (ر.س)": remaining,
+                "طريقة الدفع": b.paymentMethod,
+                "عمولة التطبيق": b.commission || 0,
+                "حالة الحجز": statusDesc
+            };
+        });
+
+        const worksheet = XLSX.utils.json_to_sheet(excelData);
+        
+        if(!worksheet['!cols']) worksheet['!cols'] = [];
+        worksheet['!cols'] = [
+            {wch: 5},  // م
+            {wch: 20}, // الاسم
+            {wch: 15}, // الجوال
+            {wch: 12}, // التاريخ
+            {wch: 10}, // الفترة
+            {wch: 10}, // القسم
+            {wch: 15}, // الإيجار
+            {wch: 15}, // المدفوع
+            {wch: 12}, // المتبقي
+            {wch: 12}, // طريقة الدفع
+            {wch: 12}, // العمولة
+            {wch: 25}  // الحالة
+        ];
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "سجل الحجوزات");
+
+        XLSX.writeFile(workbook, `سجل_حجوزات_الشاليه_${new Date().toISOString().split('T')[0]}.xlsx`);
+    }
+
+    function renderExpenses() {
+        expensesList.innerHTML = '';
+        if (expenses.length === 0) {
+            expensesList.innerHTML = '<div class="card" style="text-align:center; color:#aaa; font-size: 0.85rem;">لا توجد مصروفات مسجلة</div>';
+            return;
+        }
+
+        [...expenses].reverse().forEach((exp, reversedIndex) => {
+            const index = expenses.length - 1 - reversedIndex;
+            const card = document.createElement('div');
+            card.className = 'expense-card';
+            card.innerHTML = `
+                <div class="booking-header">
+                    <div class="booking-title" style="font-size: 0.95rem; color: #f39c12;">${exp.category}</div>
+                    <div class="booking-date">${exp.date}</div>
+                </div>
+                <div style="font-size: 0.85rem; margin-bottom: 8px;">
+                    المبلغ: <strong>${exp.amount} ر.س</strong><br>
+                    ${exp.notes ? '<span style="color:#aaa; font-size:0.78rem;">ملاحظات: ' + exp.notes + '</span>' : ''}
+                </div>
+                <div style="text-align: left;">
+                    <button class="btn-action btn-delete" onclick="deleteExpense(${index})">حذف المصروف</button>
+                </div>
+            `;
+            expensesList.appendChild(card);
+        });
+    }
+
+    function renderMaintenance() {
+        maintenanceList.innerHTML = '';
+        if (maintenance.length === 0) {
+            maintenanceList.innerHTML = '<div style="color:#888; font-size:0.78rem; text-align:center;">لا توجد مهام صيانة معلقة حالياً</div>';
+            return;
+        }
+
+        maintenance.forEach((m, index) => {
+            const card = document.createElement('div');
+            card.className = 'maintenance-card';
+            card.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+                    <span>🔧 ${m.issue}</span>
+                    <button class="btn-action btn-delete" onclick="deleteMaintenance(${index})">تم الإنجاز (حذف)</button>
+                </div>
+            `;
+            maintenanceList.appendChild(card);
+        });
+    }
+
+    function getFilteredData() {
+        const mode = document.getElementById('dashboard-mode').value;
+        const selectedPeriod = dashboardPeriodInput.value;
+
+        let filteredBookings = [];
+        let filteredExpenses = [];
+
+        if (mode === 'month') {
+            filteredBookings = bookings.filter(b => b.date && b.date.startsWith(selectedPeriod) && b.status !== 'cancelled');
+            filteredExpenses = expenses.filter(e => e.date && e.date.startsWith(selectedPeriod));
+        } else {
+            filteredBookings = bookings.filter(b => b.date && b.date.startsWith('2026') && b.status !== 'cancelled');
+            filteredExpenses = expenses.filter(e => e.date && e.date.startsWith('2026'));
+        }
+        return { filteredBookings, filteredExpenses, mode, selectedPeriod };
+    }
+
+    function updateStats() {
+        const mode = document.getElementById('dashboard-mode').value;
+        const subtitleEl = document.getElementById('dashboard-subtitle');
+
+        if (mode === 'month') {
+            subtitleEl.innerText = `حسبة شهر: ${dashboardPeriodInput.value}`;
+            dashboardPeriodInput.style.display = 'inline-block';
+        } else {
+            subtitleEl.innerText = `إجمالي السنة كاملة (2026)`;
+            dashboardPeriodInput.style.display = 'none';
+        }
+
+        const { filteredBookings, filteredExpenses } = getFilteredData();
+
+        let totalRent = 0, totalPaid = 0, totalCommission = 0;
+        filteredBookings.forEach(b => {
+            totalRent += Number(b.totalRent);
+            totalPaid += Number(b.paidAmount);
+            totalCommission += Number(b.commission || 0);
+        });
+
+        let totalExpenses = 0;
+        filteredExpenses.forEach(e => {
+            totalExpenses += Number(e.amount);
+        });
+
+        const activeCount = filteredBookings.length;
+        const netProfit = totalPaid - totalExpenses - totalCommission;
+
+        document.getElementById('stat-count').innerText = activeCount;
+        document.getElementById('stat-total').innerText = totalRent + ' ر.س';
+        document.getElementById('stat-paid').innerText = totalPaid + ' ر.س';
+        document.getElementById('stat-remaining').innerText = (totalRent - totalPaid) + ' ر.س';
+        document.getElementById('stat-expenses').innerText = (totalExpenses + totalCommission) + ' ر.س';
+        document.getElementById('stat-net').innerText = netProfit + ' ر.س';
+    }
+
+    function openEditModal(index) {
+        const b = bookings[index];
+        document.getElementById('edit-index').value = index;
+        document.getElementById('edit-name').value = b.name;
+        document.getElementById('edit-phone').value = b.phone || '';
+        document.getElementById('edit-date').value = b.date;
+        document.getElementById('edit-shift').value = b.shift;
+        document.getElementById('edit-section').value = b.section;
+        document.getElementById('edit-paymentMethod').value = b.paymentMethod;
+        document.getElementById('edit-totalRent').value = b.totalRent;
+        document.getElementById('edit-paidAmount').value = b.paidAmount;
+        document.getElementById('edit-commission').value = b.commission || 0;
+        
+        const statusSelect = document.getElementById('edit-status');
+        const refundBox = document.getElementById('refund-box');
+        
+        if (b.status === 'cancelled') {
+            statusSelect.value = 'cancelled';
+            refundBox.style.display = 'block';
+            document.getElementById('edit-refunded').value = b.refundedAmount || 0;
+        } else {
+            statusSelect.value = 'active';
+            refundBox.style.display = 'none';
+            document.getElementById('edit-refunded').value = 0;
+        }
+
+        document.getElementById('edit-modal').style.display = 'flex';
+    }
+
+    function openReceiptModal(index) {
+        currentReceiptBooking = bookings[index];
+        const b = currentReceiptBooking;
+        const remaining = b.totalRent - b.paidAmount;
+        document.getElementById('r-name').innerText = b.name;
+        document.getElementById('r-phone').innerText = b.phone || 'غير مسجل';
+        document.getElementById('r-date').innerText = b.date;
+        document.getElementById('r-shift').innerText = b.shift;
+        document.getElementById('r-section').innerText = b.section;
+        document.getElementById('r-total').innerText = b.totalRent + ' ر.س';
+        document.getElementById('r-paid').innerText = b.paidAmount + ' ر.س';
+        document.getElementById('r-remaining').innerText = remaining + ' ر.س';
+        document.getElementById('r-method').innerText = b.paymentMethod;
+
+        document.getElementById('receipt-modal').style.display = 'flex';
+    }
+
+    function printReceipt() {
+        const printContent = document.getElementById('receipt-printable-area').innerHTML;
+        const originalContent = document.body.innerHTML;
+        document.body.innerHTML = `<div style="padding: 20px; background:#fff; color:#000;">${printContent}</div>`;
+        window.print();
+        document.body.innerHTML = originalContent;
+        window.location.reload();
+    }
+
+    function shareOnWhatsApp() {
+        if (!currentReceiptBooking) return;
+        const b = currentReceiptBooking;
+        const remaining = b.totalRent - b.paidAmount;
+        const msg = `🧾 *سند حجز شاليه رسمي*\n` +
+                    `--------------------\n` +
+                    `👤 اسم المستأجر: ${b.name}\n` +
+                    `📅 تاريخ الحجز: ${b.date}\n` +
+                    `⏰ الفترة: ${b.shift} (${b.section})\n` +
+                    `💰 إجمالي الإيجار: ${b.totalRent} ر.س\n` +
+                    `💵 المبلغ المدفوع: ${b.paidAmount} ر.س\n` +
+                    `📌 المتبقي: ${remaining} ر.س\n` +
+                    `💳 طريقة الدفع: ${b.paymentMethod}\n` +
+                    `--------------------\n` +
+                    `شكراً لتعاملكم معنا! نسعد بخدمتكم في الشاليه الملكي.\n\n` +
+                    `_تصميم المطور فهد المخلفي (أبو مرزوق)_`;
+        
+        let phoneNum = b.phone || '';
+        phoneNum = phoneNum.replace(/\D/g, '');
+        if (phoneNum.startsWith('0')) {
+            phoneNum = '966' + phoneNum.substring(1);
+        }
+        
+        const url = `https://wa.me/${phoneNum}?text=${encodeURIComponent(msg)}`;
+        window.open(url, '_blank');
+    }
+
+    function openReportModal() {
+        const { filteredBookings, filteredExpenses, mode, selectedPeriod } = getFilteredData();
+        
+        let totalRent = 0, totalPaid = 0, totalCommission = 0;
+        filteredBookings.forEach(b => {
+            totalRent += Number(b.totalRent);
+            totalPaid += Number(b.paidAmount);
+            totalCommission += Number(b.commission || 0);
+        });
+
+        let totalExpenses = 0;
+        filteredExpenses.forEach(e => {
+            totalExpenses += Number(e.amount);
+        });
+
+        const netProfit = totalPaid - totalExpenses - totalCommission;
+
+        document.getElementById('rep-period-title').innerText = mode === 'month' ? `الشهر: ${selectedPeriod}` : `السنة: 2026`;
+        document.getElementById('rep-count').innerText = filteredBookings.length;
+        document.getElementById('rep-total').innerText = totalRent + ' ر.س';
+        document.getElementById('rep-paid').innerText = totalPaid + ' ر.س';
+        document.getElementById('rep-remaining').innerText = (totalRent - totalPaid) + ' ر.س';
+        document.getElementById('rep-expenses').innerText = totalExpenses + ' ر.س';
+        document.getElementById('rep-commission').innerText = totalCommission + ' ر.س';
+        document.getElementById('rep-net').innerText = netProfit + ' ر.س';
+
+        document.getElementById('report-modal').style.display = 'flex';
+    }
+
+    function printReport() {
+        const printContent = document.getElementById('report-printable-area').innerHTML;
+        const originalContent = document.body.innerHTML;
+        document.body.innerHTML = `<div style="padding: 20px; background:#fff; color:#000;">${printContent}</div>`;
+        window.print();
+        document.body.innerHTML = originalContent;
+        window.location.reload();
+    }
+
+    function openBackupModal() {
+        document.getElementById('backup-modal').style.display = 'flex';
+    }
+
+    function exportDataFile() {
+        const data = {
+            bookings: bookings,
+            expenses: expenses,
+            maintenance: maintenance,
+            exportDate: new Date().toISOString()
+        };
+        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+        const downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", `chalet_backup_${new Date().toISOString().split('T')[0]}.json`);
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    }
+
+    function importDataFile(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const parsed = JSON.parse(e.target.result);
+                if (parsed.bookings && parsed.expenses) {
+                    bookings = parsed.bookings;
+                    expenses = parsed.expenses;
+                    maintenance = parsed.maintenance || [];
+                    updateUI();
+                    alert("تمت استعادة البيانات بنجاح!");
+                    closeModal('backup-modal');
+                } else {
+                    alert("ملف النسخ الاحتياطي غير صالح!");
+                }
+            } catch (err) {
+                alert("حدث خطأ أثناء قراءة الملف!");
+            }
+        };
+        reader.readAsText(file);
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    function handleStatusChange() {
+        const status = document.getElementById('edit-status').value;
+        const refundBox = document.getElementById('refund-box');
+        refundBox.style.display = (status === 'cancelled') ? 'block' : 'none';
+    }
+
+    document.getElementById('edit-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const index = document.getElementById('edit-index').value;
+        const totalRent = Number(document.getElementById('edit-totalRent').value);
+        const paidAmount = Number(document.getElementById('edit-paidAmount').value);
+        const status = document.getElementById('edit-status').value;
+        const refundedAmount = Number(document.getElementById('edit-refunded').value) || 0;
+        const commission = Number(document.getElementById('edit-commission').value) || 0;
+
+        if(paidAmount > totalRent) {
+            alert("المبلغ المدفوع لا يمكن أن يكون أكبر من قيمة الإيجار!");
+            return;
+        }
+
+        bookings[index] = {
+            name: document.getElementById('edit-name').value,
+            phone: document.getElementById('edit-phone').value,
+            date: document.getElementById('edit-date').value,
+            shift: document.getElementById('edit-shift').value,
+            section: document.getElementById('edit-section').value,
+            totalRent: totalRent,
+            paidAmount: paidAmount,
+            paymentMethod: document.getElementById('edit-paymentMethod').value,
+            commission: commission,
+            status: status,
+            refundedAmount: status === 'cancelled' ? refundedAmount : 0
+        };
+
+        closeModal('edit-modal');
+        updateUI();
+    });
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newBooking = {
+            name: document.getElementById('renterName').value,
+            phone: document.getElementById('renterPhone2') ? document.getElementById('renterPhone2').value : document.getElementById('renterPhone').value,
+            date: document.getElementById('bookingDate').value,
+            shift: document.getElementById('shift').value,
+            section: document.getElementById('section').value,
+            totalRent: Number(document.getElementById('totalRent').value),
+            paidAmount: Number(document.getElementById('paidAmount').value),
+            paymentMethod: document.getElementById('paymentMethod').value,
+            commission: Number(document.getElementById('commissionAmount').value) || 0,
+            status: 'active',
+            refundedOptions: 0,
+            refundedAmount: 0
+        };
+
+        if(newBooking.paidAmount > newBooking.totalRent) {
+            alert("المبلغ المدفوع لا يمكن أن يكون أكبر من قيمة الإيجار!");
+            return;
+        }
+
+        bookings.push(newBooking);
+        updateUI();
+        form.reset();
+        document.getElementById('bookingDate').valueAsDate = new Date();
+        
+        document.querySelectorAll('.nav-item')[3].click();
+    });
+
+    expenseForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const newExpense = {
+            category: document.getElementById('expenseCategory').value,
+            amount: Number(document.getElementById('expenseAmount').value),
+            date: document.getElementById('expenseDate').value,
+            notes: document.getElementById('expenseNotes').value
+        };
+
+        expenses.push(newExpense);
+        updateUI();
+        expenseForm.reset();
+        document.getElementById('expenseDate').valueAsDate = new Date();
+    });
+
+    maintenanceForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const issueText = document.getElementById('maintIssue').value;
+        maintenance.push({ issue: issueText });
+        updateUI();
+        maintenanceForm.reset();
+    });
+
+    function deleteBooking(index) {
+        if(confirm('هل أنت متأكد من حذف هذا الحجز نهائياً؟')) {
+            bookings.splice(index, 1);
+            updateUI();
+        }
+    }
+
+    function deleteExpense(index) {
+        if(confirm('هل أنت متأكد من حذف هذا المصروف؟')) {
+            expenses.splice(index, 1);
+            updateUI();
+        }
+    }
+
+    function deleteMaintenance(index) {
+        maintenance.splice(index, 1);
+        updateUI();
+    }
+
+    updateUI();
+</script>
+
+</body>
+</html>
