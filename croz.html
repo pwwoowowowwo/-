@@ -43,11 +43,11 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            overflow-x: hidden;
         }
 
         .app-container {
             width: 100%;
-            max-width: 420px;
             height: 100vh;
             background: var(--app-bg);
             position: relative;
@@ -56,20 +56,33 @@
             overflow: hidden;
             box-shadow: 0 20px 40px rgba(0,0,0,0.1);
             border: 1px solid var(--glass-border);
-            transition: max-width 0.3s ease;
+            transition: all 0.3s ease;
         }
 
-        .app-container.device-tablet {
-            max-width: 720px;
+        /* التكيف التلقائي الخلفي حسب حجم الشاشة والاتجاه */
+        .app-container.mode-mobile-portrait {
+            max-width: 420px;
+            height: 100vh;
+            border-radius: 0;
+        }
+
+        .app-container.mode-mobile-landscape {
+            max-width: 750px;
+            height: 100vh;
+            border-radius: 0;
+        }
+
+        .app-container.mode-tablet {
+            max-width: 768px;
             height: 92vh;
-            border-radius: 24px;
+            border-radius: 20px;
             border: 2px solid var(--primary);
         }
 
-        .app-container.device-desktop {
-            max-width: 960px;
-            height: 94vh;
-            border-radius: 28px;
+        .app-container.mode-desktop {
+            max-width: 1024px;
+            height: 92vh;
+            border-radius: 24px;
             border: 2px solid var(--primary);
         }
 
@@ -299,7 +312,6 @@
             border-radius: 12px;
             color: var(--text-main);
             outline: none;
-            font-size: 0.95ln;
             font-size: 0.95rem;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
             box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
@@ -553,7 +565,7 @@
 </head>
 <body>
 
-<div class="app-container" id="appContainer">
+<div class="app-container mode-mobile-portrait" id="appContainer">
     <header>
         <button class="menu-toggle-btn" onclick="toggleSidebar()" title="قائمة الأزرار">
             ☰
@@ -986,12 +998,21 @@
 
     function detectDeviceAndSize() {
         const width = window.innerWidth;
+        const height = window.innerHeight;
         const container = document.getElementById('appContainer');
-        container.classList.remove('device-tablet', 'device-desktop');
-        if (width >= 768 && width < 1024) {
-            container.classList.add('device-tablet');
-        } else if (width >= 1024) {
-            container.classList.add('device-desktop');
+        
+        container.classList.remove('mode-mobile-portrait', 'mode-mobile-landscape', 'mode-tablet', 'mode-desktop');
+        
+        if (width >= 1024) {
+            container.classList.add('mode-desktop');
+        } else if (width >= 768 && width < 1024) {
+            container.classList.add('mode-tablet');
+        } else {
+            if (width > height) {
+                container.classList.add('mode-mobile-landscape');
+            } else {
+                container.classList.add('mode-mobile-portrait');
+            }
         }
     }
 
