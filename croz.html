@@ -33,6 +33,51 @@
             overflow: hidden;
         }
 
+        /* شاشة التحميل الترحيبية */
+        #splash-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, #1e272e, #2f3640);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+            transition: opacity 0.5s ease;
+        }
+
+        .splash-logo {
+            font-size: 40px;
+            font-weight: 900;
+            color: #ff9f43;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .splash-sub {
+            font-size: 15px;
+            color: #dcdde1;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+        }
+
+        .loader-ring {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.1);
+            border-top: 5px solid #ff9f43;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
         /* القائمة الجانبية */
         aside {
             width: 280px;
@@ -113,7 +158,6 @@
             width: 100%;
         }
 
-        /* الترويسة الرئيسية الثابتة والشريط العلوي */
         .header-container {
             display: flex;
             flex-direction: column;
@@ -189,7 +233,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* الإحصائيات الحية */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -327,11 +370,21 @@
         }
 
         .badge.nisah { background: #e8f5e9; color: #2e7d32; }
+        .badge.rijal { background: #e3f2fd; color: #1565c0; }
         .badge.qismain { background: #fff3e0; color: #ef6c00; }
         .badge.success { background: #e1f5fe; color: #0288d1; }
         .badge.danger { background: #ffebee; color: #c62828; }
 
-        /* تقويم الحجوزات مع شريط أيام الأسبوع الثابت بالأعلى */
+        /* التقويم الشامل */
+        .calendar-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
         .calendar-weekdays {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
@@ -356,10 +409,13 @@
             background: #ffffff;
             border: 2px solid #cbd5e1;
             border-radius: 10px;
-            padding: 10px;
-            min-height: 90px;
+            padding: 8px;
+            min-height: 95px;
             cursor: pointer;
             transition: all 0.2s;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
         .cal-day:hover {
@@ -367,25 +423,20 @@
             transform: translateY(-2px);
         }
 
-        /* ألوان مغطاة تماماً وغير شفافة */
+        .cal-day.status-qismain { background-color: #ff4757 !important; border-color: #e84118 !important; color: white !important; }
+        .cal-day.status-partial { background-color: #ffa502 !important; border-color: #e08e00 !important; color: white !important; }
         .cal-day.status-confirmed { background-color: #2ed573 !important; border-color: #26af5f !important; color: white !important; }
-        .cal-day.status-deposit { background-color: #ffa502 !important; border-color: #e08e00 !important; color: white !important; }
-        .cal-day.status-unconfirmed { background-color: #ff4757 !important; border-color: #e84118 !important; color: white !important; }
 
-        .cal-day.status-confirmed .date-num, .cal-day.status-confirmed .hijri-num, .cal-day.status-confirmed .client-name,
-        .cal-day.status-deposit .date-num, .cal-day.status-deposit .hijri-num, .cal-day.status-deposit .client-name,
-        .cal-day.status-unconfirmed .date-num, .cal-day.status-unconfirmed .hijri-num, .cal-day.status-unconfirmed .client-name {
+        .cal-day.status-qismain *, .cal-day.status-partial *, .cal-day.status-confirmed * {
             color: white !important;
         }
 
-        .cal-day .date-num { font-weight: 900; font-size: 14px; color: #2f3640; }
-        .cal-day .hijri-num { font-size: 10px; color: #718093; margin-bottom: 4px; }
-        .cal-day .client-name { font-size: 11px; font-weight: 700; color: #1e272e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .cal-day .date-num { font-weight: 900; font-size: 13px; color: #2f3640; }
+        .cal-day .booking-info-tags { font-size: 10px; font-weight: 700; margin-top: 2px; }
 
-        /* دليل الألوان التوضيحي */
         .legend-box {
             display: flex;
-            gap: 20px;
+            gap: 15px;
             align-items: center;
             margin-bottom: 15px;
             font-size: 12px;
@@ -427,6 +478,14 @@
 </head>
 <body>
 
+    <div id="splash-screen">
+        <div class="splash-logo">
+            <i class="fa-solid fa-house-chimney-window"></i> شاليه كروز
+        </div>
+        <div class="splash-sub">جاري تحميل نظام الحجوزات والماليات الذكي...</div>
+        <div class="loader-ring"></div>
+    </div>
+
     <aside id="sidebar">
         <div>
             <div class="logo-area">
@@ -436,7 +495,7 @@
             <ul class="nav-links">
                 <li class="active" onclick="switchTab('dashboard', this)"><i class="fa-solid fa-chart-pie"></i> لوحة المؤشرات</li>
                 <li onclick="switchTab('new-booking', this)"><i class="fa-solid fa-plus-circle"></i> تسجيل حجز جديد</li>
-                <li onclick="switchTab('calendar', this)"><i class="fa-solid fa-calendar-days"></i> تقويم الحجوزات</li>
+                <li onclick="switchTab('calendar', this)"><i class="fa-solid fa-calendar-days"></i> تقويم الحجوزات الذكي</li>
                 <li onclick="switchTab('reservations', this)"><i class="fa-solid fa-file-lines"></i> سجل الحجوزات</li>
                 <li onclick="switchTab('expenses', this)"><i class="fa-solid fa-coins"></i> المصروفات والصيانة</li>
                 <li onclick="switchTab('reports', this)"><i class="fa-solid fa-file-invoice-dollar"></i> التقرير المالي</li>
@@ -562,11 +621,11 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label>القسم</label>
+                            <label>القسم (التحقق الذكي للتعارض)</label>
                             <select id="b-section">
-                                <option>نساء</option>
-                                <option>رجال</option>
-                                <option>قسمين</option>
+                                <option value="نساء">نساء</option>
+                                <option value="رجال">رجال</option>
+                                <option value="قسمين">قسمين (كامل الشاليه)</option>
                             </select>
                         </div>
                         <div class="form-group">
@@ -597,24 +656,50 @@
                             </select>
                         </div>
                     </div>
-                    <button type="submit" class="btn" style="margin-top: 10px;"><i class="fa-solid fa-check"></i> حفظ البيانات</button>
+                    <button type="submit" class="btn" style="margin-top: 10px;"><i class="fa-solid fa-check"></i> حفظ البيانات مع الفحص الآلي</button>
                 </form>
             </div>
         </div>
 
         <div id="calendar" class="tab-content">
             <div class="card-box">
-                <h3>تقويم الحجوزات وتفاصيل التواريخ</h3>
+                <h3>تقويم الحجوزات الشامل (السنة كاملة أو بالشهور)</h3>
                 
                 <div class="legend-box">
-                    <div class="legend-item"><div class="legend-color" style="background: #2ed573;"></div> حجز مؤكد</div>
-                    <div class="legend-item"><div class="legend-color" style="background: #ffa502;"></div> مدفوع عربون</div>
-                    <div class="legend-item"><div class="legend-color" style="background: #ff4757;"></div> معلق / غير مؤكد</div>
+                    <div class="legend-item"><div class="legend-color" style="background: #ff4757;"></div> محجوز قسمين (كامل)</div>
+                    <div class="legend-item"><div class="legend-color" style="background: #ffa502;"></div> محجوز قسم جزئي (نساء/رجال)</div>
+                    <div class="legend-item"><div class="legend-color" style="background: #2ed573;"></div> مؤكد</div>
                     <div class="legend-item"><div class="legend-color" style="background: #ffffff; border: 1px solid #ccc;"></div> يوم متاح</div>
                 </div>
 
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <span id="cal-month-title" style="font-weight: 900; font-size: 16px;"></span>
+                <div class="calendar-controls">
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button onclick="changeMonth(-1)" class="btn" style="padding: 6px 12px; font-size: 12px;"><i class="fa-solid fa-chevron-right"></i> السابق</button>
+                        <select id="cal-month-select" onchange="jumpToMonth()" style="padding: 6px 12px; border-radius: 8px; border: 2px solid #dcdde1; font-weight: 700; font-size: 13px;">
+                            <option value="0">يناير 2026</option>
+                            <option value="1">فبراير 2026</option>
+                            <option value="2">مارس 2026</option>
+                            <option value="3">أبريل 2026</option>
+                            <option value="4">مايو 2026</option>
+                            <option value="5" selected>يونيو 2026</option>
+                            <option value="6">يوليو 2026</option>
+                            <option value="7">أغسطس 2026</option>
+                            <option value="8">سبتمبر 2026</option>
+                            <option value="9">أكتوبر 2026</option>
+                            <option value="10">نوفمبر 2026</option>
+                            <option value="11">ديسمبر 2026</option>
+                        </select>
+                        <button onclick="changeMonth(1)" class="btn" style="padding: 6px 12px; font-size: 12px;">التالي <i class="fa-solid fa-chevron-left"></i></button>
+                    </div>
+
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <input type="date" id="calendar-search-date" onchange="quickCheckDate()" style="padding: 6px 10px; border-radius: 8px; border: 2px solid #dcdde1; font-size: 13px;">
+                        <button onclick="quickCheckDate()" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;"><i class="fa-solid fa-search"></i> فحص التاريخ</button>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 12px;">
+                    <span id="cal-month-title" style="font-weight: 900; font-size: 16px; color: #1e272e;"></span>
                 </div>
                 
                 <div class="calendar-weekdays">
@@ -630,7 +715,7 @@
                 <div class="calendar-grid" id="calendar-container"></div>
 
                 <div id="calendar-details-box" class="calendar-details-card">
-                    <h4 style="margin-bottom: 10px; color: #2f3640; border-bottom: 1px solid #ddd; padding-bottom: 5px;"><i class="fa-solid fa-info-circle"></i> تفاصيل الحجز المحدد</h4>
+                    <h4 style="margin-bottom: 10px; color: #2f3640; border-bottom: 1px solid #ddd; padding-bottom: 5px;"><i class="fa-solid fa-info-circle"></i> تفاصيل الحجوزات للتاريخ المحدد</h4>
                     <div id="calendar-details-content" style="font-size: 13px; line-height: 1.8;"></div>
                 </div>
             </div>
@@ -729,7 +814,7 @@
                 <h3>النسخ الاحتياطي والأمان</h3>
                 <p style="font-size: 13px; color: #718093; margin-bottom: 20px;">يمكنك الاحتفاظ بنسخة محلية من كافة بياناتك واستعادتها في أي وقت لضمان الأمان.</p>
                 <div style="display: flex; gap: 15px; flex-wrap: wrap;">
-                    <button onclick="exportDataJSON()" class="btn btn-success"><i class="fa-solid fa-download"></i> تصدير نسخة احتياطية (JSON)</button>
+                    <button onclick="exportDataJSON()" class="btn btn-success"><i class="fa-solid fa-download"></i> تصدير نسخة احتياطية باسم البرنامج</button>
                     <label class="btn btn-secondary" style="cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
                         <i class="fa-solid fa-upload"></i> استعادة البيانات
                         <input type="file" id="import-file" onchange="importDataJSON(event)" style="display: none;" accept=".json">
@@ -752,6 +837,14 @@
     </div>
 
     <script>
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                let splash = document.getElementById('splash-screen');
+                splash.style.opacity = '0';
+                setTimeout(() => splash.style.display = 'none', 500);
+            }, 800);
+        });
+
         let bookings = JSON.parse(localStorage.getItem('cruise_bookings')) || [
             { id: 1, name: 'تميم البدحاني', phone: '0501112233', date: '2026-06-10', period: 'مساء', section: 'نساء', price: 600, paid: 100, method: 'تحويل بنكي', status: 'عربون' },
             { id: 2, name: 'وليد محمد', phone: '0552223344', date: '2026-06-12', period: 'يوم كامل', section: 'قسمين', price: 1200, paid: 1200, method: 'كاش', status: 'مؤكد' }
@@ -762,6 +855,8 @@
         ];
 
         let activeReceipt = null;
+        let currentCalendarMonth = 5; // يونيو افتراضياً (0-11)
+        const monthNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
 
         function switchTab(tabId, element) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
@@ -783,19 +878,51 @@
             document.getElementById('b-rem').value = rem >= 0 ? rem + ' ر.س' : '0 ر.س';
         }
 
+        // دالة الفحص الذكي للتعارض قبل الحفظ
+        function checkBookingConflict(date, requestedSection, editId) {
+            let existingOnDate = bookings.filter(b => b.date === date && b.id != editId);
+            if(existingOnDate.length === 0) return null; // متاح تماماً
+
+            // إذا كان محجوزاً مسبقاً "قسمين" (كامل)
+            let hasFull = existingOnDate.some(b => b.section === 'قسمين');
+            if(hasFull) return 'اليوم محجوز بالكامل (قسمين) مسبقاً!';
+
+            // إذا طلب المستخدم حجز "قسمين" وكان هناك قسم محجوز (نساء أو رجال)
+            if(requestedSection === 'قسمين') {
+                return 'عذراً، يوجد حجز قائم لأحد الأقسام في هذا اليوم، لا يمكن حجز القسمين معاً!';
+            }
+
+            // إذا طلب حجز قسم معين (نساء أو رجال) وكان نفس القسم محجوزاً بالفعل
+            let hasSameSection = existingOnDate.some(b => b.section === requestedSection);
+            if(hasSameSection) {
+                return `عذراً، قسم (${requestedSection}) محجوز مسبقاً في هذا التاريخ!`;
+            }
+
+            return null; // القسم الآخر متاح (مثلاً الرجال محجوز والنساء متاح والعكس)
+        }
+
         function saveBookingData(e) {
             e.preventDefault();
             let editId = document.getElementById('b-edit-id').value;
+            let date = document.getElementById('b-date').value;
+            let section = document.getElementById('b-section').value;
             let price = parseFloat(document.getElementById('b-price').value);
             let paid = parseFloat(document.getElementById('b-paid').value);
+
+            // فحص التعارض الآلي
+            let conflictMsg = checkBookingConflict(date, section, editId);
+            if(conflictMsg) {
+                alert('⚠️ تنبيه تعارض الحجز:\n' + conflictMsg);
+                return;
+            }
             
             let bookingData = {
                 id: editId ? parseInt(editId) : Date.now(),
                 name: document.getElementById('b-name').value,
                 phone: document.getElementById('b-phone').value,
-                date: document.getElementById('b-date').value,
+                date: date,
                 period: document.getElementById('b-period').value,
-                section: document.getElementById('b-section').value,
+                section: section,
                 price: price,
                 paid: paid,
                 method: document.getElementById('b-method').value,
@@ -808,7 +935,7 @@
                 alert('تم تحديث الحجز بنجاح!');
             } else {
                 bookings.push(bookingData);
-                alert('تم حفظ الحجز الجديد بنجاح!');
+                alert('تم فحص التاريخ بنجاح وحفظ الحجز دون تعارض!');
             }
 
             document.getElementById('b-edit-id').value = '';
@@ -875,15 +1002,15 @@
 
         function updateDashboard() {
             let filterType = document.getElementById('period-selector').value;
-            let currentMonth = new Date().toISOString().slice(0, 7);
+            let currentMonthStr = new Date().toISOString().slice(0, 7);
 
             let filteredBookings = bookings.filter(b => {
-                if(filterType === 'month') return b.date.startsWith(currentMonth);
+                if(filterType === 'month') return b.date.startsWith(currentMonthStr);
                 return b.date.startsWith('2026');
             });
 
             let filteredExpenses = expenses.filter(e => {
-                if(filterType === 'month') return e.date.startsWith(currentMonth);
+                if(filterType === 'month') return e.date.startsWith(currentMonthStr);
                 return e.date.startsWith('2026');
             });
 
@@ -930,7 +1057,7 @@
             tbody.innerHTML = '';
             bookings.forEach((b, index) => {
                 let rem = b.price - b.paid;
-                let badgeClass = b.section === 'نساء' ? 'nisah' : 'qismain';
+                let badgeClass = b.section === 'نساء' ? 'nisah' : (b.section === 'رجال' ? 'rijal' : 'qismain');
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${index + 1}</td>
@@ -978,53 +1105,111 @@
             });
         }
 
+        // دوال التحكم بالتقويم الشامل
+        function changeMonth(direction) {
+            currentCalendarMonth += direction;
+            if(currentCalendarMonth > 11) currentCalendarMonth = 0;
+            if(currentCalendarMonth < 0) currentCalendarMonth = 11;
+            document.getElementById('cal-month-select').value = currentCalendarMonth;
+            renderCalendar();
+        }
+
+        function jumpToMonth() {
+            currentCalendarMonth = parseInt(document.getElementById('cal-month-select').value);
+            renderCalendar();
+        }
+
         function renderCalendar() {
             let container = document.getElementById('calendar-container');
             container.innerHTML = '';
-            document.getElementById('cal-month-title').innerText = 'حجوزات شهر يونيو 2026';
+            let monthName = monthNames[currentCalendarMonth];
+            document.getElementById('cal-month-title').innerText = `حجوزات شهر ${monthName} 2026`;
             document.getElementById('calendar-details-box').style.display = 'none';
             
-            for (let i = 1; i <= 30; i++) {
-                let dayStr = `2026-06-${i < 10 ? '0' + i : i}`;
-                let booking = bookings.find(b => b.date === dayStr);
+            // حساب عدد الأيام في الشهر الحالي 2026
+            let daysInMonth = new Date(2026, currentCalendarMonth + 1, 0).getDate();
+            
+            for (let i = 1; i <= daysInMonth; i++) {
+                let mFormatted = (currentCalendarMonth + 1) < 10 ? '0' + (currentCalendarMonth + 1) : (currentCalendarMonth + 1);
+                let dFormatted = i < 10 ? '0' + i : i;
+                let dayStr = `2026-${mFormatted}-${dFormatted}`;
+                
+                let dayBookings = bookings.filter(b => b.date === dayStr);
                 
                 let dayDiv = document.createElement('div');
                 let className = 'cal-day';
+                let infoHtml = '<span style="color:#718093">متاح</span>';
                 
-                if(booking) {
-                    if(booking.status === 'مؤكد') className += ' status-confirmed';
-                    else if(booking.status === 'عربون') className += ' status-deposit';
-                    else className += ' status-unconfirmed';
+                if(dayBookings.length > 0) {
+                    let hasFull = dayBookings.some(b => b.section === 'قسمين');
+                    if(hasFull) {
+                        className += ' status-qismain';
+                        infoHtml = '🔒 محجوز كامل';
+                    } else {
+                        className += ' status-partial';
+                        let sections = dayBookings.map(b => b.section).join(', ');
+                        infoHtml = `⚡ محجوز (${sections})`;
+                    }
                 }
                 
                 dayDiv.className = className;
                 dayDiv.innerHTML = `
                     <div class="date-num">${i}</div>
-                    <div class="hijri-num">${i + 14} ذو القعدة</div>
-                    <div class="client-name">${booking ? booking.name : '<span style="color:#718093">متاح</span>'}</div>
+                    <div class="booking-info-tags">${infoHtml}</div>
                 `;
 
-                if(booking) {
-                    dayDiv.onclick = () => showCalendarDetails(booking);
+                if(dayBookings.length > 0) {
+                    dayDiv.onclick = () => showCalendarDetailsForDate(dayStr, dayBookings);
                 }
 
                 container.appendChild(dayDiv);
             }
         }
 
-        function showCalendarDetails(b) {
-            let rem = b.price - b.paid;
+        // البحث السريع في التقويم لتاريخ محدد
+        function quickCheckDate() {
+            let checkDate = document.getElementById('calendar-search-date').value;
+            if(!checkDate) {
+                alert('الرجاء اختيار تاريخ أولاً لفحصه!');
+                return;
+            }
+            let matchedBookings = bookings.filter(b => b.date === checkDate);
             let box = document.getElementById('calendar-details-box');
             let content = document.getElementById('calendar-details-content');
-            
             box.style.display = 'block';
-            content.innerHTML = `
-                <b>اسم المستأجر:</b> ${b.name} | <b>الجوال:</b> ${b.phone}<br>
-                <b>التاريخ والفترة:</b> ${b.date} (${b.period}) | <b>القسم:</b> ${b.section}<br>
-                <b>الإيجار:</b> ${b.price} ر.س | <b>الواصل:</b> ${b.paid} ر.س | <span style="color: #c62828; font-weight: bold;">المتبقي: ${rem} ر.س</span><br>
-                <b>الحالة:</b> <span class="badge ${b.status === 'مؤكد' ? 'success' : 'danger'}">${b.status}</span><br>
-                <button onclick="editBooking(${b.id})" class="btn" style="margin-top: 10px; padding: 6px 15px; font-size: 12px;"><i class="fa-solid fa-pen-to-square"></i> تعديل بيانات هذا الحجز</button>
-            `;
+
+            if(matchedBookings.length === 0) {
+                content.innerHTML = `<b style="color: #2ed573;"><i class="fa-solid fa-circle-check"></i> التاريخ (${checkDate}) متاح تماماً للحجز (لا توجد أي حجوزات مسبقة)!</b>`;
+            } else {
+                let hasFull = matchedBookings.some(b => b.section === 'قسمين');
+                let html = `<b style="color: #c62828;"><i class="fa-solid fa-triangle-exclamation"></i> التاريخ (${checkDate}) محجوز كالتالي:</b><br><br>`;
+                matchedBookings.forEach(b => {
+                    html += `• المستأجر: <b>${b.name}</b> | القسم: <span class="badge nisah">${b.section}</span> | الفترة: ${b.period} | الحالة: ${b.status}<br>`;
+                });
+                if(!hasFull) {
+                    html += `<br><b style="color: #10ac84;"><i class="fa-solid fa-circle-info"></i> ملاحظة: يمكنك حجز القسم غير المحجوز في هذا اليوم لعدم وجود تعارض تام.</b>`;
+                }
+                content.innerHTML = html;
+            }
+        }
+
+        function showCalendarDetailsForDate(dateStr, dayBookings) {
+            let box = document.getElementById('calendar-details-box');
+            let content = document.getElementById('calendar-details-content');
+            box.style.display = 'block';
+            
+            let html = `<b>تفاصيل تاريخ: ${dateStr}</b><br><hr style="margin: 5px 0;">`;
+            dayBookings.forEach(b => {
+                let rem = b.price - b.paid;
+                html += `
+                    • المستأجر: <b>${b.name}</b> (${b.phone})<br>
+                    • القسم المحجوز: <span class="badge nisah">${b.section}</span> | الفترة: ${b.period}<br>
+                    • الإيجار: ${b.price} ر.س | الواصل: ${b.paid} ر.س | المتبقي: ${rem} ر.س<br>
+                    • الحالة: <span class="badge ${b.status === 'مؤكد' ? 'success' : 'danger'}">${b.status}</span><br>
+                    <button onclick="editBooking(${b.id})" class="btn" style="margin: 5px 0 10px 0; padding: 4px 10px; font-size: 11px;"><i class="fa-solid fa-pen"></i> تعديل الحجز</button><br>
+                `;
+            });
+            content.innerHTML = html;
         }
 
         function openReceipt(b) {
@@ -1052,7 +1237,7 @@
 
         function sendWhatsApp() {
             if(!activeReceipt) return;
-            let msg = `مرحباً ${activeReceipt.name}، نؤكد لكم حجزكم في شاليه كروز بتاريخ ${activeReceipt.date} (${activeReceipt.period}). المبلغ الواصل: ${activeReceipt.paid} ر.س والمتبقي: ${activeReceipt.price - activeReceipt.paid} ر.س. شكراً لاختياركم لنا!`;
+            let msg = `مرحباً ${activeReceipt.name}، نؤكد لكم حجزكم في شاليه كروز بتاريخ ${activeReceipt.date} (${activeReceipt.period}) - قسم (${activeReceipt.section}). المبلغ الواصل: ${activeReceipt.paid} ر.س والمتبقي: ${activeReceipt.price - activeReceipt.paid} ر.س. شكراً لاختياركم لنا!`;
             let url = `https://wa.me/${activeReceipt.phone}?text=${encodeURIComponent(msg)}`;
             window.open(url, '_blank');
         }
@@ -1078,7 +1263,7 @@
             let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             let link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'Cruise_Chalets_Bookings.csv';
+            link.download = 'تقرير_حجوزات_شاليه_كروز.csv';
             link.click();
         }
 
@@ -1087,7 +1272,7 @@
             let blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
             let link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = 'cruise_backup_2026.json';
+            link.download = 'نسخة_احتياطية_شاليه_كروز.json';
             link.click();
         }
 
@@ -1118,3 +1303,4 @@
     </script>
 </body>
 </html>
+
