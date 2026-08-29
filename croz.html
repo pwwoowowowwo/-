@@ -2,1669 +2,1119 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>إدارة الشاليه الملكي</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>شاليه كروز | النظام المالي وإدارة الحجوزات الاحترافي</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #d4af37;         /* ذهبي ملكي ساطع */
-            --primary-dark: #b89728;    /* ذهبي غامق للتدرجات */
-            --primary-light: rgba(212, 175, 55, 0.15);
-            --accent-glow: rgba(212, 175, 55, 0.5);
-            
-            --success: #059669;
-            --success-light: rgba(5, 150, 105, 0.15);
-            --warning: #d97706;
-            --warning-light: rgba(217, 119, 6, 0.15);
-            --danger: #dc2626;
-            --danger-light: rgba(220, 38, 38, 0.15);
-            
-            --dark-bg: #e2e8f0;        /* خلفية عامة فاتحة ومنعشة */
-            --app-bg: #ffffff;         /* خلفية التطبيق البيضاء الناصعة */
-            --card-bg: #f8fafc;        /* خلفية البطاقات الفاتحة */
-            --glass-border: #cbd5e1;   /* حدود واضحة ونظيفة */
-            --text-main: #0f172a;      /* نصوص رئيسية داكنة واضحة */
-            --text-muted: #64748b;     /* نصوص ثانوية */
+            --primary-gradient: linear-gradient(135deg, #FF6B6B, #FF8E53);
+            --secondary-gradient: linear-gradient(135deg, #1dd1a1, #10ac84);
+            --info-gradient: linear-gradient(135deg, #54a0ff, #2e86de);
+            --warning-gradient: linear-gradient(135deg, #feca57, #ff9f43);
+            --dark-bg: #1e272e;
+            --light-bg: #f5f6fa;
+            --card-bg: #ffffff;
+            --text-main: #2f3640;
         }
-        
+
         * {
             box-sizing: border-box;
-            font-family: 'Tajawal', sans-serif;
             margin: 0;
             padding: 0;
-            -webkit-tap-highlight-color: transparent;
+            font-family: 'Cairo', sans-serif;
         }
 
         body {
-            background-color: var(--dark-bg);
+            background-color: var(--light-bg);
             color: var(--text-main);
             display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            overflow-x: hidden;
+            height: 100vh;
+            overflow: hidden;
         }
 
-        .app-container {
-            width: 100%;
-            height: 100vh;
-            background: var(--app-bg);
-            position: relative;
+        /* القائمة الجانبية */
+        aside {
+            width: 280px;
+            background: var(--dark-bg);
+            color: white;
             display: flex;
             flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-            border: 1px solid var(--glass-border);
-            transition: all 0.3s ease;
-        }
-
-        /* التكيف التلقائي الخلفي حسب حجم الشاشة والاتجاه */
-        .app-container.mode-mobile-portrait {
-            max-width: 420px;
-            height: 100vh;
-            border-radius: 0;
-        }
-
-        .app-container.mode-mobile-landscape {
-            max-width: 750px;
-            height: 100vh;
-            border-radius: 0;
-        }
-
-        .app-container.mode-tablet {
-            max-width: 768px;
-            height: 92vh;
-            border-radius: 20px;
-            border: 2px solid var(--primary);
-        }
-
-        .app-container.mode-desktop {
-            max-width: 1024px;
-            height: 92vh;
-            border-radius: 24px;
-            border: 2px solid var(--primary);
-        }
-
-        /* الترويسة العلوية الحية والملونة */
-        header {
-            padding: 14px 20px;
-            display: flex;
             justify-content: space-between;
-            align-items: center;
-            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-            border-bottom: 3px solid var(--primary);
-            z-index: 20;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-            position: relative;
+            box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            z-index: 10;
+            transition: transform 0.3s ease, width 0.3s ease;
+        }
+
+        aside.hidden {
+            transform: translateX(100%);
+            width: 0;
             overflow: hidden;
         }
-        
-        header::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
-            animation: shimmerHeader 3s infinite;
-        }
 
-        @keyframes shimmerHeader {
-            0% { left: -100%; }
-            50% { left: 100%; }
-            100% { left: 100%; }
-        }
-
-        .brand-header-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+        .logo-area {
+            padding: 25px 20px;
             text-align: center;
-        }
-        .brand-header-box h1 {
-            font-size: 1.15rem;
-            background: linear-gradient(135deg, #fef08a, #d4af37);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin: 0;
-            font-weight: 900;
-            letter-spacing: 0.5px;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
-        }
-        .brand-header-box span {
-            font-size: 0.7rem;
-            color: #94a3b8;
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            background: rgba(255,255,255,0.05);
+            white-space: nowrap;
         }
 
-        /* زر القائمة الجانبية الحيي والتفاعلي */
-        .menu-toggle-btn {
-            background: linear-gradient(145deg, #f8fafc, #e2e8f0);
-            border: 2px solid var(--primary);
-            color: #1e293b;
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            font-size: 1.25rem;
+        .logo-area h1 {
+            font-size: 22px;
+            font-weight: 900;
+            color: #ff9f43;
+        }
+
+        .logo-area p {
+            font-size: 12px;
+            color: #a4b0be;
+            margin-top: 5px;
+        }
+
+        .nav-links {
+            list-style: none;
+            padding: 15px 0;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+
+        .nav-links li {
+            padding: 14px 25px;
             cursor: pointer;
             display: flex;
             align-items: center;
-            justify-content: center;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .menu-toggle-btn:hover {
-            background: var(--primary);
-            color: #ffffff;
-            transform: scale(1.1) rotate(90deg);
-            box-shadow: 0 0 15px var(--accent-glow);
-        }
-        .menu-toggle-btn:active { transform: scale(0.92); }
-
-        /* القائمة الجانبية */
-        .sidebar-overlay {
-            position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 50;
-            display: none;
-            justify-content: flex-start;
-            animation: fadeInOverlay 0.25s ease;
-        }
-        .sidebar-overlay.active { display: flex; }
-
-        @keyframes fadeInOverlay {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            gap: 15px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            color: #dcdde1;
+            white-space: nowrap;
         }
 
-        .sidebar {
-            width: 260px;
-            height: 100%;
-            background: #ffffff;
-            border-left: 3px solid var(--primary);
-            padding: 20px 15px;
+        .nav-links li:hover, .nav-links li.active {
+            background: rgba(255,255,255,0.1);
+            color: #ff9f43;
+            border-right: 5px solid #ff9f43;
+        }
+
+        .nav-links li i {
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        /* المحتوى الرئيسي */
+        main {
+            flex-grow: 1;
+            padding: 20px 25px;
+            overflow-y: auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        /* الترويسة الرئيسية الثابتة والشريط العلوي */
+        .header-container {
             display: flex;
             flex-direction: column;
             gap: 10px;
-            box-shadow: 10px 0 30px rgba(0,0,0,0.15);
-            animation: slideRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            margin-bottom: 20px;
         }
 
-        @keyframes slideRight {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(0); }
-        }
-
-        .sidebar-header {
+        .main-header-banner {
+            background: linear-gradient(135deg, #1e272e, #2f3640);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 12px;
             display: flex;
+            align-items: center;
             justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #f1f5f9;
-            padding-bottom: 12px;
-            margin-bottom: 5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
         }
-        .sidebar-header h3 { color: var(--primary); font-size: 1.05rem; font-weight: 900; }
 
-        .sidebar-item {
+        .main-header-banner h2 {
+            font-size: 20px;
+            font-weight: 900;
+            color: #ff9f43;
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 12px 14px;
-            background: #f8fafc;
-            border: 1px solid var(--glass-border);
-            border-radius: 14px;
-            color: var(--text-main);
-            font-size: 0.92rem;
+            gap: 10px;
+        }
+
+        .main-header-banner p {
+            font-size: 12px;
+            color: #dcdde1;
+        }
+
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: white;
+            padding: 12px 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.03);
+        }
+
+        .menu-toggle-btn {
+            background: var(--dark-bg);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.25s ease;
-            position: relative;
-            overflow: hidden;
-        }
-        .sidebar-item::before {
-            content: '';
-            position: absolute;
-            right: 0; top: 0; height: 100%; width: 4px;
-            background: var(--primary);
-            transform: scaleY(0);
-            transition: transform 0.25s ease;
-        }
-        .sidebar-item:hover {
-            background: var(--primary-light);
-            border-color: var(--primary);
-            transform: translateX(-4px);
-        }
-        .sidebar-item.active {
-            background: var(--primary-light);
-            border-color: var(--primary);
-            color: var(--primary);
-            font-weight: 900;
-        }
-        .sidebar-item.active::before { transform: scaleY(1); }
-        .sidebar-item:active { transform: scale(0.96); }
-        .sidebar-icon { font-size: 1.2rem; }
-
-        main {
-            flex: 1;
-            overflow-y: auto;
-            padding: 16px;
-            padding-bottom: 50px;
-            background: var(--app-bg);
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
         }
 
-        .view {
+        .menu-toggle-btn:hover {
+            background: #ff9f43;
+        }
+
+        .tab-content {
             display: none;
-            animation: fadeInView 0.3s ease;
         }
-        .view.active { display: block; }
 
-        @keyframes fadeInView {
-            from { opacity: 0; transform: translateY(8px); }
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* البطاقات الفاتحة والحيوية */
-        .card {
-            background: var(--card-bg);
-            border: 1.5px solid var(--glass-border);
-            border-radius: 18px;
-            padding: 16px;
-            margin-bottom: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            transition: all 0.3s ease;
-        }
-        .card:hover {
-            border-color: var(--primary);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.15);
+        /* الإحصائيات الحية */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
         }
 
-        .stat-row { display: flex; gap: 10px; margin-bottom: 10px; }
-        .stat-box {
-            flex: 1;
-            background: #ffffff;
-            border: 1.5px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 14px 8px;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        .stat-box:hover {
-            transform: translateY(-3px);
-            border-color: var(--primary);
-            box-shadow: 0 6px 15px rgba(212, 175, 55, 0.2);
-        }
-        .stat-box h3 { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; }
-        .stat-box .value { font-size: 1.1rem; font-weight: 900; color: var(--text-main); }
-
-        /* خانات الإدخال الفاتحة الحية والمميزة بلون عند التفاعل */
-        .form-group { margin-bottom: 14px; }
-        label { display: block; font-size: 0.85rem; color: var(--text-main); margin-bottom: 6px; font-weight: 700; }
-        
-        input, select, textarea {
-            width: 100%;
-            padding: 12px 14px;
-            background: #ffffff;
-            border: 2px solid var(--glass-border);
+        .stat-card {
+            padding: 15px;
             border-radius: 12px;
-            color: var(--text-main);
-            outline: none;
-            font-size: 0.95rem;
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-        input:hover, select:hover, textarea:hover {
-            border-color: var(--primary-dark);
-        }
-        input:focus, select:focus, textarea:focus {
-            border-color: var(--primary);
-            background: #ffffff;
-            box-shadow: 0 0 0 4px var(--accent-glow), inset 0 1px 3px rgba(0,0,0,0.05);
-            transform: translateY(-1px);
-        }
-        select option { background-color: #ffffff; color: var(--text-main); padding: 10px; }
 
-        /* الأزرار الحية والمتفاعلة */
-        button.btn-primary {
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            color: #ffffff;
-            border: none;
-            padding: 14px;
-            border-radius: 14px;
-            width: 100%;
-            font-size: 1rem;
-            font-weight: 900;
-            margin-top: 6px;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35);
-            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
-            overflow: hidden;
-        }
-        button.btn-primary::after {
-            content: '';
-            position: absolute;
-            top: 0; left: -100%; width: 100%; height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: 0.5s;
-        }
-        button.btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.55);
-            filter: brightness(1.05);
-        }
-        button.btn-primary:hover::after { left: 100%; }
-        button.btn-primary:active { transform: translateY(1px) scale(0.98); }
+        .stat-card.c1 { background: var(--primary-gradient); }
+        .stat-card.c2 { background: var(--secondary-gradient); }
+        .stat-card.c3 { background: var(--info-gradient); }
+        .stat-card.c4 { background: var(--warning-gradient); }
+        .stat-card.c5 { background: linear-gradient(135deg, #a55eea, #8854d0); }
 
-        /* شريط التنبيهات الحي */
-        .quick-alert-bar {
-            background: #ffffff;
-            border: 1.5px solid var(--glass-border);
-            border-right: 6px solid var(--primary);
-            border-radius: 16px;
-            padding: 16px;
-            margin-bottom: 16px;
-            font-size: 0.85rem;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            transition: transform 0.2s;
-        }
-        .quick-alert-bar:hover { transform: scale(1.01); }
-        .quick-alert-bar h4 { color: var(--primary); font-size: 0.92rem; margin-bottom: 6px; font-weight: 900; }
+        .stat-info h3 { font-size: 11px; font-weight: 600; opacity: 0.9; }
+        .stat-info p { font-size: 18px; font-weight: 900; margin-top: 3px; }
+        .stat-card i { font-size: 28px; opacity: 0.4; }
 
-        /* تقويم الآيفون الفاتح والحي */
-        .month-selector {
-            background: #ffffff;
-            border: 1.5px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 14px;
-            margin-bottom: 14px;
+        .alert-box {
+            background: #fff3cd;
+            border: 1px solid #ffeeba;
+            color: #856404;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            font-weight: 600;
             display: flex;
             align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
-        }
-        
-        .iphone-calendar {
-            background: #ffffff;
-            border: 1.5px solid var(--glass-border);
-            border-radius: 18px;
-            padding: 14px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
+            gap: 10px;
         }
 
-        .weekdays-grid {
+        .card-box {
+            background: var(--card-bg);
+            border-radius: 14px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+            margin-bottom: 20px;
+        }
+
+        .card-box h3 {
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 700;
+            color: #2f3640;
+            border-bottom: 2px solid #f1f2f6;
+            padding-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #718093;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 9px 12px;
+            border: 2px solid #dcdde1;
+            border-radius: 8px;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: #ff9f43;
+            box-shadow: 0 0 5px rgba(255, 159, 67, 0.3);
+        }
+
+        .btn {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            padding: 10px 22px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-secondary { background: var(--info-gradient); }
+        .btn-success { background: var(--secondary-gradient); }
+
+        .table-responsive { width: 100%; overflow-x: auto; }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+            margin-top: 5px;
+            white-space: nowrap;
+        }
+
+        table th, table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f2f6;
+        }
+
+        table th { background-color: #f8f9fa; color: #2f3640; font-size: 13px; font-weight: 700; }
+        table td { font-size: 13px; color: #57606f; }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .badge.nisah { background: #e8f5e9; color: #2e7d32; }
+        .badge.qismain { background: #fff3e0; color: #ef6c00; }
+        .badge.success { background: #e1f5fe; color: #0288d1; }
+        .badge.danger { background: #ffebee; color: #c62828; }
+
+        /* تقويم الحجوزات مع شريط أيام الأسبوع الثابت بالأعلى */
+        .calendar-weekdays {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
+            gap: 8px;
+            margin-bottom: 8px;
             text-align: center;
             font-weight: 900;
-            font-size: 0.8rem;
-            color: var(--primary-dark);
-            margin-bottom: 10px;
+            font-size: 13px;
+            color: #2f3640;
+            background: #f1f2f6;
+            padding: 8px;
+            border-radius: 8px;
         }
 
-        .days-grid {
+        .calendar-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 6px;
+            gap: 8px;
         }
 
-        .cal-day-cell {
-            aspect-ratio: 0.85;
-            background: #f8fafc;
-            border: 1.5px solid var(--glass-border);
-            border-radius: 12px;
+        .cal-day {
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 10px;
+            min-height: 90px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .cal-day:hover {
+            border-color: #ff9f43;
+            transform: translateY(-2px);
+        }
+
+        /* ألوان مغطاة تماماً وغير شفافة */
+        .cal-day.status-confirmed { background-color: #2ed573 !important; border-color: #26af5f !important; color: white !important; }
+        .cal-day.status-deposit { background-color: #ffa502 !important; border-color: #e08e00 !important; color: white !important; }
+        .cal-day.status-unconfirmed { background-color: #ff4757 !important; border-color: #e84118 !important; color: white !important; }
+
+        .cal-day.status-confirmed .date-num, .cal-day.status-confirmed .hijri-num, .cal-day.status-confirmed .client-name,
+        .cal-day.status-deposit .date-num, .cal-day.status-deposit .hijri-num, .cal-day.status-deposit .client-name,
+        .cal-day.status-unconfirmed .date-num, .cal-day.status-unconfirmed .hijri-num, .cal-day.status-unconfirmed .client-name {
+            color: white !important;
+        }
+
+        .cal-day .date-num { font-weight: 900; font-size: 14px; color: #2f3640; }
+        .cal-day .hijri-num { font-size: 10px; color: #718093; margin-bottom: 4px; }
+        .cal-day .client-name { font-size: 11px; font-weight: 700; color: #1e272e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+        /* دليل الألوان التوضيحي */
+        .legend-box {
             display: flex;
-            flex-direction: column;
+            gap: 20px;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 12px;
+            font-weight: 700;
+            flex-wrap: wrap;
+        }
+        .legend-item { display: flex; align-items: center; gap: 6px; }
+        .legend-color { width: 16px; height: 16px; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1); }
+
+        .calendar-details-card {
+            background: #f8f9fa;
+            border: 2px dashed #cbd5e1;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        /* نافذة سند القبض */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5);
             justify-content: center;
             align-items: center;
-            padding: 2px;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .cal-day-cell:hover:not(.empty) {
-            transform: scale(1.1);
-            z-index: 5;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-color: var(--primary);
-        }
-
-        .cal-day-cell.empty { background: transparent; border: none; cursor: default; }
-
-        .cal-day-cell.status-free { background: #f8fafc; border-color: var(--glass-border); }
-        .cal-day-cell.status-green { background: var(--success-light); border-color: var(--success); box-shadow: 0 0 10px rgba(5, 150, 105, 0.15); }
-        .cal-day-cell.status-yellow { background: var(--warning-light); border-color: var(--warning); box-shadow: 0 0 10px rgba(217, 119, 6, 0.15); }
-        .cal-day-cell.status-red { background: var(--danger-light); border-color: var(--danger); box-shadow: 0 0 10px rgba(220, 38, 38, 0.15); }
-
-        .cal-day-cell .day-gregorian { font-size: 1rem; font-weight: 900; color: var(--text-main); line-height: 1.1; }
-        .cal-day-cell .day-hijri { font-size: 0.65rem; color: var(--text-muted); margin-top: 3px; font-weight: 700; }
-
-        .selected-day-details {
-            margin-top: 14px;
-            background: #ffffff;
-            border: 1.5px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 16px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-        }
-        .selected-day-details h3 {
-            font-size: 0.95rem; color: var(--primary); margin-bottom: 10px;
-            border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; font-weight: 900;
-        }
-        .detail-slot {
-            font-size: 0.82rem; background: #f8fafc; border: 1.5px solid var(--glass-border); padding: 10px 12px; border-radius: 10px; margin-bottom: 8px;
-        }
-
-        /* بطاقات السجل والمصروفات الفاتحة والحية */
-        .booking-card, .expense-card, .maintenance-card {
-            background: #ffffff;
-            border: 1.5px solid var(--glass-border);
-            border-radius: 18px;
-            padding: 16px;
-            margin-bottom: 14px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            transition: all 0.25s ease;
-        }
-        .booking-card:hover, .expense-card:hover {
-            transform: translateY(-2px);
-            border-color: var(--primary);
-            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.2);
-        }
-        .booking-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 10px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;
-        }
-        .booking-title { font-size: 1.05rem; font-weight: 900; color: var(--primary); }
-        .booking-date { font-size: 0.8rem; color: var(--text-muted); background: #f8fafc; padding: 4px 10px; border-radius: 8px; border: 1.5px solid var(--glass-border); font-weight: 700; }
-        .booking-details {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.88rem; margin-bottom: 12px; background: #f8fafc; padding: 10px; border-radius: 12px; border: 1.5px solid var(--glass-border);
-        }
-        .detail-item span { display: block; color: var(--text-muted); font-size: 0.72rem; margin-bottom: 2px; font-weight: 700; }
-        .booking-actions { display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; }
-        
-        .badge { padding: 5px 10px; border-radius: 8px; font-size: 0.78rem; font-weight: 900; }
-        .badge-success { background: var(--success-light); color: var(--success); border: 1.5px solid var(--success); }
-        .badge-danger { background: var(--danger-light); color: var(--danger); border: 1.5px solid var(--danger); }
-        .badge-warning { background: var(--warning-light); color: var(--warning); border: 1.5px solid var(--warning); }
-        .badge-cancelled { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); border: 1.5px solid var(--glass-border); }
-
-        .btn-action {
-            background: #f8fafc;
-            padding: 6px 12px;
-            border-radius: 8px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            border: 1.5px solid var(--glass-border);
-            font-weight: 900;
-            transition: all 0.2s ease;
-        }
-        .btn-action:hover { transform: scale(1.05); }
-        .btn-edit { color: var(--primary); border-color: var(--primary); }
-        .btn-edit:hover { background: var(--primary-light); }
-        .btn-receipt { color: var(--success); border-color: var(--success); }
-        .btn-receipt:hover { background: var(--success-light); }
-        .btn-delete { color: var(--danger); border-color: var(--danger); }
-        .btn-delete:hover { background: var(--danger-light); }
-
-        /* النوافذ المنبثقة وسند القبض */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(5px);
-            display: none; justify-content: center; align-items: center; z-index: 100;
-            padding: 15px;
-            animation: fadeInOverlay 0.25s ease;
+            z-index: 100;
         }
         .modal-content {
-            background: #ffffff; border: 2px solid var(--primary);
-            border-radius: 22px; width: 100%; max-width: 400px; max-height: 90vh;
-            overflow-y: auto; padding: 22px; box-shadow: 0 25px 50px rgba(0,0,0,0.15);
-            animation: scaleUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        @keyframes scaleUpModal {
-            from { transform: scale(0.9); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
-        }
-
-        .modal-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 14px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;
-        }
-        .modal-header h3 { color: var(--primary); font-size: 1.1rem; font-weight: 900; }
-        .close-modal {
-            background: #f8fafc; border: 1.5px solid var(--glass-border); border-radius: 10px; width: 32px; height: 32px; color: var(--text-main); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
-            transition: all 0.2s ease;
-        }
-        .close-modal:hover { background: var(--danger-light); color: var(--danger); border-color: var(--danger); transform: rotate(90deg); }
-
-        .receipt-box {
-            background: #ffffff; color: #1e293b; border: 1.5px solid var(--glass-border); border-radius: 16px; padding: 18px; font-family: 'Tajawal', sans-serif;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
-        .receipt-header { text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 10px; margin-bottom: 12px; }
-        .receipt-header h2 { font-size: 1.2rem; color: var(--primary); margin-bottom: 4px; font-weight: 900; }
-        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.88rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px; }
-        .receipt-row span { font-weight: 700; color: #64748b; }
-
-        /* شريط حقوق التطوير السفلي الحي */
-        .developer-footer {
-            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
-            border-top: 1.5px solid var(--glass-border);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 420px;
+            max-width: 90%;
             text-align: center;
-            padding: 10px;
-            font-size: 0.75rem;
-            background: linear-gradient(90deg, #1e293b, var(--primary), #1e293b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 900;
-            letter-spacing: 0.5px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
         }
     </style>
 </head>
 <body>
 
-<div class="app-container mode-mobile-portrait" id="appContainer">
-    <header>
-        <button class="menu-toggle-btn" onclick="toggleSidebar()" title="قائمة الأزرار">
-            ☰
-        </button>
-        <div class="brand-header-box">
-            <h1>إدارة الشاليه الملكي</h1>
-            <span id="header-title">الرئيسية</span>
+    <aside id="sidebar">
+        <div>
+            <div class="logo-area">
+                <h1>شاليه كروز</h1>
+                <p>إدارة الحجوزات والماليات 2026</p>
+            </div>
+            <ul class="nav-links">
+                <li class="active" onclick="switchTab('dashboard', this)"><i class="fa-solid fa-chart-pie"></i> لوحة المؤشرات</li>
+                <li onclick="switchTab('new-booking', this)"><i class="fa-solid fa-plus-circle"></i> تسجيل حجز جديد</li>
+                <li onclick="switchTab('calendar', this)"><i class="fa-solid fa-calendar-days"></i> تقويم الحجوزات</li>
+                <li onclick="switchTab('reservations', this)"><i class="fa-solid fa-file-lines"></i> سجل الحجوزات</li>
+                <li onclick="switchTab('expenses', this)"><i class="fa-solid fa-coins"></i> المصروفات والصيانة</li>
+                <li onclick="switchTab('reports', this)"><i class="fa-solid fa-file-invoice-dollar"></i> التقرير المالي</li>
+                <li onclick="switchTab('backup', this)"><i class="fa-solid fa-database"></i> النسخ الاحتياطي</li>
+            </ul>
         </div>
-        <div style="width: 40px;"></div>
-    </header>
-
-    <!-- القائمة الجانبية -->
-    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()">
-        <div class="sidebar" onclick="event.stopPropagation()">
-            <div class="sidebar-header">
-                <h3>القائمة الرئيسية</h3>
-                <button class="close-modal" onclick="toggleSidebar()">&times;</button>
-            </div>
-            
-            <div class="sidebar-item active" onclick="switchTab('dashboard', 'الرئيسية', this)">
-                <span class="sidebar-icon">📊</span> الرئيسية
-            </div>
-            <div class="sidebar-item" onclick="switchTab('calendar', 'تقويم الشاليه', this)">
-                <span class="sidebar-icon">📅</span> تقويم الحجوزات
-            </div>
-            <div class="sidebar-item" onclick="switchTab('add', 'إضافة حجز', this)">
-                <span class="sidebar-icon">➕</span> حجز جديد
-            </div>
-            <div class="sidebar-item" onclick="switchTab('history', 'سجل الحجوزات', this)">
-                <span class="sidebar-icon">📜</span> سجل الحجوزات
-            </div>
-            <div class="sidebar-item" onclick="switchTab('expenses', 'المصروفات والصيانة', this)">
-                <span class="sidebar-icon">💸</span> المصروفات وصيانة الشاليه
-            </div>
+        <div style="padding: 15px; text-align: center; color: #a4b0be; font-size: 11px;">
+            نسخة إدارية مطورة
         </div>
-    </div>
+    </aside>
 
     <main>
-        <!-- 1. الشاشة الرئيسية -->
-        <section id="view-dashboard" class="view active">
-            <div class="quick-alert-bar" id="quick-alerts-container">
-                <h4>🔔 تنبيهات الحجوزات السريعة:</h4>
-                <div id="quick-alerts-text" style="color: var(--text-muted);">جاري التحقق من حجوزات اليوم وغداً...</div>
+        <div class="header-container">
+            <div class="main-header-banner">
+                <div>
+                    <h2><i class="fa-solid fa-house-chimney-window"></i> شاليه كروز - نظام إدارة الحجوزات والماليات</h2>
+                    <p>إدارة متكاملة للحجوزات، المداخيل، المصروفات، والتقارير المالية بكل احترافية</p>
+                </div>
+                <div style="text-align: left; display: none; @media(min-width: 768px){display:block;}">
+                    <span class="badge" style="background: rgba(255,255,255,0.1); color: #ff9f43; font-size: 12px; padding: 6px 12px;">إصدار التشغيل الفوري</span>
+                </div>
             </div>
 
-            <div class="card" style="padding: 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
-                <h2 id="dashboard-subtitle" style="font-size:0.95rem; color:var(--primary); font-weight:900;">حسبة الشهر الحالي</h2>
-                <input type="month" id="dashboard-period" style="width: auto; padding: 6px 10px; font-size:0.85rem;" onchange="updateStats()">
-            </div>
-
-            <div class="stat-row">
-                <div class="stat-box"><h3>الحجوزات النشطة</h3><div class="value" id="stat-count">0</div></div>
-                <div class="stat-box"><h3>الإيرادات المتوقعة</h3><div class="value" id="stat-total">0</div></div>
-            </div>
-            <div class="stat-row">
-                <div class="stat-box" style="border-color: var(--success);">
-                    <h3 style="color: var(--success);">المحصل الفعلي</h3><div class="value" id="stat-paid">0</div>
-                </div>
-                <div class="stat-box" style="border-color: var(--danger);">
-                    <h3 style="color: var(--danger);">المتبقي للدفع</h3><div class="value" id="stat-remaining">0</div>
-                </div>
-            </div>
-            <div class="stat-row">
-                <div class="stat-box" style="border-color: var(--warning);">
-                    <h3 style="color: var(--warning);">إجمالي المصروفات</h3><div class="value" id="stat-expenses">0</div>
-                </div>
-                <div class="stat-box" style="border-color: var(--primary);">
-                    <h3 style="color: var(--primary);">الصافي النهائي</h3><div class="value" id="stat-net">0</div>
-                </div>
-            </div>
-            
-            <div class="card" style="padding: 14px; margin-top: 10px;">
-                <div class="form-group" style="margin-bottom: 10px;">
-                    <label>طريقة العرض:</label>
-                    <select id="dashboard-mode" onchange="updateStats()">
-                        <option value="month">عرض الشهر المحدد فقط</option>
-                        <option value="year">عرض إجمالي السنة كاملة (2026)</option>
+            <div class="top-bar">
+                <button class="menu-toggle-btn" onclick="toggleSidebar()" title="إخفاء/إظهار القائمة">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    <select id="period-selector" onchange="updateDashboard()" style="padding: 6px 12px; border-radius: 8px; border: 2px solid #dcdde1; font-weight: 700; font-size: 13px;">
+                        <option value="month">الشهر الحالي</option>
+                        <option value="year">إجمالي سنة 2026</option>
                     </select>
-                </div>
-
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button type="button" class="btn-primary" style="flex: 1; background: linear-gradient(135deg, #059669, #047857); color:#fff;" onclick="openReportModal()">📊 التقرير المالي</button>
-                    <button type="button" class="btn-primary" style="flex: 1; background: linear-gradient(135deg, #475569, #334155); color:#fff;" onclick="openBackupModal()">💾 النسخ الاحتياطي</button>
+                    <span id="current-date-badge" class="badge success" style="font-size: 13px; padding: 6px 12px;"></span>
                 </div>
             </div>
-        </section>
+        </div>
+        
+        <div id="dashboard" class="tab-content active">
+            <div id="today-alert-container"></div>
 
-        <!-- 2. شاشة التقويم -->
-        <section id="view-calendar" class="view">
-            <div class="month-selector">
-                <label style="margin:0;">اختر الشهر:</label>
-                <input type="month" id="calendar-month" style="width: auto;" onchange="generateCalendar()">
-            </div>
-
-            <div class="iphone-calendar">
-                <div class="weekdays-grid">
-                    <div>أحد</div>
-                    <div>إثنين</div>
-                    <div>ثلاثاء</div>
-                    <div>أربعاء</div>
-                    <div>خميس</div>
-                    <div>جمعة</div>
-                    <div>سبت</div>
-                </div>
-                <div class="days-grid" id="days-grid-container"></div>
-            </div>
-
-            <div class="selected-day-details" id="day-details-box">
-                <h3 id="selected-date-title">اختر يوماً من التقويم</h3>
-                <div id="selected-date-content" style="color: var(--text-muted); font-size: 0.82rem;">انقر على أي مربع يوم لمعرفة تفاصيل الحجوزات الخاصة به.</div>
-            </div>
-        </section>
-
-        <!-- 3. شاشة إضافة حجز -->
-        <section id="view-add" class="view">
-            <div class="card">
-                <h3 style="font-size: 1rem; color: var(--primary); margin-bottom: 14px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; font-weight: 900;">إدخال تفاصيل حجز جديد</h3>
-                <form id="booking-form">
-                    <div class="form-group">
-                        <label>اسم المستأجر</label>
-                        <input type="text" id="renterName" required placeholder="أدخل اسم المستأجر">
+            <div class="stats-grid">
+                <div class="stat-card c1">
+                    <div class="stat-info">
+                        <h3>المتوقعة</h3>
+                        <p id="stat-expected">0 ر.س</p>
                     </div>
-                    <div class="form-group">
-                        <label>رقم جوال العميل</label>
-                        <input type="tel" id="renterPhone" required placeholder="مثال: 0551234567">
+                    <i class="fa-solid fa-file-invoice-dollar"></i>
+                </div>
+                <div class="stat-card c2">
+                    <div class="stat-info">
+                        <h3>المحصل</h3>
+                        <p id="stat-collected">0 ر.س</p>
                     </div>
-                    <div class="stat-row" style="margin-bottom:0;">
-                        <div class="form-group" style="flex: 1;">
+                    <i class="fa-solid fa-hand-holding-dollar"></i>
+                </div>
+                <div class="stat-card c3">
+                    <div class="stat-info">
+                        <h3>المتبقي</h3>
+                        <p id="stat-remaining">0 ر.س</p>
+                    </div>
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <div class="stat-card c4">
+                    <div class="stat-info">
+                        <h3>المصروفات</h3>
+                        <p id="stat-expenses">0 ر.س</p>
+                    </div>
+                    <i class="fa-solid fa-coins"></i>
+                </div>
+                <div class="stat-card c5">
+                    <div class="stat-info">
+                        <h3>الصفاء النهائي</h3>
+                        <p id="stat-net">0 ر.س</p>
+                    </div>
+                    <i class="fa-solid fa-vault"></i>
+                </div>
+            </div>
+
+            <div class="card-box">
+                <h3>نظرة سريعة على آخر الحجوزات</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>المستأجر</th>
+                                <th>التاريخ</th>
+                                <th>القسم</th>
+                                <th>الإيجار</th>
+                                <th>المتبقي</th>
+                                <th>الحالة</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dashboard-recent-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="new-booking" class="tab-content">
+            <div class="card-box">
+                <h3 id="form-title-text"><i class="fa-solid fa-plus-circle" style="color: #ff9f43;"></i> نموذج تسجيل حجز جديد للشاليه</h3>
+                <form id="quick-booking-form" onsubmit="saveBookingData(event)">
+                    <input type="hidden" id="b-edit-id" value="">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>اسم المستأجر</label>
+                            <input type="text" id="b-name" required placeholder="مثال: تميم البدحاني">
+                        </div>
+                        <div class="form-group">
+                            <label>رقم الجوال</label>
+                            <input type="text" id="b-phone" required placeholder="05xxxxxxxx">
+                        </div>
+                        <div class="form-group">
                             <label>تاريخ الحجز</label>
-                            <input type="date" id="bookingDate" required>
+                            <input type="date" id="b-date" required>
                         </div>
-                        <div class="form-group" style="flex: 1;">
+                        <div class="form-group">
                             <label>الفترة</label>
-                            <select id="shift" required>
-                                <option value="مساء">مساء</option>
-                                <option value="صباح">صباح</option>
-                                <option value="يوم كامل">يوم كامل</option>
+                            <select id="b-period">
+                                <option>مساء</option>
+                                <option>صباح</option>
+                                <option>يوم كامل</option>
                             </select>
                         </div>
-                    </div>
-                    <div class="stat-row" style="margin-bottom:0;">
-                        <div class="form-group" style="flex: 1;">
+                        <div class="form-group">
                             <label>القسم</label>
-                            <select id="section" required>
-                                <option value="نساء">نساء</option>
-                                <option value="رجال">رجال</option>
-                                <option value="قسمين">قسمين</option>
+                            <select id="b-section">
+                                <option>نساء</option>
+                                <option>رجال</option>
+                                <option>قسمين</option>
                             </select>
                         </div>
-                        <div class="form-group" style="flex: 1;">
-                            <label>طريقة الدفع</label>
-                            <select id="paymentMethod" required>
-                                <option value="تحويل">تحويل</option>
-                                <option value="كاش">كاش</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="stat-row" style="margin-bottom:0;">
-                        <div class="form-group" style="flex: 1;">
+                        <div class="form-group">
                             <label>قيمة الإيجار</label>
-                            <input type="number" id="totalRent" required min="0" placeholder="مثال: 600">
+                            <input type="number" id="b-price" required placeholder="600" oninput="calcRemaining()">
                         </div>
-                        <div class="form-group" style="flex: 1;">
+                        <div class="form-group">
                             <label>الواصل (المدفوع)</label>
-                            <input type="number" id="paidAmount" required min="0" placeholder="عربون أو كامل">
+                            <input type="number" id="b-paid" required placeholder="100" oninput="calcRemaining()">
+                        </div>
+                        <div class="form-group">
+                            <label>المتبقي (تلقائي)</label>
+                            <input type="text" id="b-rem" readonly style="background: #f1f2f6; font-weight: bold; color: #c62828;">
+                        </div>
+                        <div class="form-group">
+                            <label>طريقة الدفع</label>
+                            <select id="b-method">
+                                <option>تحويل بنكي</option>
+                                <option>كاش</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>حالة الحجز</label>
+                            <select id="b-status">
+                                <option value="مؤكد">مؤكد بالكامل</option>
+                                <option value="عربون">مدفوع عربون</option>
+                                <option value="غير مؤكد">غير مؤكد / معلق</option>
+                            </select>
                         </div>
                     </div>
-                    <div class="form-group" style="margin-top: 10px;">
-                        <label>مصاريف تسويق أو عمولة تطبيق (إن وجدت)</label>
-                        <input type="number" id="commissionAmount" min="0" value="0" placeholder="مثال: 50">
-                    </div>
-                    <button type="submit" class="btn-primary">حفظ الحجز الجديد</button>
+                    <button type="submit" class="btn" style="margin-top: 10px;"><i class="fa-solid fa-check"></i> حفظ البيانات</button>
                 </form>
             </div>
-        </section>
+        </div>
 
-        <!-- 4. شاشة السجل -->
-        <section id="view-history" class="view">
-            <div class="card" style="padding: 14px; margin-bottom: 14px;">
-                <div class="form-group" style="margin-bottom: 0; display: flex; gap: 8px;">
-                    <input type="text" id="search-history" placeholder="🔍 ابحث بالاسم أو الجوال أو التاريخ..." oninput="renderBookings()" style="flex:1;">
-                    <button type="button" class="btn-primary" style="width: auto; margin-top:0; background: linear-gradient(135deg, #059669, #047857); color:#fff; padding: 0 14px; font-size:0.85rem;" onclick="exportToExcel()" title="تصدير إلى إكسل">📊 Excel</button>
+        <div id="calendar" class="tab-content">
+            <div class="card-box">
+                <h3>تقويم الحجوزات وتفاصيل التواريخ</h3>
+                
+                <div class="legend-box">
+                    <div class="legend-item"><div class="legend-color" style="background: #2ed573;"></div> حجز مؤكد</div>
+                    <div class="legend-item"><div class="legend-color" style="background: #ffa502;"></div> مدفوع عربون</div>
+                    <div class="legend-item"><div class="legend-color" style="background: #ff4757;"></div> معلق / غير مؤكد</div>
+                    <div class="legend-item"><div class="legend-color" style="background: #ffffff; border: 1px solid #ccc;"></div> يوم متاح</div>
+                </div>
+
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <span id="cal-month-title" style="font-weight: 900; font-size: 16px;"></span>
+                </div>
+                
+                <div class="calendar-weekdays">
+                    <div>الأحد</div>
+                    <div>الاثنين</div>
+                    <div>الثلاثاء</div>
+                    <div>الأربعاء</div>
+                    <div>الخميس</div>
+                    <div>الجمعة</div>
+                    <div>السبت</div>
+                </div>
+
+                <div class="calendar-grid" id="calendar-container"></div>
+
+                <div id="calendar-details-box" class="calendar-details-card">
+                    <h4 style="margin-bottom: 10px; color: #2f3640; border-bottom: 1px solid #ddd; padding-bottom: 5px;"><i class="fa-solid fa-info-circle"></i> تفاصيل الحجز المحدد</h4>
+                    <div id="calendar-details-content" style="font-size: 13px; line-height: 1.8;"></div>
                 </div>
             </div>
-            <div id="bookings-list"></div>
-        </section>
+        </div>
 
-        <!-- 5. شاشة المصروفات والصيانة -->
-        <section id="view-expenses" class="view">
-            <div class="card">
-                <h3 style="font-size:1rem; color: var(--primary); margin-bottom: 12px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; font-weight: 900;">إضافة مصروف جديد</h3>
-                <form id="expense-form">
-                    <div class="form-group">
-                        <label>بند المصروف</label>
-                        <select id="expenseCategory" required>
-                            <option value="صابون ومستلزمات نظافة">صابون ومستلزمات نظافة</option>
-                            <option value="كهرباء">كهرباء</option>
-                            <option value="ماء">ماء</option>
-                            <option value="صيانة عامة">صيانة عامة</option>
-                            <option value="صيانة المسبح">صيانة المسبح</option>
-                            <option value="راتب عامل">راتب عامل</option>
-                            <option value="أخرى">أخرى</option>
-                        </select>
-                    </div>
-                    <div class="stat-row" style="margin-bottom:0;">
-                        <div class="form-group" style="flex: 1;">
-                            <label>المبلغ (ريال)</label>
-                            <input type="number" id="expenseAmount" required min="0" placeholder="مثال: 150">
+        <div id="reservations" class="tab-content">
+            <div class="card-box">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                    <input type="text" id="search-input" onkeyup="filterBookings()" placeholder="ابحث بالاسم، الجوال، أو التاريخ..." style="padding: 8px 12px; border-radius: 8px; border: 2px solid #dcdde1; width: 280px; font-size: 13px;">
+                    <button onclick="exportToExcel()" class="btn btn-success"><i class="fa-solid fa-file-excel"></i> تصدير إلى Excel</button>
+                </div>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>المستأجر</th>
+                                <th>الجوال</th>
+                                <th>التاريخ</th>
+                                <th>الفترة</th>
+                                <th>القسم</th>
+                                <th>الإيجار</th>
+                                <th>الواصل</th>
+                                <th>المتبقي</th>
+                                <th>الحالة</th>
+                                <th>إجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="bookings-table-body"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div id="expenses" class="tab-content">
+            <div class="card-box">
+                <h3>تسجيل مصروف جديد أو مهمة صيانة</h3>
+                <form onsubmit="addExpense(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>البند / الوصف</label>
+                            <input type="text" id="e-title" required placeholder="فواتير كهرباء / صيانة...">
                         </div>
-                        <div class="form-group" style="flex: 1;">
+                        <div class="form-group">
+                            <label>التصنيف</label>
+                            <select id="e-category">
+                                <option>كهرباء وماء</option>
+                                <option>نظافة وضيافة</option>
+                                <option>صيانة وإصلاحات</option>
+                                <option>رواتب وأجور</option>
+                                <option>أخرى</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>المبلغ (ر.س)</label>
+                            <input type="number" id="e-amount" required placeholder="250">
+                        </div>
+                        <div class="form-group">
                             <label>التاريخ</label>
-                            <input type="date" id="expenseDate" required>
+                            <input type="date" id="e-date" required>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label>ملاحظات إضافية</label>
-                        <input type="text" id="expenseNotes" placeholder="تفاصيل المصروف...">
-                    </div>
-                    <button type="submit" class="btn-primary">حفظ المصروف</button>
+                    <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-plus"></i> تسجيل المصروف</button>
                 </form>
             </div>
 
-            <div class="card" style="border-color: var(--warning);">
-                <h3 style="font-size:1rem; color: var(--warning); margin-bottom: 12px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; font-weight: 900;">🛠️ سجل ملاحظات الصيانة العاجلة</h3>
-                <form id="maintenance-form">
-                    <div class="form-group">
-                        <label>وصف المشكلة / طلب الصيانة</label>
-                        <input type="text" id="maintIssue" required placeholder="مثال: تصليح لمبة الإنارة">
-                    </div>
-                    <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, #d97706, #b45309); color:#fff;">إضافة لملاحظات الصيانة</button>
-                </form>
-                <div id="maintenance-list" style="margin-top: 12px;"></div>
+            <div class="card-box">
+                <h3>سجل المصروفات المسجلة</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>البند</th>
+                                <th>التصنيف</th>
+                                <th>المبلغ</th>
+                                <th>التاريخ</th>
+                                <th>إجراء</th>
+                            </tr>
+                        </thead>
+                        <tbody id="expenses-table-body"></tbody>
+                    </table>
+                </div>
             </div>
+        </div>
 
-            <h3 style="font-size:1rem; margin: 16px 0 10px 0; color: var(--primary); font-weight: 900;">سجل المصروفات السابقة</h3>
-            <div id="expenses-list"></div>
-        </section>
+        <div id="reports" class="tab-content">
+            <div class="card-box">
+                <h3>التقرير المالي التفصيلي للشاليه</h3>
+                <div id="financial-report-content" style="line-height: 2; font-size: 14px; color: #2f3640;"></div>
+                <button onclick="window.print()" class="btn" style="margin-top: 20px;"><i class="fa-solid fa-print"></i> طباعة التقرير مباشرة</button>
+            </div>
+        </div>
+
+        <div id="backup" class="tab-content">
+            <div class="card-box">
+                <h3>النسخ الاحتياطي والأمان</h3>
+                <p style="font-size: 13px; color: #718093; margin-bottom: 20px;">يمكنك الاحتفاظ بنسخة محلية من كافة بياناتك واستعادتها في أي وقت لضمان الأمان.</p>
+                <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                    <button onclick="exportDataJSON()" class="btn btn-success"><i class="fa-solid fa-download"></i> تصدير نسخة احتياطية (JSON)</button>
+                    <label class="btn btn-secondary" style="cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                        <i class="fa-solid fa-upload"></i> استعادة البيانات
+                        <input type="file" id="import-file" onchange="importDataJSON(event)" style="display: none;" accept=".json">
+                    </label>
+                </div>
+            </div>
+        </div>
     </main>
 
-    <!-- نافذة تعديل الحجز -->
-    <div class="modal-overlay" id="edit-modal">
+    <div id="receipt-modal" class="modal">
         <div class="modal-content">
-            <div class="modal-header">
-                <h3>تعديل تفاصيل الحجز</h3>
-                <button class="close-modal" onclick="closeModal('edit-modal')">&times;</button>
-            </div>
-            <form id="edit-form">
-                <input type="hidden" id="edit-index">
-                <div class="form-group">
-                    <label>اسم المستأجر</label>
-                    <input type="text" id="edit-name" required>
-                </div>
-                <div class="form-group">
-                    <label>رقم جوال العميل</label>
-                    <input type="tel" id="edit-phone" required>
-                </div>
-                <div class="stat-row" style="margin-bottom:0;">
-                    <div class="form-group" style="flex: 1;">
-                        <label>التاريخ</label>
-                        <input type="date" id="edit-date" required>
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>الفترة</label>
-                        <select id="edit-shift" required>
-                            <option value="مساء">مساء</option>
-                            <option value="صباح">صباح</option>
-                            <option value="يوم كامل">يوم كامل</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="stat-row" style="margin-bottom:0;">
-                    <div class="form-group" style="flex: 1;">
-                        <label>القسم</label>
-                        <select id="edit-section" required>
-                            <option value="نساء">نساء</option>
-                            <option value="رجال">رجال</option>
-                            <option value="قسمين">قسمين</option>
-                        </select>
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>طريقة الدفع</label>
-                        <select id="edit-paymentMethod" required>
-                            <option value="تحويل">تحويل</option>
-                            <option value="كاش">كاش</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="stat-row" style="margin-bottom:0;">
-                    <div class="form-group" style="flex: 1;">
-                        <label>قيمة الإيجار</label>
-                        <input type="number" id="edit-totalRent" required min="0">
-                    </div>
-                    <div class="form-group" style="flex: 1;">
-                        <label>الواصل (المدفوع)</label>
-                        <input type="number" id="edit-paidAmount" required min="0">
-                    </div>
-                </div>
-
-                <div class="form-group" style="margin-top: 10px;">
-                    <label>عمولة التطبيق / المسوق</label>
-                    <input type="number" id="edit-commission" min="0" value="0">
-                </div>
-
-                <div class="form-group">
-                    <label>حالة الحجز</label>
-                    <select id="edit-status" onchange="handleStatusChange()">
-                        <option value="active">حجز نشط (مؤكد / عربون)</option>
-                        <option value="cancelled">إلغاء الحجز</option>
-                    </select>
-                </div>
-
-                <div class="form-group" id="refund-box" style="display: none; background: rgba(220, 38, 38, 0.08); border: 1.5px solid var(--danger); padding: 12px; border-radius: 10px;">
-                    <label style="color: var(--danger);">كم تم استرداده من العربون؟</label>
-                    <input type="number" id="edit-refunded" min="0" value="0">
-                </div>
-
-                <button type="submit" class="btn-primary">حفظ التعديلات</button>
-            </form>
-        </div>
-    </div>
-
-    <!-- نافذة سند القبض -->
-    <div class="modal-overlay" id="receipt-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>سند حجز / قبض شاليه</h3>
-                <button class="close-modal" onclick="closeModal('receipt-modal')">&times;</button>
-            </div>
-            <div class="receipt-box" id="receipt-printable-area">
-                <div class="receipt-header">
-                    <h2>إدارة الشاليه الملكي</h2>
-                    <p style="font-size: 0.78rem; color: #64748b;">سند قبض حجز رسمي</p>
-                </div>
-                <div class="receipt-row"><span>اسم المستأجر:</span> <span id="r-name">-</span></div>
-                <div class="receipt-row"><span>رقم الجوال:</span> <span id="r-phone">-</span></div>
-                <div class="receipt-row"><span>تاريخ الحجز:</span> <span id="r-date">-</span></div>
-                <div class="receipt-row"><span>الفترة:</span> <span id="r-shift">-</span></div>
-                <div class="receipt-row"><span>القسم:</span> <span id="r-section">-</span></div>
-                <div class="receipt-row"><span>قيمة الإيجار:</span> <span id="r-total">-</span></div>
-                <div class="receipt-row"><span>المبلغ المدفوع (الواصل):</span> <span id="r-paid">-</span></div>
-                <div class="receipt-row"><span>المتبقي:</span> <span id="r-remaining">-</span></div>
-                <div class="receipt-row"><span>طريقة الدفع:</span> <span id="r-method">-</span></div>
-                <div style="text-align: center; margin-top: 15px; font-size: 0.78rem; color: #64748b; font-weight: 700;">
-                    شكراً لتعاملكم معنا، نسعد بخدمتكم!
-                </div>
-            </div>
-            <div style="display: flex; gap: 10px; margin-top: 14px;">
-                <button type="button" class="btn-primary" style="flex: 1; background: linear-gradient(135deg, #059669, #047857); color:#fff; margin-top: 0;" onclick="printReceipt()">طباعة السند</button>
-                <button type="button" class="btn-primary" style="flex: 1; background: linear-gradient(135deg, #16a34a, #15803d); color:#fff; margin-top: 0;" onclick="shareOnWhatsApp()">إرسال واتساب</button>
+            <h3 style="border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; color: #ff9f43;"><i class="fa-solid fa-receipt"></i> سند قبض شاليه كروز</h3>
+            <div id="receipt-details" style="text-align: right; font-size: 13px; line-height: 1.8; margin-bottom: 20px;"></div>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button onclick="printReceipt()" class="btn"><i class="fa-solid fa-print"></i> طباعة السند</button>
+                <button onclick="sendWhatsApp()" class="btn btn-success"><i class="fa-brands fa-whatsapp"></i> إرسال واتساب</button>
+                <button onclick="closeReceiptModal()" class="btn" style="background: #a4b0be;">إغلاق</button>
             </div>
         </div>
     </div>
 
-    <!-- نافذة التقرير المالي -->
-    <div class="modal-overlay" id="report-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>التقرير المالي الشامل</h3>
-                <button class="close-modal" onclick="closeModal('report-modal')">&times;</button>
-            </div>
-            <div class="receipt-box" id="report-printable-area">
-                <div class="receipt-header">
-                    <h2>تقرير أرباح الشاليه الملكي</h2>
-                    <p id="rep-period-title" style="font-size: 0.78rem; color: #64748b;">الفترة: الحالي</p>
-                </div>
-                <div class="receipt-row"><span>إجمالي الحجوزات النشطة:</span> <span id="rep-count">0</span></div>
-                <div class="receipt-row"><span>إجمالي الإيرادات المتوقعة:</span> <span id="rep-total">0</span></div>
-                <div class="receipt-row"><span>المحصل الفعلي:</span> <span id="rep-paid">0</span></div>
-                <div class="receipt-row"><span>المتبقي للدفع:</span> <span id="rep-remaining">0</span></div>
-                <div class="receipt-row"><span>إجمالي المصروفات:</span> <span id="rep-expenses">0</span></div>
-                <div class="receipt-row"><span>إجمالي عمولات التطبيقات:</span> <span id="rep-commission">0</span></div>
-                <div class="receipt-row" style="border-bottom: 2px solid #0f172a; font-weight: 900;"><span>الصافي النهائي للأرباح:</span> <span id="rep-net">0</span></div>
-            </div>
-            <button type="button" class="btn-primary" style="margin-top: 14px; background: linear-gradient(135deg, #059669, #047857); color:#fff;" onclick="printReport()">طباعة التقرير</button>
-        </div>
-    </div>
-
-    <!-- نافذة النسخ الاحتياطي واستعادة البيانات -->
-    <div class="modal-overlay" id="backup-modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>النسخ الاحتياطي للبيانات</h3>
-                <button class="close-modal" onclick="closeModal('backup-modal')">&times;</button>
-            </div>
-            <div style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5;">
-                يمكنك حفظ نسخة من بيانات حجوزاتك ومصروفاتك في ملف على جهازك، أو استعادتها في أي وقت.
-            </div>
-            <button type="button" class="btn-primary" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; margin-bottom: 12px;" onclick="exportDataFile()">📥 تصدير وحفظ البيانات كملف</button>
-            
-            <div class="form-group" style="margin-top: 15px;">
-                <label>استعادة البيانات من ملف سابق:</label>
-                <input type="file" id="importFile" accept=".json" onchange="importDataFile(event)">
-            </div>
-        </div>
-    </div>
-
-    <!-- شريط حقوق التطوير -->
-    <div class="developer-footer">
-        المطور فهد المخلفي | أخوكم أبو مرزوق
-    </div>
-</div>
-
-<script>
-    let bookings = JSON.parse(localStorage.getItem('chalet_bookings')) || [];
-    let expenses = JSON.parse(localStorage.getItem('chalet_expenses')) || [];
-    let maintenance = JSON.parse(localStorage.getItem('chalet_maintenance')) || [];
-    let currentReceiptBooking = null;
-
-    const form = document.getElementById('booking-form');
-    const expenseForm = document.getElementById('expense-form');
-    const maintenanceForm = document.getElementById('maintenance-form');
-    const bookingsList = document.getElementById('bookings-list');
-    const expensesList = document.getElementById('expenses-list');
-    const maintenanceList = document.getElementById('maintenance-list');
-    const daysGridContainer = document.getElementById('days-grid-container');
-    const monthInput = document.getElementById('calendar-month');
-    const dashboardPeriodInput = document.getElementById('dashboard-period');
-
-    const today = new Date();
-    const currentMonthStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0');
-    monthInput.value = currentMonthStr;
-    dashboardPeriodInput.value = currentMonthStr;
-    document.getElementById('bookingDate').valueAsDate = today;
-    document.getElementById('expenseDate').valueAsDate = today;
-
-    function toggleSidebar() {
-        const overlay = document.getElementById('sidebarOverlay');
-        overlay.classList.toggle('active');
-    }
-
-    function detectDeviceAndSize() {
-        const width = window.innerWidth;
-        const height = window.innerHeight;
-        const container = document.getElementById('appContainer');
-        
-        container.classList.remove('mode-mobile-portrait', 'mode-mobile-landscape', 'mode-tablet', 'mode-desktop');
-        
-        if (width >= 1024) {
-            container.classList.add('mode-desktop');
-        } else if (width >= 768 && width < 1024) {
-            container.classList.add('mode-tablet');
-        } else {
-            if (width > height) {
-                container.classList.add('mode-mobile-landscape');
-            } else {
-                container.classList.add('mode-mobile-portrait');
-            }
-        }
-    }
-
-    window.addEventListener('resize', detectDeviceAndSize);
-    window.addEventListener('DOMContentLoaded', detectDeviceAndSize);
-
-    function switchTab(tabId, title, element) {
-        document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-        document.querySelectorAll('.sidebar-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('view-' + tabId).classList.add('active');
-        element.classList.add('active');
-        document.getElementById('header-title').innerText = title;
-        toggleSidebar();
-        if(tabId === 'calendar') generateCalendar();
-    }
-
-    function updateUI() {
-        renderBookings();
-        renderExpenses();
-        renderMaintenance();
-        updateStats();
-        checkQuickAlerts();
-        generateCalendar();
-        detectDeviceAndSize();
-        localStorage.setItem('chalet_bookings', JSON.stringify(bookings));
-        localStorage.setItem('chalet_expenses', JSON.stringify(expenses));
-        localStorage.setItem('chalet_maintenance', JSON.stringify(maintenance));
-    }
-
-    function getFormattedDate(d) {
-        return d.toISOString().split('T')[0];
-    }
-
-    function checkQuickAlerts() {
-        const todayStr = getFormattedDate(new Date());
-        const tomorrowObj = new Date();
-        tomorrowObj.setDate(tomorrowObj.getDate() + 1);
-        const tomorrowStr = getFormattedDate(tomorrowObj);
-
-        const todayBookings = bookings.filter(b => b.date === todayStr && b.status !== 'cancelled');
-        const tomBookings = bookings.filter(b => b.date === tomorrowStr && b.status !== 'cancelled');
-
-        let textHtml = '';
-        if (todayBookings.length > 0) {
-            textHtml += `⚡ <b>حجوزات اليوم (${todayStr}):</b> `;
-            todayBookings.forEach(b => {
-                const rem = b.totalRent - b.paidAmount;
-                textHtml += `[${b.name} - ${b.shift} (متبقي: ${rem} ر.س)] `;
-            });
-            textHtml += '<br>';
-        }
-        if (tomBookings.length > 0) {
-            textHtml += `📌 <b>حجوزات الغد (${tomorrowStr}):</b> `;
-            tomBookings.forEach(b => {
-                textHtml += `[${b.name} - ${b.shift}] `;
-            });
-        }
-
-        if (todayBookings.length === 0 && tomBookings.length === 0) {
-            document.getElementById('quick-alerts-text').innerHTML = 'لا توجد حجوزات مسجلة ليوم اليوم أو الغد.';
-        } else {
-            document.getElementById('quick-alerts-text').innerHTML = textHtml;
-        }
-    }
-
-    function getHijriDate(dateObj) {
-        try {
-            const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { day: 'numeric', month: 'numeric' });
-            const parts = formatter.formatToParts(dateObj);
-            const day = parts.find(p => p.type === 'day')?.value || '';
-            const month = parts.find(p => p.type === 'month')?.value || '';
-            return `${day}/${month}`;
-        } catch (e) {
-            return '';
-        }
-    }
-
-    function generateCalendar() {
-        daysGridContainer.innerHTML = '';
-        if(!monthInput.value) return;
-
-        const [year, month] = monthInput.value.split('-');
-        const firstDayIndex = new Date(year, month - 1, 1).getDay();
-        const totalDays = new Date(year, month, 0).getDate();
-
-        for (let i = 0; i < firstDayIndex; i++) {
-            const emptyCell = document.createElement('div');
-            emptyCell.className = 'cal-day-cell empty';
-            daysGridContainer.appendChild(emptyCell);
-        }
-
-        for (let day = 1; day <= totalDays; day++) {
-            const dateStr = `${year}-${month}-${String(day).padStart(2, '0')}`;
-            const dateObj = new Date(dateStr);
-            const dayBookings = bookings.filter(b => b.date === dateStr && b.status !== 'cancelled');
-            const hijriStr = getHijriDate(dateObj);
-
-            const cell = document.createElement('div');
-            let statusClass = 'status-free';
-            if (dayBookings.length > 0) {
-                let hasUnconfirmed = dayBookings.some(b => b.paidAmount === 0);
-                let hasDeposit = dayBookings.some(b => b.paidAmount > 0 && b.paidAmount < b.totalRent);
-                let allPaid = dayBookings.every(b => b.paidAmount >= b.totalRent);
-
-                if (hasUnconfirmed) statusClass = 'status-red';
-                else if (hasDeposit) statusClass = 'status-yellow';
-                else if (allPaid) statusClass = 'status-green';
-            }
-
-            cell.className = `cal-day-cell ${statusClass}`;
-            cell.innerHTML = `
-                <span class="day-gregorian">${day}</span>
-                <span class="day-hijri">${hijriStr}</span>
-            `;
-
-            const allDayBookings = bookings.filter(b => b.date === dateStr);
-            cell.onclick = () => showDayDetails(dateStr, hijriStr, allDayBookings);
-            daysGridContainer.appendChild(cell);
-        }
-    }
-
-    function showDayDetails(dateStr, hijriStr, dayBookings) {
-        const titleEl = document.getElementById('selected-date-title');
-        const contentEl = document.getElementById('selected-date-content');
-
-        titleEl.innerText = `حجوزات يوم: ${dateStr} (هجري: ${hijriStr})`;
-        
-        if (dayBookings.length === 0) {
-            contentEl.innerHTML = `<div style="color: var(--success); font-weight: bold; padding: 4px;">✨ هذا اليوم متاح تماماً للحجز.</div>`;
-            return;
-        }
-
-        let html = '';
-        dayBookings.forEach(b => {
-            if (b.status === 'cancelled') {
-                html += `
-                    <div class="detail-slot" style="opacity: 0.6;">
-                        <strong>${b.name}</strong> (${b.phone || 'بدون جوال'}) - ${b.shift} (${b.section})<br>
-                        <span style="color: var(--text-muted); font-weight:bold;">الحالة: ملغى (مسترد: ${b.refundedAmount || 0} ر.س)</span>
-                    </div>
-                `;
-            } else {
-                let statusText = 'مؤكد (خالص)';
-                let colorStyle = 'color: var(--success);';
-                if (b.paidAmount === 0) {
-                    statusText = 'غير مؤكد';
-                    colorStyle = 'color: var(--danger);';
-                } else if (b.paidAmount < b.totalRent) {
-                    statusText = 'عربون (' + b.paidAmount + ' ر.س)';
-                    colorStyle = 'color: var(--warning);';
-                }
-
-                html += `
-                    <div class="detail-slot">
-                        <strong>${b.name}</strong> (${b.phone || 'بدون جوال'}) - ${b.shift} (${b.section})<br>
-                        <span style="${colorStyle} font-weight:bold;">الحالة: ${statusText}</span>
-                    </div>
-                `;
-            }
-        });
-        contentEl.innerHTML = html;
-    }
-
-    function renderBookings() {
-        bookingsList.innerHTML = '';
-        const searchQuery = document.getElementById('search-history').value.trim().toLowerCase();
-
-        const filtered = bookings.filter(b => {
-            if (!searchQuery) return true;
-            return (b.name && b.name.toLowerCase().includes(searchQuery)) ||
-                   (b.phone && b.phone.includes(searchQuery)) ||
-                   (b.date && b.date.includes(searchQuery));
-        });
-
-        if (filtered.length === 0) {
-            bookingsList.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted);">لا توجد حجوزات مطابقة للبحث</div>';
-            return;
-        }
-
-        [...filtered].reverse().forEach((booking) => {
-            const originalIndex = bookings.indexOf(booking);
-            const remaining = booking.totalRent - booking.paidAmount;
-            
-            let statusBadge = '';
-            if (booking.status === 'cancelled') {
-                statusBadge = `<span class="badge badge-cancelled">ملغى (مسترد: ${booking.refundedAmount || 0})</span>`;
-            } else if (remaining === 0) {
-                statusBadge = '<span class="badge badge-success">خالص / مؤكد</span>';
-            } else if (booking.paidAmount === 0) {
-                statusBadge = '<span class="badge badge-danger">غير مؤكد</span>';
-            } else {
-                statusBadge = '<span class="badge badge-warning">عربون مدفوع (متبقي: ' + remaining + ')</span>';
-            }
-
-            const card = document.createElement('div');
-            card.className = 'booking-card';
-            card.innerHTML = `
-                <div class="booking-header">
-                    <div class="booking-title">${booking.name}</div>
-                    <div class="booking-date">${booking.date}</div>
-                </div>
-                <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 8px;">
-                    📱 الجوال: ${booking.phone || 'غير مسجل'} ${booking.commission > 0 ? '| عمولة: ' + booking.commission + ' ر.س' : ''}
-                </div>
-                <div class="booking-details">
-                    <div class="detail-item"><span>الإيجار</span>${booking.totalRent} ر.س</div>
-                    <div class="detail-item"><span>المدفوع</span>${booking.paidAmount} ر.س</div>
-                    <div class="detail-item"><span>الفترة</span>${booking.shift}</div>
-                    <div class="detail-item"><span>القسم</span>${booking.section}</div>
-                </div>
-                <div class="booking-actions">
-                    ${statusBadge}
-                    <div style="display: flex; gap: 6px;">
-                        <button class="btn-action btn-receipt" onclick="openReceiptModal(${originalIndex})">السند</button>
-                        <button class="btn-action btn-edit" onclick="openEditModal(${originalIndex})">تعديل</button>
-                        <button class="btn-action btn-delete" onclick="deleteBooking(${originalIndex})">حذف</button>
-                    </div>
-                </div>
-            `;
-            bookingsList.appendChild(card);
-        });
-    }
-
-    function exportToExcel() {
-        if (bookings.length === 0) {
-            alert("لا توجد حجوزات لتصديرها!");
-            return;
-        }
-
-        const excelData = bookings.map((b, index) => {
-            let statusDesc = 'نشط (مؤكد)';
-            let remaining = b.totalRent - b.paidAmount;
-            if (b.status === 'cancelled') {
-                statusDesc = `ملغى (مسترد: ${b.refundedAmount || 0} ر.س)`;
-            } else if (remaining === 0) {
-                statusDesc = 'خالص بالكامل';
-            } else if (b.paidAmount === 0) {
-                statusDesc = 'غير مؤكد (بدون عربون)';
-            } else {
-                statusDesc = `عربون مدفوع (متبقي: ${remaining} ر.س)`;
-            }
-
-            return {
-                "م": index + 1,
-                "اسم المستأجر": b.name,
-                "رقم الجوال": b.phone || '-',
-                "تاريخ الحجز": b.date,
-                "الفترة": b.shift,
-                "القسم": b.section,
-                "قيمة الإيجار (ر.س)": b.totalRent,
-                "المبلغ المدفوع (ر.س)": b.paidAmount,
-                "المتبقي (ر.س)": remaining,
-                "طريقة الدفع": b.paymentMethod,
-                "عمولة التطبيق": b.commission || 0,
-                "حالة الحجز": statusDesc
-            };
-        });
-
-        const worksheet = XLSX.utils.json_to_sheet(excelData);
-        if(!worksheet['!cols']) worksheet['!cols'] = [];
-        worksheet['!cols'] = [
-            {wch: 5}, {wch: 20}, {wch: 15}, {wch: 12}, {wch: 10}, {wch: 10}, 
-            {wch: 15}, {wch: 15}, {wch: 12}, {wch: 12}, {wch: 12}, {wch: 25}
+    <script>
+        let bookings = JSON.parse(localStorage.getItem('cruise_bookings')) || [
+            { id: 1, name: 'تميم البدحاني', phone: '0501112233', date: '2026-06-10', period: 'مساء', section: 'نساء', price: 600, paid: 100, method: 'تحويل بنكي', status: 'عربون' },
+            { id: 2, name: 'وليد محمد', phone: '0552223344', date: '2026-06-12', period: 'يوم كامل', section: 'قسمين', price: 1200, paid: 1200, method: 'كاش', status: 'مؤكد' }
         ];
 
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, worksheet, "سجل الحجوزات");
-        XLSX.writeFile(workbook, `سجل_حجوزات_الشاليه_${new Date().toISOString().split('T')[0]}.xlsx`);
-    }
+        let expenses = JSON.parse(localStorage.getItem('cruise_expenses')) || [
+            { id: 1, title: 'فاتورة الكهرباء والماء', category: 'كهرباء وماء', amount: 350, date: '2026-06-01' }
+        ];
 
-    function renderExpenses() {
-        expensesList.innerHTML = '';
-        if (expenses.length === 0) {
-            expensesList.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted); font-size: 0.88rem;">لا توجد مصروفات مسجلة</div>';
-            return;
+        let activeReceipt = null;
+
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.nav-links li').forEach(l => l.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if(element) element.classList.add('active');
+            if(tabId === 'calendar') renderCalendar();
+            if(tabId === 'reports') generateReport();
         }
 
-        [...expenses].reverse().forEach((exp, reversedIndex) => {
-            const index = expenses.length - 1 - reversedIndex;
-            const card = document.createElement('div');
-            card.className = 'expense-card';
-            card.innerHTML = `
-                <div class="booking-header">
-                    <div class="booking-title" style="font-size: 1rem; color: var(--warning);">${exp.category}</div>
-                    <div class="booking-date">${exp.date}</div>
-                </div>
-                <div style="font-size: 0.88rem; margin-bottom: 10px;">
-                    المبلغ: <strong style="color: var(--warning);">${exp.amount} ر.س</strong><br>
-                    ${exp.notes ? '<span style="color:var(--text-muted); font-size:0.8rem;">ملاحظات: ' + exp.notes + '</span>' : ''}
-                </div>
-                <div style="text-align: left;">
-                    <button class="btn-action btn-delete" onclick="deleteExpense(${index})">حذف المصروف</button>
-                </div>
-            `;
-            expensesList.appendChild(card);
-        });
-    }
-
-    function renderMaintenance() {
-        maintenanceList.innerHTML = '';
-        if (maintenance.length === 0) {
-            maintenanceList.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding: 6px;">لا توجد مهام صيانة معلقة حالياً</div>';
-            return;
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('hidden');
         }
 
-        maintenance.forEach((m, index) => {
-            const card = document.createElement('div');
-            card.className = 'maintenance-card';
-            card.style.background = '#f8fafc';
-            card.style.margin = '8px 0';
-            card.innerHTML = `
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
-                    <span>🔧 ${m.issue}</span>
-                    <button class="btn-action btn-receipt" onclick="deleteMaintenance(${index})">تم الإنجاز</button>
-                </div>
-            `;
-            maintenanceList.appendChild(card);
-        });
-    }
-
-    function getFilteredData() {
-        const mode = document.getElementById('dashboard-mode').value;
-        const selectedPeriod = dashboardPeriodInput.value;
-
-        let filteredBookings = [];
-        let filteredExpenses = [];
-
-        if (mode === 'month') {
-            filteredBookings = bookings.filter(b => b.date && b.date.startsWith(selectedPeriod) && b.status !== 'cancelled');
-            filteredExpenses = expenses.filter(e => e.date && e.date.startsWith(selectedPeriod));
-        } else {
-            filteredBookings = bookings.filter(b => b.date && b.date.startsWith('2026') && b.status !== 'cancelled');
-            filteredExpenses = expenses.filter(e => e.date && e.date.startsWith('2026'));
-        }
-        return { filteredBookings, filteredExpenses, mode, selectedPeriod };
-    }
-
-    function updateStats() {
-        const mode = document.getElementById('dashboard-mode').value;
-        const subtitleEl = document.getElementById('dashboard-subtitle');
-
-        if (mode === 'month') {
-            subtitleEl.innerText = `حسبة شهر: ${dashboardPeriodInput.value}`;
-            dashboardPeriodInput.style.display = 'inline-block';
-        } else {
-            subtitleEl.innerText = `إجمالي السنة كاملة (2026)`;
-            dashboardPeriodInput.style.display = 'none';
+        function calcRemaining() {
+            let price = parseFloat(document.getElementById('b-price').value) || 0;
+            let paid = parseFloat(document.getElementById('b-paid').value) || 0;
+            let rem = price - paid;
+            document.getElementById('b-rem').value = rem >= 0 ? rem + ' ر.س' : '0 ر.س';
         }
 
-        const { filteredBookings, filteredExpenses } = getFilteredData();
+        function saveBookingData(e) {
+            e.preventDefault();
+            let editId = document.getElementById('b-edit-id').value;
+            let price = parseFloat(document.getElementById('b-price').value);
+            let paid = parseFloat(document.getElementById('b-paid').value);
+            
+            let bookingData = {
+                id: editId ? parseInt(editId) : Date.now(),
+                name: document.getElementById('b-name').value,
+                phone: document.getElementById('b-phone').value,
+                date: document.getElementById('b-date').value,
+                period: document.getElementById('b-period').value,
+                section: document.getElementById('b-section').value,
+                price: price,
+                paid: paid,
+                method: document.getElementById('b-method').value,
+                status: document.getElementById('b-status').value
+            };
 
-        let totalRent = 0, totalPaid = 0, totalCommission = 0;
-        filteredBookings.forEach(b => {
-            totalRent += Number(b.totalRent);
-            totalPaid += Number(b.paidAmount);
-            totalCommission += Number(b.commission || 0);
-        });
-
-        let totalExpenses = 0;
-        filteredExpenses.forEach(e => {
-            totalExpenses += Number(e.amount);
-        });
-
-        const activeCount = filteredBookings.length;
-        const netProfit = totalPaid - totalExpenses - totalCommission;
-
-        document.getElementById('stat-count').innerText = activeCount;
-        document.getElementById('stat-total').innerText = totalRent + ' ر.س';
-        document.getElementById('stat-paid').innerText = totalPaid + ' ر.س';
-        document.getElementById('stat-remaining').innerText = (totalRent - totalPaid) + ' ر.س';
-        document.getElementById('stat-expenses').innerText = (totalExpenses + totalCommission) + ' ر.س';
-        document.getElementById('stat-net').innerText = netProfit + ' ر.س';
-    }
-
-    function openEditModal(index) {
-        const b = bookings[index];
-        document.getElementById('edit-index').value = index;
-        document.getElementById('edit-name').value = b.name;
-        document.getElementById('edit-phone').value = b.phone || '';
-        document.getElementById('edit-date').value = b.date;
-        document.getElementById('edit-shift').value = b.shift;
-        document.getElementById('edit-section').value = b.section;
-        document.getElementById('edit-paymentMethod').value = b.paymentMethod;
-        document.getElementById('edit-totalRent').value = b.totalRent;
-        document.getElementById('edit-paidAmount').value = b.paidAmount;
-        document.getElementById('edit-commission').value = b.commission || 0;
-        
-        const statusSelect = document.getElementById('edit-status');
-        const refundBox = document.getElementById('refund-box');
-        
-        if (b.status === 'cancelled') {
-            statusSelect.value = 'cancelled';
-            refundBox.style.display = 'block';
-            document.getElementById('edit-refunded').value = b.refundedAmount || 0;
-        } else {
-            statusSelect.value = 'active';
-            refundBox.style.display = 'none';
-            document.getElementById('edit-refunded').value = 0;
-        }
-
-        document.getElementById('edit-modal').style.display = 'flex';
-    }
-
-    function openReceiptModal(index) {
-        currentReceiptBooking = bookings[index];
-        const b = currentReceiptBooking;
-        const remaining = b.totalRent - b.paidAmount;
-        document.getElementById('r-name').innerText = b.name;
-        document.getElementById('r-phone').innerText = b.phone || 'غير مسجل';
-        document.getElementById('r-date').innerText = b.date;
-        document.getElementById('r-shift').innerText = b.shift;
-        document.getElementById('r-section').innerText = b.section;
-        document.getElementById('r-total').innerText = b.totalRent + ' ر.س';
-        document.getElementById('r-paid').innerText = b.paidAmount + ' ر.س';
-        document.getElementById('r-remaining').innerText = remaining + ' ر.س';
-        document.getElementById('r-method').innerText = b.paymentMethod;
-
-        document.getElementById('receipt-modal').style.display = 'flex';
-    }
-
-    function printReceipt() {
-        const printContent = document.getElementById('receipt-printable-area').innerHTML;
-        const originalContent = document.body.innerHTML;
-        document.body.innerHTML = `<div style="padding: 20px; background:#fff; color:#000;">${printContent}</div>`;
-        window.print();
-        document.body.innerHTML = originalContent;
-        window.location.reload();
-    }
-
-    function shareOnWhatsApp() {
-        if (!currentReceiptBooking) return;
-        const b = currentReceiptBooking;
-        const remaining = b.totalRent - b.paidAmount;
-        const msg = `🧾 *سند حجز شاليه رسمي*\n` +
-                    `--------------------\n` +
-                    `👤 اسم المستأجر: ${b.name}\n` +
-                    `📅 تاريخ الحجز: ${b.date}\n` +
-                    `⏰ الفترة: ${b.shift} (${b.section})\n` +
-                    `💰 إجمالي الإيجار: ${b.totalRent} ر.س\n` +
-                    `💵 المبلغ المدفوع: ${b.paidAmount} ر.س\n` +
-                    `📌 المتبقي: ${remaining} ر.س\n` +
-                    `💳 طريقة الدفع: ${b.paymentMethod}\n` +
-                    `--------------------\n` +
-                    `شكراً لتعاملكم معنا! نسعد بخدمتكم في الشاليه الملكي.\n\n` +
-                    `_تصميم المطور فهد المخلفي (أبو مرزوق)_`;
-        
-        let phoneNum = b.phone || '';
-        phoneNum = phoneNum.replace(/\D/g, '');
-        if (phoneNum.startsWith('0')) {
-            phoneNum = '966' + phoneNum.substring(1);
-        }
-        
-        const url = `https://wa.me/${phoneNum}?text=${encodeURIComponent(msg)}`;
-        window.open(url, '_blank');
-    }
-
-    function openReportModal() {
-        const { filteredBookings, filteredExpenses, mode, selectedPeriod } = getFilteredData();
-        
-        let totalRent = 0, totalPaid = 0, totalCommission = 0;
-        filteredBookings.forEach(b => {
-            totalRent += Number(b.totalRent);
-            totalPaid += Number(b.paidAmount);
-            totalCommission += Number(b.commission || 0);
-        });
-
-        let totalExpenses = 0;
-        filteredExpenses.forEach(e => {
-            totalExpenses += Number(e.amount);
-        });
-
-        const netProfit = totalPaid - totalExpenses - totalCommission;
-
-        document.getElementById('rep-period-title').innerText = mode === 'month' ? `الشهر: ${selectedPeriod}` : `السنة: 2026`;
-        document.getElementById('rep-count').innerText = filteredBookings.length;
-        document.getElementById('rep-total').innerText = totalRent + ' ر.س';
-        document.getElementById('rep-paid').innerText = totalPaid + ' ر.س';
-        document.getElementById('rep-remaining').innerText = (totalRent - totalPaid) + ' ر.س';
-        document.getElementById('rep-expenses').innerText = totalExpenses + ' ر.س';
-        document.getElementById('rep-commission').innerText = totalCommission + ' ر.س';
-        document.getElementById('rep-net').innerText = netProfit + ' ر.س';
-
-        document.getElementById('report-modal').style.display = 'flex';
-    }
-
-    function printReport() {
-        const printContent = document.getElementById('report-printable-area').innerHTML;
-        const originalContent = document.body.innerHTML;
-        document.body.innerHTML = `<div style="padding: 20px; background:#fff; color:#000;">${printContent}</div>`;
-        window.print();
-        document.body.innerHTML = originalContent;
-        window.location.reload();
-    }
-
-    function openBackupModal() {
-        document.getElementById('backup-modal').style.display = 'flex';
-    }
-
-    function exportDataFile() {
-        const data = {
-            bookings: bookings,
-            expenses: expenses,
-            maintenance: maintenance,
-            exportDate: new Date().toISOString()
-        };
-        const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
-        const downloadAnchor = document.createElement('a');
-        downloadAnchor.setAttribute("href", dataStr);
-        downloadAnchor.setAttribute("download", `chalet_backup_${new Date().toISOString().split('T')[0]}.json`);
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        downloadAnchor.remove();
-    }
-
-    function importDataFile(event) {
-        const file = event.target.files[0];
-        if (!file) return;
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const parsed = JSON.parse(e.target.result);
-                if (parsed.bookings && parsed.expenses) {
-                    bookings = parsed.bookings;
-                    expenses = parsed.expenses;
-                    maintenance = parsed.maintenance || [];
-                    updateUI();
-                    alert("تمت استعادة البيانات بنجاح!");
-                    closeModal('backup-modal');
-                } else {
-                    alert("ملف النسخ الاحتياطي غير صالح!");
-                }
-            } catch (err) {
-                alert("حدث خطأ أثناء قراءة الملف!");
+            if(editId) {
+                let index = bookings.findIndex(b => b.id == editId);
+                if(index !== -1) bookings[index] = bookingData;
+                alert('تم تحديث الحجز بنجاح!');
+            } else {
+                bookings.push(bookingData);
+                alert('تم حفظ الحجز الجديد بنجاح!');
             }
-        };
-        reader.readAsText(file);
-    }
 
-    function closeModal(modalId) {
-        document.getElementById(modalId).style.display = 'none';
-    }
-
-    function handleStatusChange() {
-        const status = document.getElementById('edit-status').value;
-        const refundBox = document.getElementById('refund-box');
-        refundBox.style.display = (status === 'cancelled') ? 'block' : 'none';
-    }
-
-    document.getElementById('edit-form').addEventListener('submit', function(e) {
-        e.preventDefault();
-        const index = document.getElementById('edit-index').value;
-        const totalRent = Number(document.getElementById('edit-totalRent').value);
-        const paidAmount = Number(document.getElementById('edit-paidAmount').value);
-        const status = document.getElementById('edit-status').value;
-        const refundedAmount = Number(document.getElementById('edit-refunded').value) || 0;
-        const commission = Number(document.getElementById('edit-commission').value) || 0;
-
-        if(paidAmount > totalRent) {
-            alert("المبلغ المدفوع لا يمكن أن يكون أكبر من قيمة الإيجار!");
-            return;
+            document.getElementById('b-edit-id').value = '';
+            document.getElementById('quick-booking-form').reset();
+            document.getElementById('form-title-text').innerHTML = `<i class="fa-solid fa-plus-circle" style="color: #ff9f43;"></i> نموذج تسجيل حجز جديد للشاليه`;
+            saveAndRefresh();
+            switchTab('dashboard', document.querySelectorAll('.nav-links li')[0]);
         }
 
-        bookings[index] = {
-            name: document.getElementById('edit-name').value,
-            phone: document.getElementById('edit-phone').value,
-            date: document.getElementById('edit-date').value,
-            shift: document.getElementById('edit-shift').value,
-            section: document.getElementById('edit-section').value,
-            totalRent: totalRent,
-            paidAmount: paidAmount,
-            paymentMethod: document.getElementById('edit-paymentMethod').value,
-            commission: commission,
-            status: status,
-            refundedAmount: status === 'cancelled' ? refundedAmount : 0
-        };
+        function editBooking(id) {
+            let b = bookings.find(item => item.id == id);
+            if(!b) return;
+            
+            document.getElementById('b-edit-id').value = b.id;
+            document.getElementById('b-name').value = b.name;
+            document.getElementById('b-phone').value = b.phone;
+            document.getElementById('b-date').value = b.date;
+            document.getElementById('b-period').value = b.period;
+            document.getElementById('b-section').value = b.section;
+            document.getElementById('b-price').value = b.price;
+            document.getElementById('b-paid').value = b.paid;
+            document.getElementById('b-method').value = b.method;
+            document.getElementById('b-status').value = b.status;
+            calcRemaining();
 
-        closeModal('edit-modal');
-        updateUI();
-    });
-
-    form.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const newBooking = {
-            name: document.getElementById('renterName').value,
-            phone: document.getElementById('renterPhone').value,
-            date: document.getElementById('bookingDate').value,
-            shift: document.getElementById('shift').value,
-            section: document.getElementById('section').value,
-            totalRent: Number(document.getElementById('totalRent').value),
-            paidAmount: Number(document.getElementById('paidAmount').value),
-            paymentMethod: document.getElementById('paymentMethod').value,
-            commission: Number(document.getElementById('commissionAmount').value) || 0,
-            status: 'active',
-            refundedAmount: 0
-        };
-
-        if(newBooking.paidAmount > newBooking.totalRent) {
-            alert("المبلغ المدفوع لا يمكن أن يكون أكبر من قيمة الإيجار!");
-            return;
+            document.getElementById('form-title-text').innerHTML = `<i class="fa-solid fa-pen-to-square" style="color: #ff9f43;"></i> تعديل بيانات الحجز: ${b.name}`;
+            switchTab('new-booking', document.querySelectorAll('.nav-links li')[1]);
         }
 
-        bookings.push(newBooking);
-        updateUI();
-        form.reset();
-        document.getElementById('bookingDate').valueAsDate = new Date();
-        document.querySelectorAll('.sidebar-item')[3].click();
-    });
-
-    expenseForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const newExpense = {
-            category: document.getElementById('expenseCategory').value,
-            amount: Number(document.getElementById('expenseAmount').value),
-            date: document.getElementById('expenseDate').value,
-            notes: document.getElementById('expenseNotes').value
-        };
-
-        expenses.push(newExpense);
-        updateUI();
-        expenseForm.reset();
-        document.getElementById('expenseDate').valueAsDate = new Date();
-    });
-
-    maintenanceForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-        const issueText = document.getElementById('maintIssue').value;
-        maintenance.push({ issue: issueText });
-        updateUI();
-        maintenanceForm.reset();
-    });
-
-    function deleteBooking(index) {
-        if(confirm('هل أنت متأكد من حذف هذا الحجز نهائياً؟')) {
-            bookings.splice(index, 1);
-            updateUI();
+        function deleteBooking(id) {
+            if(confirm('هل أنت متأكد من حذف هذا الحجز؟')) {
+                bookings = bookings.filter(b => b.id !== id);
+                saveAndRefresh();
+            }
         }
-    }
 
-    function deleteExpense(index) {
-        if(confirm('هل أنت متأكد من حذف هذا المصروف؟')) {
-            expenses.splice(index, 1);
-            updateUI();
+        function addExpense(e) {
+            e.preventDefault();
+            let newE = {
+                id: Date.now(),
+                title: document.getElementById('e-title').value,
+                category: document.getElementById('e-category').value,
+                amount: parseFloat(document.getElementById('e-amount').value),
+                date: document.getElementById('e-date').value
+            };
+            expenses.push(newE);
+            saveAndRefresh();
+            e.target.reset();
+            alert('تم تسجيل المصروف بنجاح!');
         }
-    }
 
-    function deleteMaintenance(index) {
-        maintenance.splice(index, 1);
-        updateUI();
-    }
+        function deleteExpense(id) {
+            expenses = expenses.filter(e => e.id !== id);
+            saveAndRefresh();
+        }
 
-    updateUI();
-</script>
+        function saveAndRefresh() {
+            localStorage.setItem('cruise_bookings', JSON.stringify(bookings));
+            localStorage.setItem('cruise_expenses', JSON.stringify(expenses));
+            renderBookingsTable();
+            renderExpensesTable();
+            updateDashboard();
+        }
 
+        function updateDashboard() {
+            let filterType = document.getElementById('period-selector').value;
+            let currentMonth = new Date().toISOString().slice(0, 7);
+
+            let filteredBookings = bookings.filter(b => {
+                if(filterType === 'month') return b.date.startsWith(currentMonth);
+                return b.date.startsWith('2026');
+            });
+
+            let filteredExpenses = expenses.filter(e => {
+                if(filterType === 'month') return e.date.startsWith(currentMonth);
+                return e.date.startsWith('2026');
+            });
+
+            let expected = filteredBookings.reduce((sum, b) => sum + b.price, 0);
+            let collected = filteredBookings.reduce((sum, b) => sum + b.paid, 0);
+            let remaining = expected - collected;
+            let totalExp = filteredExpenses.reduce((sum, e) => sum + e.amount, 0);
+            let net = collected - totalExp;
+
+            document.getElementById('stat-expected').innerText = expected.toLocaleString() + ' ر.س';
+            document.getElementById('stat-collected').innerText = collected.toLocaleString() + ' ر.س';
+            document.getElementById('stat-remaining').innerText = remaining.toLocaleString() + ' ر.س';
+            document.getElementById('stat-expenses').innerText = totalExp.toLocaleString() + ' ر.س';
+            document.getElementById('stat-net').innerText = net.toLocaleString() + ' ر.س';
+
+            let todayStr = new Date().toISOString().slice(0, 10);
+            let todayBookings = bookings.filter(b => b.date === todayStr);
+            let alertBox = document.getElementById('today-alert-container');
+            if(todayBookings.length > 0) {
+                alertBox.innerHTML = `<div class="alert-box"><i class="fa-solid fa-bell"></i> تنبيه: يوجد ${todayBookings.length} حجز مسجل اليوم باسم (${todayBookings.map(b => b.name).join(', ')})!</div>`;
+            } else {
+                alertBox.innerHTML = '';
+            }
+
+            let recentBody = document.getElementById('dashboard-recent-body');
+            recentBody.innerHTML = '';
+            bookings.slice(-4).reverse().forEach(b => {
+                let rem = b.price - b.paid;
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${b.name}</b></td>
+                    <td>${b.date}</td>
+                    <td><span class="badge nisah">${b.section}</span></td>
+                    <td>${b.price} ر.س</td>
+                    <td style="color: #c62828; font-weight: bold;">${rem} ر.س</td>
+                    <td><span class="badge ${b.status === 'مؤكد' ? 'success' : 'danger'}">${b.status}</span></td>
+                `;
+                recentBody.appendChild(tr);
+            });
+        }
+
+        function renderBookingsTable() {
+            let tbody = document.getElementById('bookings-table-body');
+            tbody.innerHTML = '';
+            bookings.forEach((b, index) => {
+                let rem = b.price - b.paid;
+                let badgeClass = b.section === 'نساء' ? 'nisah' : 'qismain';
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><b>${b.name}</b></td>
+                    <td>${b.phone}</td>
+                    <td>${b.date}</td>
+                    <td>${b.period}</td>
+                    <td><span class="badge ${badgeClass}">${b.section}</span></td>
+                    <td>${b.price} ر.س</td>
+                    <td style="color: #10ac84; font-weight: bold;">${b.paid} ر.س</td>
+                    <td style="color: #c62828; font-weight: bold;">${rem} ر.س</td>
+                    <td><span class="badge ${b.status === 'مؤكد' ? 'success' : 'danger'}">${b.status}</span></td>
+                    <td>
+                        <button onclick='editBooking(${b.id})' class="btn" style="padding: 4px 8px; font-size: 11px; background: #54a0ff;"><i class="fa-solid fa-pen"></i> تعديل</button>
+                        <button onclick='openReceipt(${JSON.stringify(b)})' class="btn" style="padding: 4px 8px; font-size: 11px;"><i class="fa-solid fa-receipt"></i> سند</button>
+                        <button onclick='deleteBooking(${b.id})' class="btn badge danger" style="padding: 5px 8px; border:none; cursor:pointer;"><i class="fa-solid fa-trash"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderExpensesTable() {
+            let tbody = document.getElementById('expenses-table-body');
+            tbody.innerHTML = '';
+            expenses.forEach(e => {
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${e.title}</b></td>
+                    <td>${e.category}</td>
+                    <td style="color: #c62828; font-weight: bold;">${e.amount} ر.س</td>
+                    <td>${e.date}</td>
+                    <td><button onclick='deleteExpense(${e.id})' class="btn badge danger" style="padding: 5px 8px; border:none; cursor:pointer;"><i class="fa-solid fa-trash"></i></button></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function filterBookings() {
+            let query = document.getElementById('search-input').value.toLowerCase();
+            let rows = document.querySelectorAll('#bookings-table-body tr');
+            rows.forEach(row => {
+                let text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        function renderCalendar() {
+            let container = document.getElementById('calendar-container');
+            container.innerHTML = '';
+            document.getElementById('cal-month-title').innerText = 'حجوزات شهر يونيو 2026';
+            document.getElementById('calendar-details-box').style.display = 'none';
+            
+            for (let i = 1; i <= 30; i++) {
+                let dayStr = `2026-06-${i < 10 ? '0' + i : i}`;
+                let booking = bookings.find(b => b.date === dayStr);
+                
+                let dayDiv = document.createElement('div');
+                let className = 'cal-day';
+                
+                if(booking) {
+                    if(booking.status === 'مؤكد') className += ' status-confirmed';
+                    else if(booking.status === 'عربون') className += ' status-deposit';
+                    else className += ' status-unconfirmed';
+                }
+                
+                dayDiv.className = className;
+                dayDiv.innerHTML = `
+                    <div class="date-num">${i}</div>
+                    <div class="hijri-num">${i + 14} ذو القعدة</div>
+                    <div class="client-name">${booking ? booking.name : '<span style="color:#718093">متاح</span>'}</div>
+                `;
+
+                if(booking) {
+                    dayDiv.onclick = () => showCalendarDetails(booking);
+                }
+
+                container.appendChild(dayDiv);
+            }
+        }
+
+        function showCalendarDetails(b) {
+            let rem = b.price - b.paid;
+            let box = document.getElementById('calendar-details-box');
+            let content = document.getElementById('calendar-details-content');
+            
+            box.style.display = 'block';
+            content.innerHTML = `
+                <b>اسم المستأجر:</b> ${b.name} | <b>الجوال:</b> ${b.phone}<br>
+                <b>التاريخ والفترة:</b> ${b.date} (${b.period}) | <b>القسم:</b> ${b.section}<br>
+                <b>الإيجار:</b> ${b.price} ر.س | <b>الواصل:</b> ${b.paid} ر.س | <span style="color: #c62828; font-weight: bold;">المتبقي: ${rem} ر.س</span><br>
+                <b>الحالة:</b> <span class="badge ${b.status === 'مؤكد' ? 'success' : 'danger'}">${b.status}</span><br>
+                <button onclick="editBooking(${b.id})" class="btn" style="margin-top: 10px; padding: 6px 15px; font-size: 12px;"><i class="fa-solid fa-pen-to-square"></i> تعديل بيانات هذا الحجز</button>
+            `;
+        }
+
+        function openReceipt(b) {
+            activeReceipt = b;
+            let details = `
+                <b>اسم المستأجر:</b> ${b.name}<br>
+                <b>رقم الجوال:</b> ${b.phone}<br>
+                <b>تاريخ الحجز:</b> ${b.date} (${b.period})<br>
+                <b>القسم:</b> ${b.section}<br>
+                <b>إجمالي الإيجار:</b> ${b.price} ر.س<br>
+                <b>المبلغ الواصل:</b> ${b.paid} ر.س (${b.method})<br>
+                <b>المتبقي:</b> ${b.price - b.paid} ر.س
+            `;
+            document.getElementById('receipt-details').innerHTML = details;
+            document.getElementById('receipt-modal').style.display = 'flex';
+        }
+
+        function closeReceiptModal() {
+            document.getElementById('receipt-modal').style.display = 'none';
+        }
+
+        function printReceipt() {
+            window.print();
+        }
+
+        function sendWhatsApp() {
+            if(!activeReceipt) return;
+            let msg = `مرحباً ${activeReceipt.name}، نؤكد لكم حجزكم في شاليه كروز بتاريخ ${activeReceipt.date} (${activeReceipt.period}). المبلغ الواصل: ${activeReceipt.paid} ر.س والمتبقي: ${activeReceipt.price - activeReceipt.paid} ر.س. شكراً لاختياركم لنا!`;
+            let url = `https://wa.me/${activeReceipt.phone}?text=${encodeURIComponent(msg)}`;
+            window.open(url, '_blank');
+        }
+
+        function generateReport() {
+            let totalExp = expenses.reduce((sum, e) => sum + e.amount, 0);
+            let totalInc = bookings.reduce((sum, b) => sum + b.paid, 0);
+            let html = `
+                <b>إجمالي الحجوزات المسجلة:</b> ${bookings.length} حجزاً<br>
+                <b>إجمالي العوائد الفعلية (الواصل):</b> ${totalInc.toLocaleString()} ر.س<br>
+                <b>إجمالي المصروفات والصيانة:</b> ${totalExp.toLocaleString()} ر.س<br>
+                <hr style="margin: 10px 0; border:0; border-top:1px solid #ddd;">
+                <h3 style="color: #10ac84;">صافي الربح النهائي: ${(totalInc - totalExp).toLocaleString()} ر.س</h3>
+            `;
+            document.getElementById('financial-report-content').innerHTML = html;
+        }
+
+        function exportToExcel() {
+            let csv = '\uFEFFالاسم,الجوال,التاريخ,الفترة,القسم,الإيجار,الواصل,المتبقي,الحالة\n';
+            bookings.forEach(b => {
+                csv += `"${b.name}","${b.phone}","${b.date}","${b.period}","${b.section}",${b.price},${b.paid},${b.price - b.paid},"${b.status}"\n`;
+            });
+            let blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Cruise_Chalets_Bookings.csv';
+            link.click();
+        }
+
+        function exportDataJSON() {
+            let data = { bookings, expenses };
+            let blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            let link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'cruise_backup_2026.json';
+            link.click();
+        }
+
+        function importDataJSON(e) {
+            let file = e.target.files[0];
+            if(!file) return;
+            let reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    let data = JSON.parse(evt.target.result);
+                    if(data.bookings && data.expenses) {
+                        bookings = data.bookings;
+                        expenses = data.expenses;
+                        saveAndRefresh();
+                        alert('تم استعادة البيانات بنجاح!');
+                    }
+                } catch(err) {
+                    alert('ملف غير صالح!');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        document.getElementById('current-date-badge').innerText = new Date().toLocaleDateString('ar-SA', options);
+
+        saveAndRefresh();
+    </script>
 </body>
 </html>
