@@ -423,12 +423,6 @@
     <main>
         <!-- 1. الشاشة الرئيسية -->
         <section id="view-dashboard" class="view active">
-            <!-- مؤشر نوع الجهاز الذكي المتصل حالياً -->
-            <div class="quick-alert-bar" id="device-info-bar" style="background: rgba(40, 167, 69, 0.1); border-color: #28a745;">
-                <h4>📱 مؤشر جهازك الذكي الحالي:</h4>
-                <div id="device-specs-text" style="color: #e5e7eb; font-size: 0.8rem;">جاري فحص المقاسات ونوع الجهاز...</div>
-            </div>
-
             <!-- تنبيهات سريعة لحجوزات اليوم وغداً -->
             <div class="quick-alert-bar" id="quick-alerts-container">
                 <h4>🔔 تنبيهات الحجوزات السريعة:</h4>
@@ -816,27 +810,17 @@
         overlay.classList.toggle('active');
     }
 
-    // دالة الكشف الذكي عن مقاسات الشاشة ونوع الجهاز وتحديث الواجهة تلقائياً
+    // دالة التكيف الذكي لمقاسات الشاشة في الخلفية بدون عرض الشريط العلوي
     function detectDeviceAndSize() {
         const width = window.innerWidth;
         const container = document.getElementById('appContainer');
-        const infoText = document.getElementById('device-specs-text');
         
         container.classList.remove('device-tablet', 'device-desktop');
         
-        let deviceType = '';
-        if (width < 768) {
-            deviceType = 'جوال ذكي (Smartphone)';
-        } else if (width >= 768 && width < 1024) {
-            deviceType = 'جهاز لوحي (Tablet)';
+        if (width >= 768 && width < 1024) {
             container.classList.add('device-tablet');
-        } else {
-            deviceType = 'حاسوب / شاشة مكتبية (Desktop/PC)';
+        } else if (width >= 1024) {
             container.classList.add('device-desktop');
-        }
-
-        if (infoText) {
-            infoText.innerHTML = `نوع الجهاز: <b>${deviceType}</b> | المقاسات الحالية: <b>${width}px × ${window.innerHeight}px</b>`;
         }
     }
 
