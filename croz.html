@@ -4,23 +4,28 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>إدارة الشاليه الملكي</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
-    <!-- مكتبة تصدير الإكسل الملون المنظم -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <style>
         :root {
-            --primary: #c5a059;         /* ذهبي دافئ فاخر */
-            --primary-light: #e6c587;   /* ذهبي فاتح */
-            --success: rgba(40, 167, 69, 0.2);
-            --success-border: #28a745;
-            --warning: rgba(217, 119, 6, 0.2);
-            --warning-border: #d97706;
-            --danger: rgba(220, 53, 69, 0.2);
-            --danger-border: #dc3545;
-            --dark-bg: #1a1a1a;        /* خلفية داكنة فخمة تناسب العيون */
-            --app-bg: #222222;
-            --glass-bg: rgba(255, 255, 255, 0.04);
-            --glass-border: rgba(197, 160, 89, 0.2); /* حدود ذهبية خفيفة */
+            --primary: #d4af37;         /* ذهبي ملكي ساطع */
+            --primary-dark: #b89728;    /* ذهبي غامق للتدرجات */
+            --primary-light: rgba(212, 175, 55, 0.15);
+            --accent-glow: rgba(212, 175, 55, 0.5);
+            
+            --success: #059669;
+            --success-light: rgba(5, 150, 105, 0.15);
+            --warning: #d97706;
+            --warning-light: rgba(217, 119, 6, 0.15);
+            --danger: #dc2626;
+            --danger-light: rgba(220, 38, 38, 0.15);
+            
+            --dark-bg: #e2e8f0;        /* خلفية عامة فاتحة ومنعشة */
+            --app-bg: #ffffff;         /* خلفية التطبيق البيضاء الناصعة */
+            --card-bg: #f8fafc;        /* خلفية البطاقات الفاتحة */
+            --glass-border: #cbd5e1;   /* حدود واضحة ونظيفة */
+            --text-main: #0f172a;      /* نصوص رئيسية داكنة واضحة */
+            --text-muted: #64748b;     /* نصوص ثانوية */
         }
         
         * {
@@ -33,7 +38,7 @@
 
         body {
             background-color: var(--dark-bg);
-            color: #f3f4f6;
+            color: var(--text-main);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -44,84 +49,134 @@
             width: 100%;
             max-width: 420px;
             height: 100vh;
-            background: linear-gradient(135deg, #1f1f1f, #282828);
+            background: var(--app-bg);
             position: relative;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            box-shadow: 0 0 50px rgba(0,0,0,0.7);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            border: 1px solid var(--glass-border);
             transition: max-width 0.3s ease;
         }
 
-        /* التكيف الذكي للشاشات الأكبر (تابلت وكمبيوتر) */
         .app-container.device-tablet {
             max-width: 720px;
             height: 92vh;
             border-radius: 24px;
-            border: 4px solid var(--primary);
+            border: 2px solid var(--primary);
         }
 
         .app-container.device-desktop {
             max-width: 960px;
             height: 94vh;
             border-radius: 28px;
-            border: 6px solid var(--primary);
+            border: 2px solid var(--primary);
         }
 
+        /* الترويسة العلوية الحية والملونة */
         header {
-            padding: 12px 15px;
+            padding: 14px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(26, 26, 26, 0.95);
-            backdrop-filter: blur(10px);
-            border-bottom: 1px solid var(--glass-border);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border-bottom: 3px solid var(--primary);
             z-index: 20;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.2), transparent);
+            animation: shimmerHeader 3s infinite;
         }
 
-        header h1 {
-            font-size: 1.1rem;
-            color: var(--primary-light);
+        @keyframes shimmerHeader {
+            0% { left: -100%; }
+            50% { left: 100%; }
+            100% { left: 100%; }
+        }
+
+        .brand-header-box {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .brand-header-box h1 {
+            font-size: 1.15rem;
+            background: linear-gradient(135deg, #fef08a, #d4af37);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             margin: 0;
-            font-weight: 700;
+            font-weight: 900;
+            letter-spacing: 0.5px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+        .brand-header-box span {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        /* زر الثلاث خطوط (القائمة الجانبية) */
+        /* زر القائمة الجانبية الحيي والتفاعلي */
         .menu-toggle-btn {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            color: var(--primary-light);
-            padding: 6px 10px;
-            border-radius: 8px;
-            font-size: 1.1rem;
+            background: linear-gradient(145deg, #f8fafc, #e2e8f0);
+            border: 2px solid var(--primary);
+            color: #1e293b;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            font-size: 1.25rem;
             cursor: pointer;
-            transition: 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .menu-toggle-btn:active { background: rgba(197, 160, 89, 0.2); }
+        .menu-toggle-btn:hover {
+            background: var(--primary);
+            color: #ffffff;
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+        .menu-toggle-btn:active { transform: scale(0.92); }
 
-        /* القائمة الجانبية (Sidebar) */
+        /* القائمة الجانبية */
         .sidebar-overlay {
             position: absolute;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            backdrop-filter: blur(3px);
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
             z-index: 50;
             display: none;
             justify-content: flex-start;
+            animation: fadeInOverlay 0.25s ease;
         }
         .sidebar-overlay.active { display: flex; }
 
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
         .sidebar {
-            width: 240px;
+            width: 260px;
             height: 100%;
-            background: #1f1f1f;
-            border-left: 1px solid var(--glass-border);
+            background: #ffffff;
+            border-left: 3px solid var(--primary);
             padding: 20px 15px;
             display: flex;
             flex-direction: column;
             gap: 10px;
-            box-shadow: 5px 0 25px rgba(0,0,0,0.8);
-            animation: slideRight 0.3s ease;
+            box-shadow: 10px 0 30px rgba(0,0,0,0.15);
+            animation: slideRight 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         @keyframes slideRight {
@@ -133,253 +188,366 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid var(--glass-border);
-            padding-bottom: 10px;
-            margin-bottom: 10px;
+            border-bottom: 2px solid #f1f5f9;
+            padding-bottom: 12px;
+            margin-bottom: 5px;
         }
-        .sidebar-header h3 { color: var(--primary-light); font-size: 1rem; }
+        .sidebar-header h3 { color: var(--primary); font-size: 1.05rem; font-weight: 900; }
 
         .sidebar-item {
             display: flex;
             align-items: center;
             gap: 12px;
-            padding: 12px;
-            background: var(--glass-bg);
+            padding: 12px 14px;
+            background: #f8fafc;
             border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            color: #d1d5db;
-            font-size: 0.9rem;
+            border-radius: 14px;
+            color: var(--text-main);
+            font-size: 0.92rem;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.25s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            right: 0; top: 0; height: 100%; width: 4px;
+            background: var(--primary);
+            transform: scaleY(0);
+            transition: transform 0.25s ease;
+        }
+        .sidebar-item:hover {
+            background: var(--primary-light);
+            border-color: var(--primary);
+            transform: translateX(-4px);
         }
         .sidebar-item.active {
-            background: rgba(197, 160, 89, 0.15);
+            background: var(--primary-light);
             border-color: var(--primary);
-            color: var(--primary-light);
-            font-weight: bold;
+            color: var(--primary);
+            font-weight: 900;
         }
-        .sidebar-item:active { transform: scale(0.98); }
-        .sidebar-icon { font-size: 1.1rem; }
+        .sidebar-item.active::before { transform: scaleY(1); }
+        .sidebar-item:active { transform: scale(0.96); }
+        .sidebar-icon { font-size: 1.2rem; }
 
         main {
             flex: 1;
             overflow-y: auto;
-            padding: 15px;
-            padding-bottom: 45px;
+            padding: 16px;
+            padding-bottom: 50px;
+            background: var(--app-bg);
         }
 
         .view {
             display: none;
-            animation: fadeIn 0.3s ease;
+            animation: fadeInView 0.3s ease;
         }
-        .view.active {
-            display: block;
-        }
+        .view.active { display: block; }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+        @keyframes fadeInView {
+            from { opacity: 0; transform: translateY(8px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* البطاقات الفاتحة والحيوية */
         .card {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 15px;
+            background: var(--card-bg);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 16px;
             margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.15);
         }
 
         .stat-row { display: flex; gap: 10px; margin-bottom: 10px; }
         .stat-box {
             flex: 1;
-            background: rgba(197, 160, 89, 0.08);
-            border: 1px solid rgba(197, 160, 89, 0.25);
-            border-radius: 12px;
-            padding: 12px 8px;
+            background: #ffffff;
+            border: 1.5px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 14px 8px;
             text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
-        .stat-box h3 { font-size: 0.75rem; color: var(--primary-light); margin-bottom: 4px; }
-        .stat-box .value { font-size: 1.05rem; font-weight: bold; color: #fff; }
+        .stat-box:hover {
+            transform: translateY(-3px);
+            border-color: var(--primary);
+            box-shadow: 0 6px 15px rgba(212, 175, 55, 0.2);
+        }
+        .stat-box h3 { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 6px; font-weight: 700; }
+        .stat-box .value { font-size: 1.1rem; font-weight: 900; color: var(--text-main); }
 
-        .form-group { margin-bottom: 12px; }
-        label { display: block; font-size: 0.82rem; color: #d1d5db; margin-bottom: 4px; }
+        /* خانات الإدخال الفاتحة الحية والمميزة بلون عند التفاعل */
+        .form-group { margin-bottom: 14px; }
+        label { display: block; font-size: 0.85rem; color: var(--text-main); margin-bottom: 6px; font-weight: 700; }
+        
         input, select, textarea {
             width: 100%;
-            padding: 10px;
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            color: white;
+            padding: 12px 14px;
+            background: #ffffff;
+            border: 2px solid var(--glass-border);
+            border-radius: 12px;
+            color: var(--text-main);
             outline: none;
-            font-size: 0.92rem;
-            color-scheme: dark;
-        }
-        input:focus, select:focus, textarea:focus { border-color: var(--primary); }
-        select option { background-color: var(--dark-bg); }
-
-        button.btn-primary {
-            background: linear-gradient(135deg, var(--primary), #b89246);
-            color: #111;
-            border: none;
-            padding: 12px;
-            border-radius: 10px;
-            width: 100%;
+            font-size: 0.95ln;
             font-size: 0.95rem;
-            font-weight: bold;
-            margin-top: 5px;
-            cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
         }
-        button.btn-primary:active { opacity: 0.85; }
+        input:hover, select:hover, textarea:hover {
+            border-color: var(--primary-dark);
+        }
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 4px var(--accent-glow), inset 0 1px 3px rgba(0,0,0,0.05);
+            transform: translateY(-1px);
+        }
+        select option { background-color: #ffffff; color: var(--text-main); padding: 10px; }
 
-        /* شريط التنبيهات السريعة */
-        .quick-alert-bar {
-            background: rgba(197, 160, 89, 0.12);
-            border: 1px solid var(--primary);
+        /* الأزرار الحية والمتفاعلة */
+        button.btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: #ffffff;
+            border: none;
+            padding: 14px;
             border-radius: 14px;
-            padding: 12px;
-            margin-bottom: 15px;
-            font-size: 0.82rem;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 900;
+            margin-top: 6px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
         }
-        .quick-alert-bar h4 { color: var(--primary-light); font-size: 0.88rem; margin-bottom: 6px; }
+        button.btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%; width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: 0.5s;
+        }
+        button.btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.55);
+            filter: brightness(1.05);
+        }
+        button.btn-primary:hover::after { left: 100%; }
+        button.btn-primary:active { transform: translateY(1px) scale(0.98); }
 
-        /* تقويم الآيفون */
+        /* شريط التنبيهات الحي */
+        .quick-alert-bar {
+            background: #ffffff;
+            border: 1.5px solid var(--glass-border);
+            border-right: 6px solid var(--primary);
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            font-size: 0.85rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            transition: transform 0.2s;
+        }
+        .quick-alert-bar:hover { transform: scale(1.01); }
+        .quick-alert-bar h4 { color: var(--primary); font-size: 0.92rem; margin-bottom: 6px; font-weight: 900; }
+
+        /* تقويم الآيفون الفاتح والحي */
         .month-selector {
-            margin-bottom: 12px;
+            background: #ffffff;
+            border: 1.5px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 14px;
+            margin-bottom: 14px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
         
         .iphone-calendar {
-            background: rgba(0, 0, 0, 0.3);
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 10px;
+            background: #ffffff;
+            border: 1.5px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 14px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.05);
         }
 
         .weekdays-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
             text-align: center;
-            font-weight: bold;
-            font-size: 0.75rem;
-            color: var(--primary-light);
-            margin-bottom: 8px;
+            font-weight: 900;
+            font-size: 0.8rem;
+            color: var(--primary-dark);
+            margin-bottom: 10px;
         }
 
         .days-grid {
             display: grid;
             grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
+            gap: 6px;
         }
 
         .cal-day-cell {
             aspect-ratio: 0.85;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
+            background: #f8fafc;
+            border: 1.5px solid var(--glass-border);
+            border-radius: 12px;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 2px;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .cal-day-cell:hover:not(.empty) {
+            transform: scale(1.1);
+            z-index: 5;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-color: var(--primary);
         }
 
         .cal-day-cell.empty { background: transparent; border: none; cursor: default; }
 
-        .cal-day-cell.status-free { background: rgba(255, 255, 255, 0.04); border-color: var(--glass-border); }
-        .cal-day-cell.status-green { background: var(--success); border-color: var(--success-border); }
-        .cal-day-cell.status-yellow { background: var(--warning); border-color: var(--warning-border); }
-        .cal-day-cell.status-red { background: var(--danger); border-color: var(--danger-border); }
+        .cal-day-cell.status-free { background: #f8fafc; border-color: var(--glass-border); }
+        .cal-day-cell.status-green { background: var(--success-light); border-color: var(--success); box-shadow: 0 0 10px rgba(5, 150, 105, 0.15); }
+        .cal-day-cell.status-yellow { background: var(--warning-light); border-color: var(--warning); box-shadow: 0 0 10px rgba(217, 119, 6, 0.15); }
+        .cal-day-cell.status-red { background: var(--danger-light); border-color: var(--danger); box-shadow: 0 0 10px rgba(220, 38, 38, 0.15); }
 
-        .cal-day-cell .day-gregorian { font-size: 0.95rem; font-weight: bold; color: #ffffff; line-height: 1.1; }
-        .cal-day-cell .day-hijri { font-size: 0.6rem; color: #bbbbbb; margin-top: 2px; }
+        .cal-day-cell .day-gregorian { font-size: 1rem; font-weight: 900; color: var(--text-main); line-height: 1.1; }
+        .cal-day-cell .day-hijri { font-size: 0.65rem; color: var(--text-muted); margin-top: 3px; font-weight: 700; }
 
         .selected-day-details {
-            margin-top: 12px;
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 10px;
+            margin-top: 14px;
+            background: #ffffff;
+            border: 1.5px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
         }
         .selected-day-details h3 {
-            font-size: 0.9rem; color: var(--primary-light); margin-bottom: 6px;
-            border-bottom: 1px solid var(--glass-border); padding-bottom: 4px;
+            font-size: 0.95rem; color: var(--primary); margin-bottom: 10px;
+            border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; font-weight: 900;
         }
         .detail-slot {
-            font-size: 0.78rem; background: rgba(0,0,0,0.3); padding: 6px 8px; border-radius: 6px; margin-bottom: 4px;
+            font-size: 0.82rem; background: #f8fafc; border: 1.5px solid var(--glass-border); padding: 10px 12px; border-radius: 10px; margin-bottom: 8px;
         }
 
-        /* السجل وبطاقات الحجز والمصروفات */
+        /* بطاقات السجل والمصروفات الفاتحة والحية */
         .booking-card, .expense-card, .maintenance-card {
-            background: linear-gradient(135deg, rgba(255,255,255,0.03), rgba(0,0,0,0.3));
-            border: 1px solid var(--glass-border);
-            border-radius: 16px;
-            padding: 12px;
-            margin-bottom: 12px;
+            background: #ffffff;
+            border: 1.5px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 16px;
+            margin-bottom: 14px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            transition: all 0.25s ease;
+        }
+        .booking-card:hover, .expense-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--primary);
+            box-shadow: 0 6px 20px rgba(212, 175, 55, 0.2);
         }
         .booking-header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 8px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;
+            margin-bottom: 10px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;
         }
-        .booking-title { font-size: 1rem; font-weight: bold; color: var(--primary-light); }
-        .booking-date { font-size: 0.78rem; color: #aaa; }
+        .booking-title { font-size: 1.05rem; font-weight: 900; color: var(--primary); }
+        .booking-date { font-size: 0.8rem; color: var(--text-muted); background: #f8fafc; padding: 4px 10px; border-radius: 8px; border: 1.5px solid var(--glass-border); font-weight: 700; }
         .booking-details {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.85rem; margin-bottom: 10px;
+            display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.88rem; margin-bottom: 12px; background: #f8fafc; padding: 10px; border-radius: 12px; border: 1.5px solid var(--glass-border);
         }
-        .detail-item span { display: block; color: #aaa; font-size: 0.7rem; }
-        .booking-actions { display: flex; justify-content: space-between; align-items: center; gap: 4px; flex-wrap: wrap; }
+        .detail-item span { display: block; color: var(--text-muted); font-size: 0.72rem; margin-bottom: 2px; font-weight: 700; }
+        .booking-actions { display: flex; justify-content: space-between; align-items: center; gap: 6px; flex-wrap: wrap; }
         
-        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
-        .badge-success { background: rgba(40, 167, 69, 0.2); color: #2ecc71; }
-        .badge-danger { background: rgba(220, 53, 69, 0.2); color: #e74c3c; }
-        .badge-warning { background: rgba(217, 119, 6, 0.2); color: #f39c12; }
-        .badge-cancelled { background: rgba(120, 120, 120, 0.2); color: #95a5a6; }
+        .badge { padding: 5px 10px; border-radius: 8px; font-size: 0.78rem; font-weight: 900; }
+        .badge-success { background: var(--success-light); color: var(--success); border: 1.5px solid var(--success); }
+        .badge-danger { background: var(--danger-light); color: var(--danger); border: 1.5px solid var(--danger); }
+        .badge-warning { background: var(--warning-light); color: var(--warning); border: 1.5px solid var(--warning); }
+        .badge-cancelled { background: rgba(100, 116, 139, 0.15); color: var(--text-muted); border: 1.5px solid var(--glass-border); }
 
-        .btn-action { background: transparent; padding: 4px 8px; border-radius: 6px; font-size: 0.78rem; cursor: pointer; }
-        .btn-edit { color: var(--primary-light); border: 1px solid var(--primary-light); }
-        .btn-receipt { color: #2ecc71; border: 1px solid #2ecc71; }
-        .btn-delete { color: #e74c3c; border: 1px solid #e74c3c; }
+        .btn-action {
+            background: #f8fafc;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            border: 1.5px solid var(--glass-border);
+            font-weight: 900;
+            transition: all 0.2s ease;
+        }
+        .btn-action:hover { transform: scale(1.05); }
+        .btn-edit { color: var(--primary); border-color: var(--primary); }
+        .btn-edit:hover { background: var(--primary-light); }
+        .btn-receipt { color: var(--success); border-color: var(--success); }
+        .btn-receipt:hover { background: var(--success-light); }
+        .btn-delete { color: var(--danger); border-color: var(--danger); }
+        .btn-delete:hover { background: var(--danger-light); }
 
         /* النوافذ المنبثقة وسند القبض */
         .modal-overlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
+            background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(5px);
             display: none; justify-content: center; align-items: center; z-index: 100;
             padding: 15px;
+            animation: fadeInOverlay 0.25s ease;
         }
         .modal-content {
-            background: #222222; border: 1px solid var(--glass-border);
-            border-radius: 20px; width: 100%; max-width: 380px; max-height: 90vh;
-            overflow-y: auto; padding: 18px; box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            background: #ffffff; border: 2px solid var(--primary);
+            border-radius: 22px; width: 100%; max-width: 400px; max-height: 90vh;
+            overflow-y: auto; padding: 22px; box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+            animation: scaleUpModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
         }
+
+        @keyframes scaleUpModal {
+            from { transform: scale(0.9); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
         .modal-header {
             display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 12px; border-bottom: 1px solid var(--glass-border); padding-bottom: 8px;
+            margin-bottom: 14px; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;
         }
-        .modal-header h3 { color: var(--primary-light); font-size: 1rem; }
-        .close-modal { background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer; }
+        .modal-header h3 { color: var(--primary); font-size: 1.1rem; font-weight: 900; }
+        .close-modal {
+            background: #f8fafc; border: 1.5px solid var(--glass-border); border-radius: 10px; width: 32px; height: 32px; color: var(--text-main); font-size: 1.2rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s ease;
+        }
+        .close-modal:hover { background: var(--danger-light); color: var(--danger); border-color: var(--danger); transform: rotate(90deg); }
 
         .receipt-box {
-            background: #ffffff; color: #13131f; border-radius: 12px; padding: 15px; font-family: 'Tajawal', sans-serif;
+            background: #ffffff; color: #1e293b; border: 1.5px solid var(--glass-border); border-radius: 16px; padding: 18px; font-family: 'Tajawal', sans-serif;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
         }
-        .receipt-header { text-align: center; border-bottom: 2px dashed #ccc; padding-bottom: 8px; margin-bottom: 10px; }
-        .receipt-header h2 { font-size: 1.1rem; color: #333; margin-bottom: 2px; }
-        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 6px; font-size: 0.85rem; border-bottom: 1px solid #eee; padding-bottom: 4px; }
-        .receipt-row span { font-weight: bold; color: #555; }
+        .receipt-header { text-align: center; border-bottom: 2px dashed #cbd5e1; padding-bottom: 10px; margin-bottom: 12px; }
+        .receipt-header h2 { font-size: 1.2rem; color: var(--primary); margin-bottom: 4px; font-weight: 900; }
+        .receipt-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 0.88rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 6px; }
+        .receipt-row span { font-weight: 700; color: #64748b; }
 
-        /* شريط حقوق التطوير السفلي */
+        /* شريط حقوق التطوير السفلي الحي */
         .developer-footer {
-            background: rgba(20, 20, 20, 0.95);
-            border-top: 1px solid rgba(197, 160, 89, 0.15);
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-top: 1.5px solid var(--glass-border);
             text-align: center;
-            padding: 6px 10px;
-            font-size: 0.72rem;
-            color: #b89246;
-            letter-spacing: 0.3px;
+            padding: 10px;
+            font-size: 0.75rem;
+            background: linear-gradient(90deg, #1e293b, var(--primary), #1e293b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 900;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
@@ -390,11 +558,14 @@
         <button class="menu-toggle-btn" onclick="toggleSidebar()" title="قائمة الأزرار">
             ☰
         </button>
-        <h1 id="header-title">الرئيسية</h1>
-        <div style="width: 34px;"></div> <!-- مساحة توازن الهيدر -->
+        <div class="brand-header-box">
+            <h1>إدارة الشاليه الملكي</h1>
+            <span id="header-title">الرئيسية</span>
+        </div>
+        <div style="width: 40px;"></div>
     </header>
 
-    <!-- القائمة الجانبية المنسدلة (Sidebar) -->
+    <!-- القائمة الجانبية -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()">
         <div class="sidebar" onclick="event.stopPropagation()">
             <div class="sidebar-header">
@@ -423,15 +594,14 @@
     <main>
         <!-- 1. الشاشة الرئيسية -->
         <section id="view-dashboard" class="view active">
-            <!-- تنبيهات سريعة لحجوزات اليوم وغداً -->
             <div class="quick-alert-bar" id="quick-alerts-container">
                 <h4>🔔 تنبيهات الحجوزات السريعة:</h4>
-                <div id="quick-alerts-text" style="color: #e5e7eb;">جاري التحقق من حجوزات اليوم وغداً...</div>
+                <div id="quick-alerts-text" style="color: var(--text-muted);">جاري التحقق من حجوزات اليوم وغداً...</div>
             </div>
 
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h2 id="dashboard-subtitle" style="font-size:0.95rem; color:var(--primary-light);">حسبة الشهر الحالي</h2>
-                <input type="month" id="dashboard-period" style="width: auto; padding: 5px 8px; font-size:0.85rem;" onchange="updateStats()">
+            <div class="card" style="padding: 14px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center;">
+                <h2 id="dashboard-subtitle" style="font-size:0.95rem; color:var(--primary); font-weight:900;">حسبة الشهر الحالي</h2>
+                <input type="month" id="dashboard-period" style="width: auto; padding: 6px 10px; font-size:0.85rem;" onchange="updateStats()">
             </div>
 
             <div class="stat-row">
@@ -439,40 +609,42 @@
                 <div class="stat-box"><h3>الإيرادات المتوقعة</h3><div class="value" id="stat-total">0</div></div>
             </div>
             <div class="stat-row">
-                <div class="stat-box" style="border-color: rgba(40, 167, 69, 0.3);">
-                    <h3 style="color: #2ecc71;">المحصل الفعلي</h3><div class="value" id="stat-paid">0</div>
+                <div class="stat-box" style="border-color: var(--success);">
+                    <h3 style="color: var(--success);">المحصل الفعلي</h3><div class="value" id="stat-paid">0</div>
                 </div>
-                <div class="stat-box" style="border-color: rgba(220, 53, 69, 0.3);">
-                    <h3 style="color: #e74c3c;">المتبقي للدفع</h3><div class="value" id="stat-remaining">0</div>
+                <div class="stat-box" style="border-color: var(--danger);">
+                    <h3 style="color: var(--danger);">المتبقي للدفع</h3><div class="value" id="stat-remaining">0</div>
                 </div>
             </div>
             <div class="stat-row">
-                <div class="stat-box" style="border-color: rgba(217, 119, 6, 0.3);">
-                    <h3 style="color: #f39c12;">إجمالي المصروفات</h3><div class="value" id="stat-expenses">0</div>
+                <div class="stat-box" style="border-color: var(--warning);">
+                    <h3 style="color: var(--warning);">إجمالي المصروفات</h3><div class="value" id="stat-expenses">0</div>
                 </div>
-                <div class="stat-box" style="border-color: rgba(197, 160, 89, 0.3);">
-                    <h3 style="color: var(--primary-light);">الصافي النهائي</h3><div class="value" id="stat-net">0</div>
+                <div class="stat-box" style="border-color: var(--primary);">
+                    <h3 style="color: var(--primary);">الصافي النهائي</h3><div class="value" id="stat-net">0</div>
                 </div>
             </div>
             
-            <div class="form-group" style="margin-top: 10px;">
-                <label>طريقة العرض:</label>
-                <select id="dashboard-mode" onchange="updateStats()">
-                    <option value="month">عرض الشهر المحدد فقط</option>
-                    <option value="year">عرض إجمالي السنة كاملة (2026)</option>
-                </select>
-            </div>
+            <div class="card" style="padding: 14px; margin-top: 10px;">
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label>طريقة العرض:</label>
+                    <select id="dashboard-mode" onchange="updateStats()">
+                        <option value="month">عرض الشهر المحدد فقط</option>
+                        <option value="year">عرض إجمالي السنة كاملة (2026)</option>
+                    </select>
+                </div>
 
-            <div style="display: flex; gap: 8px; margin-top: 5px;">
-                <button type="button" class="btn-primary" style="flex: 1; background: #2ecc71; color:#fff;" onclick="openReportModal()">📊 التقرير المالي</button>
-                <button type="button" class="btn-primary" style="flex: 1; background: #333; color:var(--primary-light); border: 1px solid var(--primary);" onclick="openBackupModal()">💾 النسخ الاحتياطي</button>
+                <div style="display: flex; gap: 10px; margin-top: 10px;">
+                    <button type="button" class="btn-primary" style="flex: 1; background: linear-gradient(135deg, #059669, #047857); color:#fff;" onclick="openReportModal()">📊 التقرير المالي</button>
+                    <button type="button" class="btn-primary" style="flex: 1; background: linear-gradient(135deg, #475569, #334155); color:#fff;" onclick="openBackupModal()">💾 النسخ الاحتياطي</button>
+                </div>
             </div>
         </section>
 
         <!-- 2. شاشة التقويم -->
         <section id="view-calendar" class="view">
             <div class="month-selector">
-                <label style="margin:0;">الشهر:</label>
+                <label style="margin:0;">اختر الشهر:</label>
                 <input type="month" id="calendar-month" style="width: auto;" onchange="generateCalendar()">
             </div>
 
@@ -491,13 +663,14 @@
 
             <div class="selected-day-details" id="day-details-box">
                 <h3 id="selected-date-title">اختر يوماً من التقويم</h3>
-                <div id="selected-date-content" style="color: #aaa; font-size: 0.78rem;">انقر على أي مربع يوم لمعرفة تفاصيل الحجوزات الخاصة به.</div>
+                <div id="selected-date-content" style="color: var(--text-muted); font-size: 0.82rem;">انقر على أي مربع يوم لمعرفة تفاصيل الحجوزات الخاصة به.</div>
             </div>
         </section>
 
         <!-- 3. شاشة إضافة حجز -->
         <section id="view-add" class="view">
             <div class="card">
+                <h3 style="font-size: 1rem; color: var(--primary); margin-bottom: 14px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; font-weight: 900;">إدخال تفاصيل حجز جديد</h3>
                 <form id="booking-form">
                     <div class="form-group">
                         <label>اسم المستأجر</label>
@@ -548,9 +721,9 @@
                             <input type="number" id="paidAmount" required min="0" placeholder="عربون أو كامل">
                         </div>
                     </div>
-                    <div class="form-group" style="margin-top: 8px;">
+                    <div class="form-group" style="margin-top: 10px;">
                         <label>مصاريف تسويق أو عمولة تطبيق (إن وجدت)</label>
-                        <input type="number" id="commissionAmount" min="0" value="0" placeholder="مثال: عمولة تطبيق حجز 50 ريال">
+                        <input type="number" id="commissionAmount" min="0" value="0" placeholder="مثال: 50">
                     </div>
                     <button type="submit" class="btn-primary">حفظ الحجز الجديد</button>
                 </form>
@@ -559,9 +732,11 @@
 
         <!-- 4. شاشة السجل -->
         <section id="view-history" class="view">
-            <div class="form-group" style="margin-bottom: 12px; display: flex; gap: 6px;">
-                <input type="text" id="search-history" placeholder="🔍 ابحث بالاسم أو رقم الجوال أو التاريخ..." oninput="renderBookings()" style="flex:1;">
-                <button type="button" class="btn-primary" style="width: auto; margin-top:0; background: #217346; color:#fff; padding: 0 12px; font-size:0.8rem;" onclick="exportToExcel()" title="تصدير الحجوزات إلى ملف إكسل ملون">📊 تصدير Excel</button>
+            <div class="card" style="padding: 14px; margin-bottom: 14px;">
+                <div class="form-group" style="margin-bottom: 0; display: flex; gap: 8px;">
+                    <input type="text" id="search-history" placeholder="🔍 ابحث بالاسم أو الجوال أو التاريخ..." oninput="renderBookings()" style="flex:1;">
+                    <button type="button" class="btn-primary" style="width: auto; margin-top:0; background: linear-gradient(135deg, #059669, #047857); color:#fff; padding: 0 14px; font-size:0.85rem;" onclick="exportToExcel()" title="تصدير إلى إكسل">📊 Excel</button>
+                </div>
             </div>
             <div id="bookings-list"></div>
         </section>
@@ -569,7 +744,7 @@
         <!-- 5. شاشة المصروفات والصيانة -->
         <section id="view-expenses" class="view">
             <div class="card">
-                <h3 style="font-size:0.95rem; color: var(--primary-light); margin-bottom: 10px;">إضافة مصروف جديد</h3>
+                <h3 style="font-size:1rem; color: var(--primary); margin-bottom: 12px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; font-weight: 900;">إضافة مصروف جديد</h3>
                 <form id="expense-form">
                     <div class="form-group">
                         <label>بند المصروف</label>
@@ -601,19 +776,19 @@
                 </form>
             </div>
 
-            <div class="card" style="margin-top: 15px; border-color: rgba(217, 119, 6, 0.3);">
-                <h3 style="font-size:0.95rem; color: #f39c12; margin-bottom: 10px;">🛠️ سجل ملاحظات الصيانة العاجلة</h3>
+            <div class="card" style="border-color: var(--warning);">
+                <h3 style="font-size:1rem; color: var(--warning); margin-bottom: 12px; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; font-weight: 900;">🛠️ سجل ملاحظات الصيانة العاجلة</h3>
                 <form id="maintenance-form">
                     <div class="form-group">
                         <label>وصف المشكلة / طلب الصيانة</label>
-                        <input type="text" id="maintIssue" required placeholder="مثال: تصليح لمبة الإنارة الخارجية">
+                        <input type="text" id="maintIssue" required placeholder="مثال: تصليح لمبة الإنارة">
                     </div>
-                    <button type="submit" class="btn-primary" style="background: #f39c12; color:#111;">إضافة لملاحظات الصيانة</button>
+                    <button type="submit" class="btn-primary" style="background: linear-gradient(135deg, #d97706, #b45309); color:#fff;">إضافة لملاحظات الصيانة</button>
                 </form>
-                <div id="maintenance-list" style="margin-top: 10px;"></div>
+                <div id="maintenance-list" style="margin-top: 12px;"></div>
             </div>
 
-            <h3 style="font-size:0.95rem; margin: 15px 0 10px 0; color: var(--primary-light);">سجل المصروفات</h3>
+            <h3 style="font-size:1rem; margin: 16px 0 10px 0; color: var(--primary); font-weight: 900;">سجل المصروفات السابقة</h3>
             <div id="expenses-list"></div>
         </section>
     </main>
@@ -677,7 +852,7 @@
                     </div>
                 </div>
 
-                <div class="form-group" style="margin-top: 8px;">
+                <div class="form-group" style="margin-top: 10px;">
                     <label>عمولة التطبيق / المسوق</label>
                     <input type="number" id="edit-commission" min="0" value="0">
                 </div>
@@ -690,8 +865,8 @@
                     </select>
                 </div>
 
-                <div class="form-group" id="refund-box" style="display: none; background: rgba(220,53,69,0.1); padding: 8px; border-radius: 8px;">
-                    <label style="color: #e74c3c;">كم تم استرداده من العربون؟</label>
+                <div class="form-group" id="refund-box" style="display: none; background: rgba(220, 38, 38, 0.08); border: 1.5px solid var(--danger); padding: 12px; border-radius: 10px;">
+                    <label style="color: var(--danger);">كم تم استرداده من العربون؟</label>
                     <input type="number" id="edit-refunded" min="0" value="0">
                 </div>
 
@@ -710,7 +885,7 @@
             <div class="receipt-box" id="receipt-printable-area">
                 <div class="receipt-header">
                     <h2>إدارة الشاليه الملكي</h2>
-                    <p style="font-size: 0.75rem; color: #666;">سند قبض حجز رسمي</p>
+                    <p style="font-size: 0.78rem; color: #64748b;">سند قبض حجز رسمي</p>
                 </div>
                 <div class="receipt-row"><span>اسم المستأجر:</span> <span id="r-name">-</span></div>
                 <div class="receipt-row"><span>رقم الجوال:</span> <span id="r-phone">-</span></div>
@@ -721,13 +896,13 @@
                 <div class="receipt-row"><span>المبلغ المدفوع (الواصل):</span> <span id="r-paid">-</span></div>
                 <div class="receipt-row"><span>المتبقي:</span> <span id="r-remaining">-</span></div>
                 <div class="receipt-row"><span>طريقة الدفع:</span> <span id="r-method">-</span></div>
-                <div style="text-align: center; margin-top: 15px; font-size: 0.75rem; color: #777;">
+                <div style="text-align: center; margin-top: 15px; font-size: 0.78rem; color: #64748b; font-weight: 700;">
                     شكراً لتعاملكم معنا، نسعد بخدمتكم!
                 </div>
             </div>
-            <div style="display: flex; gap: 8px; margin-top: 12px;">
-                <button type="button" class="btn-primary" style="flex: 1; background: #2ecc71; color:#fff; margin-top: 0;" onclick="printReceipt()">طباعة السند</button>
-                <button type="button" class="btn-primary" style="flex: 1; background: #25d366; color:#fff; margin-top: 0;" onclick="shareOnWhatsApp()">إرسال واتساب</button>
+            <div style="display: flex; gap: 10px; margin-top: 14px;">
+                <button type="button" class="btn-primary" style="flex: 1; background: linear-gradient(135deg, #059669, #047857); color:#fff; margin-top: 0;" onclick="printReceipt()">طباعة السند</button>
+                <button type="button" class="btn-primary" style="flex: 1; background: linear-gradient(135deg, #16a34a, #15803d); color:#fff; margin-top: 0;" onclick="shareOnWhatsApp()">إرسال واتساب</button>
             </div>
         </div>
     </div>
@@ -742,7 +917,7 @@
             <div class="receipt-box" id="report-printable-area">
                 <div class="receipt-header">
                     <h2>تقرير أرباح الشاليه الملكي</h2>
-                    <p id="rep-period-title" style="font-size: 0.75rem; color: #666;">الفترة: الحالي</p>
+                    <p id="rep-period-title" style="font-size: 0.78rem; color: #64748b;">الفترة: الحالي</p>
                 </div>
                 <div class="receipt-row"><span>إجمالي الحجوزات النشطة:</span> <span id="rep-count">0</span></div>
                 <div class="receipt-row"><span>إجمالي الإيرادات المتوقعة:</span> <span id="rep-total">0</span></div>
@@ -750,9 +925,9 @@
                 <div class="receipt-row"><span>المتبقي للدفع:</span> <span id="rep-remaining">0</span></div>
                 <div class="receipt-row"><span>إجمالي المصروفات:</span> <span id="rep-expenses">0</span></div>
                 <div class="receipt-row"><span>إجمالي عمولات التطبيقات:</span> <span id="rep-commission">0</span></div>
-                <div class="receipt-row" style="border-bottom: 2px solid #333; font-weight: bold;"><span>الصافي النهائي للأرباح:</span> <span id="rep-net">0</span></div>
+                <div class="receipt-row" style="border-bottom: 2px solid #0f172a; font-weight: 900;"><span>الصافي النهائي للأرباح:</span> <span id="rep-net">0</span></div>
             </div>
-            <button type="button" class="btn-primary" style="margin-top: 12px; background: #2ecc71; color:#fff;" onclick="printReport()">طباعة التقرير</button>
+            <button type="button" class="btn-primary" style="margin-top: 14px; background: linear-gradient(135deg, #059669, #047857); color:#fff;" onclick="printReport()">طباعة التقرير</button>
         </div>
     </div>
 
@@ -763,10 +938,10 @@
                 <h3>النسخ الاحتياطي للبيانات</h3>
                 <button class="close-modal" onclick="closeModal('backup-modal')">&times;</button>
             </div>
-            <div style="font-size: 0.85rem; color: #d1d5db; margin-bottom: 12px;">
-                يمكنك حفظ نسخة من بيانات حجوزاتك ومصروفاتك في ملف على جهازك، أو استعادتها في أي وقت لضمان عدم ضياعها.
+            <div style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 14px; line-height: 1.5;">
+                يمكنك حفظ نسخة من بيانات حجوزاتك ومصروفاتك في ملف على جهازك، أو استعادتها في أي وقت.
             </div>
-            <button type="button" class="btn-primary" style="background: var(--primary); color:#111; margin-bottom: 10px;" onclick="exportDataFile()">📥 تصدير وحفظ البيانات كملف</button>
+            <button type="button" class="btn-primary" style="background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: #fff; margin-bottom: 12px;" onclick="exportDataFile()">📥 تصدير وحفظ البيانات كملف</button>
             
             <div class="form-group" style="margin-top: 15px;">
                 <label>استعادة البيانات من ملف سابق:</label>
@@ -804,19 +979,15 @@
     document.getElementById('bookingDate').valueAsDate = today;
     document.getElementById('expenseDate').valueAsDate = today;
 
-    // دالة فتح وإغلاق القائمة الجانبية (الثلاث خطوط)
     function toggleSidebar() {
         const overlay = document.getElementById('sidebarOverlay');
         overlay.classList.toggle('active');
     }
 
-    // دالة التكيف الذكي لمقاسات الشاشة في الخلفية بدون عرض الشريط العلوي
     function detectDeviceAndSize() {
         const width = window.innerWidth;
         const container = document.getElementById('appContainer');
-        
         container.classList.remove('device-tablet', 'device-desktop');
-        
         if (width >= 768 && width < 1024) {
             container.classList.add('device-tablet');
         } else if (width >= 1024) {
@@ -833,10 +1004,7 @@
         document.getElementById('view-' + tabId).classList.add('active');
         element.classList.add('active');
         document.getElementById('header-title').innerText = title;
-        
-        // إغلاق القائمة الجانبية تلقائياً بعد اختيار القسم
         toggleSidebar();
-
         if(tabId === 'calendar') generateCalendar();
     }
 
@@ -952,7 +1120,7 @@
         titleEl.innerText = `حجوزات يوم: ${dateStr} (هجري: ${hijriStr})`;
         
         if (dayBookings.length === 0) {
-            contentEl.innerHTML = `<div style="color: #2ecc71; font-weight: bold; padding: 4px;">✨ هذا اليوم متاح تماماً للحجز.</div>`;
+            contentEl.innerHTML = `<div style="color: var(--success); font-weight: bold; padding: 4px;">✨ هذا اليوم متاح تماماً للحجز.</div>`;
             return;
         }
 
@@ -962,18 +1130,18 @@
                 html += `
                     <div class="detail-slot" style="opacity: 0.6;">
                         <strong>${b.name}</strong> (${b.phone || 'بدون جوال'}) - ${b.shift} (${b.section})<br>
-                        <span style="color: #95a5a6; font-weight:bold;">الحالة: ملغى (مسترد: ${b.refundedAmount || 0} ر.س)</span>
+                        <span style="color: var(--text-muted); font-weight:bold;">الحالة: ملغى (مسترد: ${b.refundedAmount || 0} ر.س)</span>
                     </div>
                 `;
             } else {
                 let statusText = 'مؤكد (خالص)';
-                let colorStyle = 'color: #2ecc71;';
+                let colorStyle = 'color: var(--success);';
                 if (b.paidAmount === 0) {
                     statusText = 'غير مؤكد';
-                    colorStyle = 'color: #e74c3c;';
+                    colorStyle = 'color: var(--danger);';
                 } else if (b.paidAmount < b.totalRent) {
                     statusText = 'عربون (' + b.paidAmount + ' ر.س)';
-                    colorStyle = 'color: #f39c12;';
+                    colorStyle = 'color: var(--warning);';
                 }
 
                 html += `
@@ -999,7 +1167,7 @@
         });
 
         if (filtered.length === 0) {
-            bookingsList.innerHTML = '<div class="card" style="text-align:center; color:#aaa;">لا توجد حجوزات مطابقة للبحث</div>';
+            bookingsList.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted);">لا توجد حجوزات مطابقة للبحث</div>';
             return;
         }
 
@@ -1025,7 +1193,7 @@
                     <div class="booking-title">${booking.name}</div>
                     <div class="booking-date">${booking.date}</div>
                 </div>
-                <div style="font-size: 0.8rem; color: var(--primary-light); margin-bottom: 8px;">
+                <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 8px;">
                     📱 الجوال: ${booking.phone || 'غير مسجل'} ${booking.commission > 0 ? '| عمولة: ' + booking.commission + ' ر.س' : ''}
                 </div>
                 <div class="booking-details">
@@ -1036,7 +1204,7 @@
                 </div>
                 <div class="booking-actions">
                     ${statusBadge}
-                    <div style="display: flex; gap: 4px;">
+                    <div style="display: flex; gap: 6px;">
                         <button class="btn-action btn-receipt" onclick="openReceiptModal(${originalIndex})">السند</button>
                         <button class="btn-action btn-edit" onclick="openEditModal(${originalIndex})">تعديل</button>
                         <button class="btn-action btn-delete" onclick="deleteBooking(${originalIndex})">حذف</button>
@@ -1083,7 +1251,6 @@
         });
 
         const worksheet = XLSX.utils.json_to_sheet(excelData);
-        
         if(!worksheet['!cols']) worksheet['!cols'] = [];
         worksheet['!cols'] = [
             {wch: 5}, {wch: 20}, {wch: 15}, {wch: 12}, {wch: 10}, {wch: 10}, 
@@ -1098,7 +1265,7 @@
     function renderExpenses() {
         expensesList.innerHTML = '';
         if (expenses.length === 0) {
-            expensesList.innerHTML = '<div class="card" style="text-align:center; color:#aaa; font-size: 0.85rem;">لا توجد مصروفات مسجلة</div>';
+            expensesList.innerHTML = '<div class="card" style="text-align:center; color:var(--text-muted); font-size: 0.88rem;">لا توجد مصروفات مسجلة</div>';
             return;
         }
 
@@ -1108,12 +1275,12 @@
             card.className = 'expense-card';
             card.innerHTML = `
                 <div class="booking-header">
-                    <div class="booking-title" style="font-size: 0.95rem; color: #f39c12;">${exp.category}</div>
+                    <div class="booking-title" style="font-size: 1rem; color: var(--warning);">${exp.category}</div>
                     <div class="booking-date">${exp.date}</div>
                 </div>
-                <div style="font-size: 0.85rem; margin-bottom: 8px;">
-                    المبلغ: <strong>${exp.amount} ر.س</strong><br>
-                    ${exp.notes ? '<span style="color:#aaa; font-size:0.78rem;">ملاحظات: ' + exp.notes + '</span>' : ''}
+                <div style="font-size: 0.88rem; margin-bottom: 10px;">
+                    المبلغ: <strong style="color: var(--warning);">${exp.amount} ر.س</strong><br>
+                    ${exp.notes ? '<span style="color:var(--text-muted); font-size:0.8rem;">ملاحظات: ' + exp.notes + '</span>' : ''}
                 </div>
                 <div style="text-align: left;">
                     <button class="btn-action btn-delete" onclick="deleteExpense(${index})">حذف المصروف</button>
@@ -1126,17 +1293,19 @@
     function renderMaintenance() {
         maintenanceList.innerHTML = '';
         if (maintenance.length === 0) {
-            maintenanceList.innerHTML = '<div style="color:#888; font-size:0.78rem; text-align:center;">لا توجد مهام صيانة معلقة حالياً</div>';
+            maintenanceList.innerHTML = '<div style="color:var(--text-muted); font-size:0.8rem; text-align:center; padding: 6px;">لا توجد مهام صيانة معلقة حالياً</div>';
             return;
         }
 
         maintenance.forEach((m, index) => {
             const card = document.createElement('div');
             card.className = 'maintenance-card';
+            card.style.background = '#f8fafc';
+            card.style.margin = '8px 0';
             card.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
                     <span>🔧 ${m.issue}</span>
-                    <button class="btn-action btn-delete" onclick="deleteMaintenance(${index})">تم الإنجاز (حذف)</button>
+                    <button class="btn-action btn-receipt" onclick="deleteMaintenance(${index})">تم الإنجاز</button>
                 </div>
             `;
             maintenanceList.appendChild(card);
@@ -1428,8 +1597,6 @@
         updateUI();
         form.reset();
         document.getElementById('bookingDate').valueAsDate = new Date();
-        
-        // الانتقال تلقائياً للسجل بعد الحفظ
         document.querySelectorAll('.sidebar-item')[3].click();
     });
 
