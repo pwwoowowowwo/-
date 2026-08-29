@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إدارة الشاليه الملكي</title>
-    <!-- مكتبة الأيقونات والخطوط -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
@@ -32,50 +31,6 @@
             flex-direction: column;
         }
 
-        /* شاشة قفل الخصوصية وكلمة السر */
-        #auth-overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-        }
-        .auth-card {
-            background: #fff;
-            padding: 30px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 400px;
-            text-align: center;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-        }
-        .auth-card h2 { margin-bottom: 15px; color: var(--text-main); }
-        .auth-card p { font-size: 13px; color: #666; margin-bottom: 20px; }
-        .auth-card input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            margin-bottom: 15px;
-            text-align: center;
-            font-size: 16px;
-        }
-        .auth-card button {
-            background: var(--primary);
-            color: #fff;
-            border: none;
-            padding: 12px;
-            width: 100%;
-            border-radius: 8px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .auth-card button:hover { background: var(--primary-dark); }
-
-        /* هيكل التطبيق المتجاوب مع التدوير */
         .app-container {
             flex: 1;
             display: flex;
@@ -86,21 +41,37 @@
             width: 100%;
         }
 
-        /* التوزيع التلقائي عبر Grid يتغير بناءً على مساحة الشاشة والوضع */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        /* نظام التوزيع الذكي المتجاوب مع شكل الشاشة (كمبيوتر، عرض، طول) */
         .dashboard-grid {
             display: grid;
             gap: 20px;
             width: 100%;
         }
 
-        /* تخطيط وضع العرض (Landscape) للشاشات الواسعة والأجهزة اللوحية الأفقية */
-        @media (orientation: landscape) and (min-width: 768px) {
+        /* 1. الشاشات الكبيرة (الكمبيوتر / العرض الواسع) */
+        @media (min-width: 1024px) {
             .dashboard-grid {
-                grid-template-columns: 280px 1fr;
+                grid-template-columns: 320px 1fr;
             }
         }
 
-        /* تخطيط وضع الطول (Portrait) للهواتف والجوالات العمودية */
+        /* 2. الأجهزة اللوحية والوضع الأفقي (Landscape) */
+        @media (orientation: landscape) and (min-width: 768px) and (max-width: 1023px) {
+            .dashboard-grid {
+                grid-template-columns: 260px 1fr;
+            }
+        }
+
+        /* 3. الهواتف والوضع العمودي (Portrait) */
         @media (orientation: portrait), (max-width: 767px) {
             .dashboard-grid {
                 grid-template-columns: 1fr;
@@ -113,15 +84,6 @@
             border-radius: 12px;
             padding: 20px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.02);
-        }
-
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--border-color);
         }
 
         .actions-bar {
@@ -139,6 +101,7 @@
             border-radius: 6px;
             cursor: pointer;
             font-size: 14px;
+            transition: 0.3s;
         }
         button.btn:hover { background: var(--primary-dark); }
 
@@ -153,20 +116,10 @@
 </head>
 <body>
 
-    <!-- شاشة إدخال كلمة المرور لفك تشفير البيانات -->
-    <div id="auth-overlay">
-        <div class="auth-card">
-            <h2>🔐 منطقة خاصة وآمنة</h2>
-            <p>أدخل كلمة المرور الخاصة بك لفك تشفير بياناتك المحلية والوصول للنظام.</p>
-            <input type="password" id="passphrase" placeholder="كلمة المرور السرية...">
-            <button onclick="unlockData()">دخول النظام</button>
-        </div>
-    </div>
-
     <div class="app-container">
         <header>
             <h1>إدارة الشاليه الملكي</h1>
-            <div id="status-indicator" style="font-size: 12px; color: green;">● البيانات مشفرة محلياً</div>
+            <div id="screen-status" style="font-size: 12px; color: var(--primary-dark); font-weight: 600;"></div>
         </header>
 
         <div class="actions-bar">
@@ -177,12 +130,12 @@
 
         <div class="dashboard-grid">
             <div class="panel">
-                <h3>القائمة الجانبية / الفلترة</h3>
-                <p style="margin-top: 10px; font-size: 14px; color: #555;">تتأقلم هذه اللوحة تلقائياً بحسب وضعية الشاشة (عرض أو طول).</p>
+                <h3>القائمة والخيارات الجانبية</h3>
+                <p style="margin-top: 10px; font-size: 14px; color: #555;">تتخذ هذه اللوحة مكانها المناسب تلقائياً حسب عرض الشاشة.</p>
             </div>
             <div class="panel">
                 <h3>لوحة البيانات والتحكم الرئيسية</h3>
-                <p style="margin-top: 10px; font-size: 14px; color: #555;">البيانات هنا لا يمكن لأي كائن الاطلاع عليها سواك عبر كلمة المرور المفتاحية الخاصة بك.</p>
+                <p style="margin-top: 10px; font-size: 14px; color: #555;">تتوسع المساحة هنا تلقائياً لملء شاشات الكمبيوتر أو التكيف مع الجوال.</p>
             </div>
         </div>
     </div>
@@ -192,28 +145,28 @@
     </footer>
 
     <script>
-        // التحقق البسيط من فتح التطبيق وكلمة المرور المحلية
-        function unlockData() {
-            const pass = document.getElementById('passphrase').value;
-            if(!pass) {
-                alert('الرجاء إدخال كلمة المرور');
-                return;
+        // دالة ديناميكية للتعرف على وضع الشاشة الحالي وعرضه في الهيدر كمؤشر
+        function updateScreenInfo() {
+            const statusDiv = document.getElementById('screen-status');
+            const width = window.innerWidth;
+            const isLandscape = window.matchMedia("(orientation: landscape)").matches;
+
+            if (width >= 1024) {
+                statusDiv.textContent = "💻 وضع كمبيوتر (شاشة واسعة)";
+            } else if (isLandscape) {
+                statusDiv.textContent = "🔄 وضع عرض (Landscape)";
+            } else {
+                statusDiv.textContent = "📱 وضع طول (Portrait / جوال)";
             }
-            // حفظ حالة الجلسة المحلية للعميل
-            sessionStorage.setItem('royal_unlocked', 'true');
-            document.getElementById('auth-overlay').style.display = 'none';
         }
 
-        // عند تحميل الصفحة، التحقق إذا كان مفكوك القفل في هذه الجلسة
-        window.addEventListener('DOMContentLoaded', () => {
-            if(sessionStorage.getItem('royal_unlocked') === 'true') {
-                document.getElementById('auth-overlay').style.display = 'none';
-            }
-        });
+        window.addEventListener('resize', updateScreenInfo);
+        window.addEventListener('orientationchange', updateScreenInfo);
+        window.addEventListener('DOMContentLoaded', updateScreenInfo);
 
-        // دوال التصدير والاستيراد لملفات النسخ الاحتياطي للأجهزة الأخرى
+        // دوال الحفظ والاسترجاع للبيانات
         function exportBackup() {
-            const data = { sampleKey: "بيانات العميل السرية هنا", date: new Date().toISOString() };
+            const data = { sampleKey: "بيانات الشاليه هنا", date: new Date().toISOString() };
             const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'json' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -228,8 +181,7 @@
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
-                    const content = JSON.parse(e.target.result);
-                    alert('تم استعادة البيانات بنجاح في جهازك!');
+                    alert('تم استعادة البيانات بنجاح!');
                 } catch(err) {
                     alert('ملف غير صالح!');
                 }
