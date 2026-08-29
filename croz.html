@@ -33,7 +33,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 dark:bg-slate-950 dark:text-slate-100 min-h-screen flex flex-col transition-colors duration-300">
 
-    <!-- شريط الإشعارات والتنبيه التلقائي للشاشة -->
+    <!-- شريط العنوان والتعرف التلقائي على الشاشة -->
     <header class="bg-slate-900 border-b border-royal-500/30 text-white p-4 sticky top-0 z-50 no-print shadow-lg">
         <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-3">
             <div class="flex items-center gap-3">
@@ -46,7 +46,7 @@
                 </div>
             </div>
 
-            <!-- أدوات النسخ الاحتياطي والتحكم السريع -->
+            <!-- أدوات التحكم والنسخ الاحتياطي -->
             <div class="flex items-center gap-2 flex-wrap justify-center">
                 <button onclick="exportData()" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-xs rounded-lg border border-slate-700 transition flex items-center gap-1.5">
                     <i class="fa-solid fa-download text-royal-500"></i> تصدير البيانات
@@ -62,33 +62,35 @@
         </div>
     </header>
 
-    <!-- المحتوى الرئيسي مع توزيع ديناميكي ذكي حسب حجم الشاشة -->
-    <main class="max-w-7xl mx-auto p-3 sm:p-6 flex-1 w-full grid grid-cols-1 gap-6" id="main-grid-layout">
+    <!-- المحتوى الرئيسي بتوزيع متجاوب كلياً مع الشاشات (كمبيوتر، تابلت، جوال) -->
+    <main class="max-w-7xl mx-auto p-3 sm:p-6 flex-1 w-full flex flex-col gap-6">
 
-        <!-- لوحة التحكم السريعة والإحصائيات -->
+        <!-- لوحة الإحصائيات السريعة -->
         <section class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             <div class="glass-card p-4 rounded-2xl shadow-sm border-r-4 border-r-royal-500">
                 <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">حجوزات اليوم</p>
                 <h3 id="stat-today" class="text-xl sm:text-2xl font-black mt-1 text-slate-800 dark:text-white">0</h3>
             </div>
             <div class="glass-card p-4 rounded-2xl shadow-sm border-r-4 border-r-emerald-500">
-                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">إيرادات الشهر</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">إيرادات العربون</p>
                 <h3 id="stat-revenue" class="text-xl sm:text-2xl font-black mt-1 text-emerald-600 dark:text-emerald-400">0 ر.س</h3>
             </div>
             <div class="glass-card p-4 rounded-2xl shadow-sm border-r-4 border-r-blue-500">
-                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">الحجوزات النشطة</p>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">إجمالي الحجوزات</p>
                 <h3 id="stat-active" class="text-xl sm:text-2xl font-black mt-1 text-slate-800 dark:text-white">0</h3>
             </div>
             <div class="glass-card p-4 rounded-2xl shadow-sm border-r-4 border-r-amber-500">
-                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">المصروفات</p>
-                <h3 id="stat-expenses" class="text-xl sm:text-2xl font-black mt-1 text-amber-600 dark:text-amber-400">0 ر.س</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400 font-medium">حالة النظام</p>
+                <h3 class="text-xs sm:text-sm font-bold mt-2 text-amber-600 dark:text-amber-400 flex items-center gap-1">
+                    <i class="fa-solid fa-shield-halved"></i> تخزين محلي آمن
+                </h3>
             </div>
         </section>
 
-        <!-- منطقة العمل الرئيسية الموزعة (تتجاوب تلقائياً مع الشاشات العريضة والتابلت والعمودي) -->
+        <!-- شبكة العمل المرنة (تتوزع عمودياً للجوال وتلقائياً جنباً إلى جنب للتابلت والكمبيوتر) -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             
-            <!-- نموذج الحجز والإدارة (يمين الشاشة في الكمبيوتر، أعلى في الجوال) -->
+            <!-- نموذج تسجيل الحجز -->
             <div class="lg:col-span-5 glass-card p-5 rounded-2xl shadow-lg no-print">
                 <h2 class="text-base font-bold text-royal-600 dark:text-royal-400 mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-file-pen"></i> تسجيل حجز جديد
@@ -99,7 +101,7 @@
                         <label class="block text-xs font-semibold mb-1">اسم العميل</label>
                         <input type="text" id="client-name" required class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-royal-500">
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-semibold mb-1">رقم الجوال</label>
                             <input type="tel" id="client-phone" required class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-royal-500">
@@ -109,7 +111,7 @@
                             <input type="date" id="booking-date" required class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-royal-500">
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-3">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
                             <label class="block text-xs font-semibold mb-1">الفترة</label>
                             <select id="booking-period" class="w-full bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-2 text-sm focus:outline-none focus:border-royal-500">
@@ -138,7 +140,7 @@
                 </form>
             </div>
 
-            <!-- جدول الحجوزات وعرض البيانات (يسار الشاشة في الكمبيوتر، أسفل في الجوال) -->
+            <!-- سجل وحجوزات الشاليه -->
             <div class="lg:col-span-7 glass-card p-5 rounded-2xl shadow-lg">
                 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
                     <h2 class="text-base font-bold text-royal-600 dark:text-royal-400 flex items-center gap-2">
@@ -147,19 +149,19 @@
                     <input type="text" id="search-input" oninput="renderBookings()" placeholder="بحث بالاسم أو الجوال..." class="bg-slate-100 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-3 py-1.5 text-xs w-full sm:w-48 focus:outline-none focus:border-royal-500">
                 </div>
                 
-                <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 max-h-[450px]">
+                <div class="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800 max-h-[480px]">
                     <table class="w-full text-right text-xs">
                         <thead class="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 sticky top-0">
                             <tr>
                                 <th class="p-3">العميل</th>
                                 <th class="p-3">التاريخ</th>
-                                <th class="p-3">الفترة</th>
+                                <th class="p-3">المبلغ</th>
                                 <th class="p-3">المتبقي</th>
                                 <th class="p-3 text-center no-print">إجراءات</th>
                             </tr>
                         </thead>
                         <tbody id="bookings-table-body" class="divide-y divide-slate-200 dark:divide-slate-800">
-                            <!-- يتم تعبئتها ديناميكياً -->
+                            <!-- التعبئة التلقائية للبيانات -->
                         </tbody>
                     </table>
                 </div>
@@ -168,12 +170,12 @@
         </div>
     </main>
 
-    <!-- نافذة الطباعة المنبثقة لسند القبض -->
+    <!-- نافذة الطباعة المنبثقة -->
     <div id="print-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4 no-print">
         <div class="glass-card w-full max-w-md p-6 rounded-2xl shadow-2xl relative">
             <h3 class="text-lg font-bold text-royal-600 mb-4 text-center">سند قبض / تأكيد حجز</h3>
             <div id="print-content" class="bg-white text-slate-900 p-4 rounded-xl border border-slate-300 space-y-2 text-sm">
-                <!-- تفاصيل سند القبض -->
+                <!-- تفاصيل السند -->
             </div>
             <div class="flex gap-2 mt-5">
                 <button onclick="window.print()" class="flex-1 bg-royal-600 text-white font-bold py-2 rounded-xl text-sm">طباعة السند</button>
@@ -183,9 +185,9 @@
     </div>
 
     <script>
-        // نظام التخزين المحلي والتعرف التلقائي على الشاشة والوضع العامودي/الأفقي
         let bookings = JSON.parse(localStorage.getItem('royal_chalet_bookings')) || [];
 
+        // دالة التعرف الذكي على نوع الشاشة والوضع (عمودي أو أفقي)
         function updateScreenStatus() {
             const width = window.innerWidth;
             const height = window.innerHeight;
@@ -199,7 +201,7 @@
                 deviceType = "تابلت / جهاز لوحي";
             }
 
-            statusEl.innerText = `${deviceType} | الوضع: ${isLandscape ? 'أفقي (Landscape)' : 'عمودي (Portrait)'} (${width}x${height}px)`;
+            statusEl.innerText = `${deviceType} | الوضع: ${isLandscape ? 'أفقي (Landscape)' : 'عمودي (Portrait)'} (${width}×${height}px)`;
         }
 
         window.addEventListener('resize', updateScreenStatus);
