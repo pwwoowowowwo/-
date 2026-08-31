@@ -616,7 +616,6 @@
             .no-print {
                 display: none !important;
             }
-            /* إخفاء حاوية الأزرار السفلية تلقائياً عند الطباعة أو PDF */
             div[style*="display: flex"][style*="gap: 16px"] {
                 display: none !important;
             }
@@ -1561,36 +1560,133 @@
         async function exportToExcel() {
             let currentMonthName = monthNames[currentCalendarMonth];
             let workbook = new ExcelJS.Workbook();
-            let worksheet = workbook.addWorksheet(`حجوزات ${currentMonthName}`, { views: [{ rtl: true }] });
+            let worksheet = workbook.addWorksheet(`حجوزات أغسطس`, { views: [{ rtl: true }] });
 
-            worksheet.addRow([`سجل الحجوزات لشهر ${currentMonthName} - شاليه كروز`]);
-            worksheet.addRow([]);
+            const titleFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '1A4D2E' } };
+            const headerFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '2C5E3B' } };
+            const summaryFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'D9EAD3' } };
+            const zebraFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'F9FBF9' } };
 
-            let headers = ["م", "اسم المستأجر", "رقم الجوال", "تاريخ الحجز", "الفترة", "القسم", "الإيجار", "الواصل", "المتبقي", "الحالة"];
-            worksheet.addRow(headers);
+            const borderStyle = {
+                top: { style: 'thin', color: { argb: 'CCCCCC' } },
+                bottom: { style: 'thin', color: { argb: 'CCCCCC' } },
+                left: { style: 'thin', color: { argb: 'CCCCCC' } },
+                right: { style: 'thin', color: { argb: 'CCCCCC' } }
+            };
 
-            bookings.forEach((b, index) => {
-                let priceVal = parseFloat(b.price) || 0;
-                let paidVal = parseFloat(b.paid) || 0;
-                let rem = Math.max(0, priceVal - paidVal);
+            const headerBorder = {
+                top: { style: 'medium', color: { argb: '1A4D2E' } },
+                bottom: { style: 'medium', color: { argb: '1A4D2E' } },
+                left: { style: 'thin', color: { argb: 'CCCCCC' } },
+                right: { style: 'thin', color: { argb: 'CCCCCC' } }
+            };
 
-                worksheet.addRow([
-                    index + 1,
-                    b.name,
-                    b.phone,
-                    formatDualDate(b.date),
-                    b.period,
-                    b.section,
-                    priceVal,
-                    paidVal,
-                    rem,
-                    b.status
-                ]);
+            worksheet.mergeCells('A2:J2');
+            let titleCell = worksheet.getCell('A2');
+            titleCell.value = `سجل الحجوزات لشهر ${currentMonthName} 2026 - شاليه كروز`;
+            titleCell.font = { name: 'Calibri', size: 14, bold: true, color: { argb: 'FFFFFF' } };
+            titleCell.fill = titleFill;
+            titleCell.alignment = { horizontal: 'center', vertical: 'center' };
+            worksheet.getRow(2).height = 30;
+
+            let headers = [
+                "حالة الحجز", "المتبقي", "المبلغ الواصل", "إجمالي الإيجار", 
+                "القسم", "الفترة", "تاريخ الحجز (ميلادي / هجري)", 
+                "رقم الجوال", "اسم المستأجر", "م"
+            ];
+            
+            let headerRow = worksheet.getRow(4);
+            headerRow.height = 25;
+            headers.forEach((h, idx) => {
+                let cell = headerRow.getCell(idx + 1);
+                cell.value = h;
+                cell.font = { name: 'Calibri', size: 11, bold: true, color: { argb: 'FFFFFF' } };
+                cell.fill = headerFill;
+                cell.alignment = { horizontal: 'center', vertical: 'center', wrapText: true };
+                cell.border = headerBorder;
+            });
+
+            for (let i = 0; i < 101; i++) {
+                let rowIdx = 5 + i;
+                let row = worksheet.getRow(rowIdx);
+                row.height = 20;
+
+                let b = bookings[i];
+                let valA = b ? b.status : "";
+                let valB = b ? { formula: `D${rowIdx}-C${rowIdx}` } : "";
+                let valC = b ? (parseFloat(b.paid) || 0) : "";
+                let valD = b ? (parseFloat(b.price) || 0) : "";
+                let valE = b ? b.section : "";
+                let valF = b ? b.period : "";
+                let valG = b ? formatDualDate(b.date) : "";
+                let valH = b ? b.phone : "";
+                let valI = b ? b.name : "";
+                let valJ = b ? (i + 1) : "";
+
+                let rowValues = [valA, valB, valC, valD, valE, valF, valG, valH, valI, valJ];
+
+                rowValues.forEach((val, colIdx) => {
+                    let cell = row.getCell(colIdx + 1);
+                    cell.value = val;
+                    cell.font = { name: 'Calibri', size: 10, color: { argb: '000000' } };
+                    cell.alignment = { horizontal: 'center', vertical: 'center' };
+                    cell.border = borderStyle;
+
+                    if (i % 2 === 1) {
+                        cell.fill = zebra_fill;
+                    }
+
+                    if (colIdx === 0 && b) {
+                        cell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: b.status === 'مؤكد' ? '008000' : 'C00000' } };
+                    }
+                });
+            }
+
+            let summaryRowIdx = 106;
+            worksheet.mergeCells(`E${summaryRowIdx}:J${summaryRowIdx}`);
+            let summaryLabelCell = worksheet.getCell(`E${summaryRowIdx}`);
+            summaryLabelCell.value = "المجموع / الإجمالي النهائي";
+            summaryLabelCell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: '000000' } };
+            summaryLabelCell.alignment = { horizontal: 'center', vertical: 'center' };
+
+            let summaryRow = worksheet.getRow(summaryRowIdx);
+            summaryRow.height = 22;
+
+            for (let colIdx = 1; colIdx <= 10; colIdx++) {
+                let cell = summaryRow.getCell(colIdx);
+                cell.fill = summaryFill;
+                cell.border = {
+                    top: { style: 'thin', color: { argb: '1A4D2E' } },
+                    bottom: { style: 'double', color: { argb: '1A4D2E' } },
+                    left: { style: 'thin', color: { argb: 'CCCCCC' } },
+                    right: { style: 'thin', color: { argb: 'CCCCCC' } }
+                };
+
+                if (colIdx === 2) {
+                    cell.value = { formula: `SUM(B5:B105)` };
+                    cell.font = { name: 'Calibri', size: 10, bold: true };
+                    cell.alignment = { horizontal: 'center', vertical: 'center' };
+                } else if (colIdx === 3) {
+                    cell.value = { formula: `SUM(C5:C105)` };
+                    cell.font = { name: 'Calibri', size: 10, bold: true };
+                    cell.alignment = { horizontal: 'center', vertical: 'center' };
+                } else if (colIdx === 4) {
+                    cell.value = { formula: `SUM(D5:D105)` };
+                    cell.font = { name: 'Calibri', size: 10, bold: true };
+                    cell.alignment = { horizontal: 'center', vertical: 'center' };
+                }
+            }
+
+            const colWidths = [16, 12, 15, 15, 12, 12, 30, 16, 20, 6];
+            colWidths.forEach((w, idx) => {
+                worksheet.getColumn(idx + 1).width = w;
             });
 
             let buffer = await workbook.xlsx.writeBuffer();
             let blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            saveAs(blob, `سجل_حجوزات_شاليه_كروز_${currentMonthName}.xlsx`);
+            
+            // حفظ الملف باسم ثابت دائم
+            saveAs(blob, 'سجل_حجوزات_شاليه_كروز.xlsx');
         }
 
         function importFromExcel(event) {
@@ -1669,4 +1765,3 @@
     </script>
 </body>
 </html>
-
