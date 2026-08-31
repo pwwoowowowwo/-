@@ -7,13 +7,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- مكتبة ExcelJS -->
+    <!-- مكتبات التصدير ومعالجة الملفات -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
-    <!-- مكتبة SheetJS -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <!-- مكتبة FileSaver -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    <!-- مكتبة تصدير الـ PDF التلقائي -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
@@ -977,6 +974,7 @@
         </div>
     </main>
 
+    <!-- Modal السند المالي -->
     <div id="receipt-modal" class="modal" onclick="if(event.target === this) closeReceiptModal();">
         <div class="modal-content">
             <div id="invoice-printable-area" class="invoice-print-container">
@@ -1034,7 +1032,7 @@
 
             <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;" class="no-print">
                 <button onclick="downloadReceiptPDFDirect()" class="btn" style="background: #eb4d4b;"><i class="fa-solid fa-file-pdf"></i> تحميل PDF</button>
-                <button onclick="downloadReceiptPDFDirect()" class="btn"><i class="fa-solid fa-print"></i> طباعة A4</button>
+                <button onclick="window.print()" class="btn"><i class="fa-solid fa-print"></i> طباعة A4</button>
                 <button onclick="sendWhatsApp()" class="btn btn-success"><i class="fa-brands fa-whatsapp"></i> إرسال واتساب</button>
                 <button onclick="closeReceiptModal()" class="btn" style="background: #a4b0be;">إغلاق</button>
             </div>
@@ -1042,7 +1040,6 @@
     </div>
 
     <script>
-        // التهيئة وإعداد الحالات الأصلية
         let bookings = JSON.parse(localStorage.getItem('cruise_bookings')) || [
             { id: 1, name: 'تميم البدحاني', phone: '0501112233', date: '2026-08-10', period: 'مساء', section: 'نساء', price: 600, paid: 100, method: 'تحويل بنكي', status: 'عربون' },
             { id: 2, name: 'وليد محمد', phone: '0552223344', date: '2026-08-12', period: 'يوم كامل', section: 'قسمين', price: 1200, paid: 1200, method: 'كاش', status: 'مؤكد' }
@@ -1493,16 +1490,16 @@
             document.getElementById('receipt-modal').style.display = 'none';
         }
 
-        // دالة تصدير السند كملف PDF مباشر من الجدول
         function downloadReceiptPDF(id) {
             let booking = bookings.find(b => String(b.id) === String(id));
             if (!booking) return;
 
             openReceipt(booking);
-            downloadReceiptPDFDirect();
+            setTimeout(() => {
+                downloadReceiptPDFDirect();
+            }, 300);
         }
 
-        // دالة المعالجة وتوليد الـ PDF بنفس التصميم الحالي
         function downloadReceiptPDFDirect() {
             const element = document.getElementById('invoice-printable-area');
             const opt = {
