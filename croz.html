@@ -1560,7 +1560,7 @@
         async function exportToExcel() {
             let currentMonthName = monthNames[currentCalendarMonth];
             let workbook = new ExcelJS.Workbook();
-            let worksheet = workbook.addWorksheet(`حجوزات أغسطس`, { views: [{ rtl: true }] });
+            let worksheet = workbook.addWorksheet(`حجوزات ${currentMonthName}`, { views: [{ rtl: true }] });
 
             const titleFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '1A4D2E' } };
             const headerFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: '2C5E3B' } };
@@ -1606,7 +1606,7 @@
                 cell.border = headerBorder;
             });
 
-            for (let i = 0; i < 101; i++) {
+            for (let i = 0; i < Math.max(bookings.length, 1); i++) {
                 let rowIdx = 5 + i;
                 let row = worksheet.getRow(rowIdx);
                 row.height = 20;
@@ -1633,7 +1633,7 @@
                     cell.border = borderStyle;
 
                     if (i % 2 === 1) {
-                        cell.fill = zebra_fill;
+                        cell.fill = zebraFill;
                     }
 
                     if (colIdx === 0 && b) {
@@ -1642,7 +1642,7 @@
                 });
             }
 
-            let summaryRowIdx = 106;
+            let summaryRowIdx = 5 + Math.max(bookings.length, 1) + 1;
             worksheet.mergeCells(`E${summaryRowIdx}:J${summaryRowIdx}`);
             let summaryLabelCell = worksheet.getCell(`E${summaryRowIdx}`);
             summaryLabelCell.value = "المجموع / الإجمالي النهائي";
@@ -1662,16 +1662,17 @@
                     right: { style: 'thin', color: { argb: 'CCCCCC' } }
                 };
 
+                let lastDataRow = 4 + Math.max(bookings.length, 1);
                 if (colIdx === 2) {
-                    cell.value = { formula: `SUM(B5:B105)` };
+                    cell.value = { formula: `SUM(B5:B${lastDataRow})` };
                     cell.font = { name: 'Calibri', size: 10, bold: true };
                     cell.alignment = { horizontal: 'center', vertical: 'center' };
                 } else if (colIdx === 3) {
-                    cell.value = { formula: `SUM(C5:C105)` };
+                    cell.value = { formula: `SUM(C5:C${lastDataRow})` };
                     cell.font = { name: 'Calibri', size: 10, bold: true };
                     cell.alignment = { horizontal: 'center', vertical: 'center' };
                 } else if (colIdx === 4) {
-                    cell.value = { formula: `SUM(D5:D105)` };
+                    cell.value = { formula: `SUM(D5:D${lastDataRow})` };
                     cell.font = { name: 'Calibri', size: 10, bold: true };
                     cell.alignment = { horizontal: 'center', vertical: 'center' };
                 }
@@ -1684,8 +1685,6 @@
 
             let buffer = await workbook.xlsx.writeBuffer();
             let blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            
-            // حفظ الملف باسم ثابت دائم
             saveAs(blob, 'سجل_حجوزات_شاليه_كروز.xlsx');
         }
 
