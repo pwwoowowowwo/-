@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>كروز | حجوزات</title>
     <!-- أيقونة المتصفح -->
     <link rel="icon" type="image/png" href="https://pwwoowowowwo.github.io/croz.1/Aigonh.png.PNG">
@@ -43,38 +43,42 @@
             font-family: 'Cairo', sans-serif;
         }
 
-        body {
+        html, body {
             background-color: var(--light-bg);
             color: var(--text-main);
+            width: 100%;
+            min-height: 100vh;
+            overflow-y: auto !important;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        body {
             display: flex;
-            height: 100vh;
-            overflow: hidden;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
         }
 
         /* حاوية محاكاة مقاس شاشة الجوال الأساسية */
         .mobile-viewport-wrapper {
             display: flex;
             width: 100%;
-            height: 100%;
+            min-height: 100vh;
             max-width: 450px;
-            max-height: 900px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            border-radius: 24px;
-            overflow: hidden;
+            border-radius: 0;
             position: relative;
             background-color: var(--light-bg);
-            border: 8px solid #2f3640;
+            border: none;
+            overflow: visible !important;
         }
 
-        @media (max-width: 480px) {
+        @media (min-width: 481px) {
             .mobile-viewport-wrapper {
-                max-width: 100%;
-                max-height: 100%;
-                border: none;
-                border-radius: 0;
-                box-shadow: none;
+                min-height: 900px;
+                margin: 20px 0;
+                border-radius: 24px;
+                border: 8px solid #2f3640;
             }
         }
 
@@ -203,12 +207,11 @@
         main {
             flex-grow: 1;
             padding: 15px 15px 40px 15px;
-            overflow-y: auto;
             position: relative;
             display: flex;
             flex-direction: column;
             width: 100%;
-            height: 100%;
+            overflow: visible !important;
         }
 
         .header-container {
@@ -550,7 +553,7 @@
 
         .modal {
             display: none;
-            position: absolute;
+            position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.6);
             justify-content: center;
@@ -1207,7 +1210,6 @@
             if(tabId === 'calendar') renderCalendar();
             if(tabId === 'reports') generateReport();
             
-            // إخفاء القائمة الجانبية تلقائياً في الجوال عند اختيار صفحة
             document.getElementById('sidebar').classList.add('hidden');
         }
 
