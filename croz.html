@@ -59,7 +59,6 @@
             align-items: flex-start;
         }
 
-        /* حاوية تتمدد بملء الشاشة بالكامل بدون قيود عرض */
         .mobile-viewport-wrapper {
             display: flex;
             width: 100%;
@@ -735,7 +734,11 @@
                 <div class="main-header-banner">
                     <div>
                         <h2><i class="fa-solid fa-house-chimney-window"></i> شالية كروز </h2>
-                        <p>نظام إدارة الحجوزات والماليات الشامل</p>
+<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+    <p style="margin: 0;">نظام إدارة الحجوزات والماليات الشامل</p>
+    <span onclick="openReleaseNotesModal()" style="cursor: pointer; font-size: 14px; display: inline-block;" title="تعليمات التحديث الأخير">📨</span>
+    <span style="font-size: 11px; font-weight: bold; color: #ffffff;">v2.0.1</span>
+                     </div>
                     </div>
                 </div>
 
@@ -744,6 +747,18 @@
                         <i class="fa-solid fa-bars"></i>
                     </button>
                     <div style="display: flex; gap: 6px; align-items: center;">
+<div class="zoom-panel">
+    <button class="zoom-btn" onclick="zoomOut()" title="تصغير الشاشة">
+        <span>A-</span>
+    </button>
+    <button class="zoom-btn reset-btn" onclick="resetZoom()" title="الحجم الافتراضي">
+        <span>A</span>
+    </button>
+    <button class="zoom-btn" onclick="zoomIn()" title="تكبير الشاشة">
+        <span>A+</span>
+    </button>
+</div>
+
                         <select id="period-selector" onchange="updateDashboard()" style="padding: 6px 10px; border-radius: 6px; border: 2px solid #dcdde1; font-weight: 700; font-size: 12px;">
                             <option value="all">جميع الأشهر</option>
                             <option value="current">الشهر الحالي</option>
@@ -754,8 +769,8 @@
                             <option value="4">مايو</option>
                             <option value="5">يونيو</option>
                             <option value="6">يوليو</option>
-                            <option value="7" selected>أغسطس</option>
-                            <option value="8">سبتمبر</option>
+                            <option value="7">أغسطس</option>
+                            <option value="8" selected>سبتمبر</option>
                             <option value="9">أكتوبر</option>
                             <option value="10">نوفمبر</option>
                             <option value="11">ديسمبر</option>
@@ -970,6 +985,25 @@
                 </div>
                 <div class="card-box">
                     <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;">
+                        <!-- قائمة الفلترة بالأشهر الخاصة بسجل الحجوزات -->
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <label style="font-size: 12px; font-weight: 700; color: #2f3640; white-space: nowrap;">عرض شهر:</label>
+                            <select id="reservations-month-selector" onchange="renderBookingsTable()" style="padding: 8px 12px; border-radius: 8px; border: 2px solid #dcdde1; font-weight: 700; font-size: 12px; width: 100%;">
+                                <option value="0">يناير</option>
+                                <option value="1">فبراير</option>
+                                <option value="2">مارس</option>
+                                <option value="3">أبريل</option>
+                                <option value="4">مايو</option>
+                                <option value="5">يونيو</option>
+                                <option value="6">يوليو</option>
+                                <option value="7">أغسطس</option>
+                                <option value="8" selected>سبتمبر</option>
+                                <option value="9">أكتوبر</option>
+                                <option value="10">نوفمبر</option>
+                                <option value="11">ديسمبر</option>
+                            </select>
+                        </div>
+
                         <input type="text" id="search-input" onkeyup="filterBookings()" placeholder="ابحث بالاسم، الجوال، أو التاريخ..." style="padding: 10px 12px; border-radius: 8px; border: 2px solid #dcdde1; width: 100%; font-size: 12px;">
                         
                         <div style="display: flex; gap: 8px;">
@@ -1147,16 +1181,15 @@
                         <div>تاريخ الإصدار: <span id="inv-print-date">--</span></div>
                     </div>
 
-                <div class="client-info-box" style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 10px;">
-    <h4 style="margin: 0 0 8px 0; font-size: 13px; color: #333; border-bottom: 1px solid #e9ecef; padding-bottom: 4px;">بيانات العميل</h4>
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; font-size: 11px; line-height: 1.4;">
-        <div style="background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #eee;">اسم المستاجر : <b id="inv-client-name">--</b></div>
-        <div style="background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #eee;">رقم الحوال : <b id="inv-client-phone">--</b></div>
-        <div style="background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #eee;">تاريخ الجحز : <b id="inv-booking-date">--</b></div>
-        <div style="background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #eee;">الفترة:  <b id="inv-booking-period">--</b></div>
+                    <div class="client-info-box" style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 10px;">
+                        <h4 style="margin: 0 0 8px 0; font-size: 13px; color: #333; border-bottom: 1px solid #e9ecef; padding-bottom: 4px;">بيانات العميل</h4>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; font-size: 11px; line-height: 1.4;">
+                            <div style="background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #eee;">اسم المستأجر : <b id="inv-client-name">--</b></div>
+                            <div style="background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #eee;">رقم الجوال : <b id="inv-client-phone">--</b></div>
+                            <div style="background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #eee;">تاريخ الحجز : <b id="inv-booking-date">--</b></div>
+                            <div style="background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #eee;">الفترة: <b id="inv-booking-period">--</b></div>
+                        </div>
                     </div>
-                   </div>
-
 
                     <table class="invoice-table">
                         <thead>
@@ -1193,42 +1226,42 @@
                         3. منع استخدام الألعاب النارية أو إحداث أي إزعاج بيئي داخل النطاق السكني.<br>
                         4. إدارة الشاليه غير مسئولة نهائياً عن فقدان الأغراض الشخصية الثمينة غير المسلمة لإدارة الاستقبال.
                     </div>
-<!-- تفاصيل الحساب البنكي والصورة بنسبة 50/50 -->
-<div class="footer-box" style="display: flex; gap: 4px; border: 1px solid #e0e0e0; padding: 4px; border-radius: 3px; background-color: #ffffff; max-width: 270px; margin-left: auto; margin-top: 6px; box-sizing: border-box;">
-    
-    <!-- القسم الأيمن: بيانات الحساب (50%) -->
-    <div style="flex: 0 0 50%; max-width: 50%; box-sizing: border-box;">
-        <h5 style="margin: 0 0 3px 0; font-size: 10px; color: #111; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 2px;">تفاصيل الحساب البنكي</h5>
-        
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-bottom: 2px;">
-            <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 1px 2px; border-radius: 2px;">
-                <span style="color: #777; font-size: 5px; display: block; margin-bottom: -1px;">البنك</span>
-                <strong id="inv-bank-name" style="color: #2c3e50; font-size: 6px; word-break: break-word;">مصرف الراجحي</strong>
-            </div>
-            <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 1px 2px; border-radius: 2px;">
-                <span style="color: #777; font-size: 5px; display: block; margin-bottom: -1px;">المستفيد</span>
-                <strong id="inv-bank-beneficiary" style="color: #2c3e50; font-size: 6px; word-break: break-word;">شاليه كروز</strong>
-            </div>
-        </div>
 
-        <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 1px 2px; border-radius: 2px; margin-bottom: 2px;">
-            <span style="color: #777; font-size: 5px; display: block; margin-bottom: -1px;">رقم الحساب</span>
-            <strong id="inv-bank-account" style="color: #2c3e50; font-family: monospace; font-size: 8px; word-break: break-all; display: block;">123456789012345</strong>
-        </div>
+                    <!-- تفاصيل الحساب البنكي والصورة بنسبة 50/50 -->
+                    <div class="footer-box" style="display: flex; gap: 4px; border: 1px solid #e0e0e0; padding: 4px; border-radius: 3px; background-color: #ffffff; max-width: 270px; margin-left: auto; margin-top: 6px; box-sizing: border-box;">
+                        
+                        <!-- القسم الأيمن: بيانات الحساب (50%) -->
+                        <div style="flex: 0 0 50%; max-width: 50%; box-sizing: border-box;">
+                            <h5 style="margin: 0 0 3px 0; font-size: 10px; color: #111; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 2px;">تفاصيل الحساب البنكي</h5>
+                            
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-bottom: 2px;">
+                                <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 1px 2px; border-radius: 2px;">
+                                    <span style="color: #777; font-size: 5px; display: block; margin-bottom: -1px;">البنك</span>
+                                    <strong id="inv-bank-name" style="color: #2c3e50; font-size: 6px; word-break: break-word;">مصرف الراجحي</strong>
+                                </div>
+                                <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 1px 2px; border-radius: 2px;">
+                                    <span style="color: #777; font-size: 5px; display: block; margin-bottom: -1px;">المستفيد</span>
+                                    <strong id="inv-bank-beneficiary" style="color: #2c3e50; font-size: 6px; word-break: break-word;">شاليه كروز</strong>
+                                </div>
+                            </div>
 
-        <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 1px 2px; border-radius: 2px;">
-            <span style="color: #777; font-size: 5px; display: block; margin-bottom: -1px;">الآيبان (IBAN)</span>
-            <strong id="inv-bank-iban" style="color: #2c3e50; font-family: monospace; font-size: 8px; direction: ltr; display: block; text-align: left; word-break: break-all;">SA0380000001234567890123</strong>
-        </div>
-    </div>
+                            <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 1px 2px; border-radius: 2px; margin-bottom: 2px;">
+                                <span style="color: #777; font-size: 5px; display: block; margin-bottom: -1px;">رقم الحساب</span>
+                                <strong id="inv-bank-account" style="color: #2c3e50; font-family: monospace; font-size: 8px; word-break: break-all; display: block;">123456789012345</strong>
+                            </div>
 
-    <!-- القسم الأيسر: الصورة (50%) -->
-    <div style="flex: 0 0 50%; max-width: 50%; display: flex; align-items: center; justify-content: center; background: #fafafa; border: 1px solid #eaeded; border-radius: 2px; padding: 2px; box-sizing: border-box;">
-        <img src="ضع_رابط_الصورة_هنا" alt="صورة" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 2px;">
-    </div>
+                            <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 1px 2px; border-radius: 2px;">
+                                <span style="color: #777; font-size: 5px; display: block; margin-bottom: -1px;">الآيبان (IBAN)</span>
+                                <strong id="inv-bank-iban" style="color: #2c3e50; font-family: monospace; font-size: 8px; direction: ltr; display: block; text-align: left; word-break: break-all;">SA0380000001234567890123</strong>
+                            </div>
+                        </div>
 
-</div>
+                        <!-- القسم الأيسر: الصورة (50%) -->
+                        <div style="flex: 0 0 50%; max-width: 50%; display: flex; align-items: center; justify-content: center; background: #fafafa; border: 1px solid #eaeded; border-radius: 2px; padding: 2px; box-sizing: border-box;">
+                            <img src="https://pwwoowowowwo.github.io/croz.1/Aigonh.png.PNG" alt="QR Code" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 2px;">
+                        </div>
 
+                    </div>
 
                     <div class="signature-section" style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 10px; border-top: 1px dashed #cbd5e1; font-size: 11px;">
                         <div style="text-align: center; width: 45%;">
@@ -1254,6 +1287,41 @@
             </div>
         </div>
     </div>
+<!-- نافذة تعليمات التحديث الأخير وحقوق المطور -->
+<div id="releaseNotesModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:#fff; padding:22px; border-radius:12px; width:90%; max-width:380px; box-shadow: 0 6px 15px rgba(0,0,0,0.25); text-align: right; direction: rtl; font-family: Tahoma, sans-serif;">
+        
+        <!-- عنوان النافذة -->
+        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #edf2f7; padding-bottom: 10px; margin-bottom: 12px;">
+            <h3 style="margin:0; font-size:16px; color:#2d3748;">📌 تعليمات التحديث الأخير</h3>
+            <span style="font-size: 11px; background: #edf2f7; color: #4a5568; padding: 2px 6px; border-radius: 4px; font-weight: bold;">v2.0.1</span>
+        </div>
+
+        <!-- النقاط بخط صغير ومرتب -->
+        <div style="font-size: 12px; color: #4a5568; line-height: 1.8; max-height: 220px; overflow-y: auto; margin-bottom: 15px;">
+            <p style="margin: 0 0 6px 0; font-weight: bold; color: #2b6cb0;">✨ تفاصيل الإصدار الجديد:</p>
+            <ul style="margin: 0; padding-right: 18px;">
+                <li style="margin-bottom: 5px;">تم ترتيب الواجهة وتحسين الأداء العام للنظام لتصبح أسرع.</li>
+                <li style="margin-bottom: 5px;">إضافة ميزة عرض رقم النسخة والاطلاع على التحديثات بسهولة.</li>
+                <li style="margin-bottom: 5px;">نقل ازرار الستند وطباعة pdf بالظغط على اسم المستاجر.</li>
+                <li style="margin-bottom: 5px;">اضافة امكانية تعديل على السند بالتعليمات والتنبيهات الخاصة بالشاليةوعلى بيانات البنكية.</li>
+            </ul>
+        </div>
+
+        <!-- حقوق المطور بالانجليزي -->
+        <div style="border-top: 1px solid #edf2f7; padding-top: 10px; margin-bottom: 15px; text-align: center;">
+            <p style="margin: 0; font-size: 11px; color: #718096; direction: ltr; font-family: Arial, sans-serif;">
+                © 2026 Fahad Al-Mikhlafi. All rights reserved.
+            </p>
+        </div>
+
+        <!-- زر الإغلاق -->
+        <div style="text-align: center;">
+            <button onclick="closeReleaseNotesModal()" style="padding: 6px 20px; background:#3182ce; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size: 12px; width: 100%;">فهمت، شكراً</button>
+        </div>
+
+    </div>
+</div>
 
     <!-- عنصر مخفي لطباعة التقرير المالي الشامل PDF -->
     <div id="financial-report-print-container" style="display:none; background: #fff; color: #2f3640; font-family: 'Cairo', sans-serif; text-align: right; padding: 20px;">
@@ -1265,18 +1333,12 @@
     </div>
 
     <script>
-        let bookings = JSON.parse(localStorage.getItem('cruise_bookings')) || [
-            { id: 1, name: 'تميم البدحاني', phone: '501112233', date: '2026-08-10', period: 'مساء', section: 'نساء', price: 600, paid: 100, method: 'تحويل بنكي', status: 'عربون' },
-            { id: 2, name: 'وليد محمد', phone: '552223344', date: '2026-08-12', period: 'يوم كامل', section: 'قسمين', price: 1200, paid: 1200, method: 'كاش', status: 'مؤكد' }
-        ];
-
-        let expenses = JSON.parse(localStorage.getItem('cruise_expenses')) || [
-            { id: 1, title: 'فاتورة الكهرباء والماء', category: 'كهرباء وماء', amount: 350, date: '2026-08-01' }
-        ];
+        let bookings = JSON.parse(localStorage.getItem('cruise_bookings')) || [];
+        let expenses = JSON.parse(localStorage.getItem('cruise_expenses')) || [];
 
         let activeReceipt = null;
         let currentCalendarYear = 2026;
-        let currentCalendarMonth = 7; 
+        let currentCalendarMonth = 8; // سبتمبر
         const monthNames = ['يناير', 'فبراير', 'مارس', 'أبريل', 'مايو', 'يونيو', 'يوليو', 'أغسطس', 'سبتمبر', 'أكتوبر', 'نوفمبر', 'ديسمبر'];
 
         window.addEventListener('load', () => {
@@ -1288,13 +1350,20 @@
                 }
             }, 500);
             
-            let today = new Date().toISOString().split('T')[0];
+            // استخدام توقيت السعودية (GMT+3)
+            let saudiDateStr = new Date().toLocaleString('en-US', { timeZone: 'Asia/Riyadh' });
+            let saudiDate = new Date(saudiDateStr);
+            let today = saudiDate.toISOString().split('T')[0];
+            
             document.getElementById('b-date').value = today;
             document.getElementById('e-date').value = today;
             document.getElementById('calendar-search-date').value = today;
-            document.getElementById('cal-month-select').value = new Date().getMonth();
-            currentCalendarMonth = new Date().getMonth();
-            currentCalendarYear = new Date().getFullYear();
+            
+            // ضبط الافتراضي على الشهر الحالي
+            document.getElementById('cal-month-select').value = saudiDate.getMonth();
+            document.getElementById('reservations-month-selector').value = saudiDate.getMonth();
+            currentCalendarMonth = saudiDate.getMonth();
+            currentCalendarYear = saudiDate.getFullYear();
 
             saveAndRefresh();
         });
@@ -1426,7 +1495,8 @@
 
             document.getElementById('b-edit-id').value = '';
             document.getElementById('quick-booking-form').reset();
-            let today = new Date().toISOString().split('T')[0];
+            let saudiDateStr = new Date().toLocaleString('en-US', { timeZone: 'Asia/Riyadh' });
+            let today = new Date(saudiDateStr).toISOString().split('T')[0];
             document.getElementById('b-date').value = today;
             document.getElementById('form-title-text').innerHTML = `<i class="fa-solid fa-plus-circle" style="color: #ff9f43;"></i> حجز جديد للشاليه`;
             saveAndRefresh();
@@ -1484,7 +1554,8 @@
             expenses.push(newE);
             saveAndRefresh();
             e.target.reset();
-            let today = new Date().toISOString().split('T')[0];
+            let saudiDateStr = new Date().toLocaleString('en-US', { timeZone: 'Asia/Riyadh' });
+            let today = new Date(saudiDateStr).toISOString().split('T')[0];
             document.getElementById('e-date').value = today;
             alert('تم تسجيل المصروف بنجاح!');
         }
@@ -1506,7 +1577,8 @@
 
         function updateDashboard() {
             let filterVal = document.getElementById('period-selector').value;
-            let currentMonthStr = new Date().toISOString().slice(0, 7);
+            let saudiDateStr = new Date().toLocaleString('en-US', { timeZone: 'Asia/Riyadh' });
+            let currentMonthStr = new Date(saudiDateStr).toISOString().slice(0, 7);
 
             let filteredBookings = bookings.filter(b => {
                 if (filterVal === 'all') return true;
@@ -1536,7 +1608,7 @@
             document.getElementById('stat-expenses').innerText = totalExp.toLocaleString() + ' ر.س';
             document.getElementById('stat-net').innerText = net.toLocaleString() + ' ر.س';
 
-            let todayStr = new Date().toISOString().slice(0, 10);
+            let todayStr = new Date(saudiDateStr).toISOString().slice(0, 10);
             let todayBookings = bookings.filter(b => b.date === todayStr);
             let alertBox = document.getElementById('today-alert-container');
             if(todayBookings.length > 0) {
@@ -1547,25 +1619,43 @@
 
             let recentBody = document.getElementById('dashboard-recent-body');
             recentBody.innerHTML = '';
-            bookings.slice(-4).reverse().forEach(b => {
-                let rem = Math.max(0, (parseFloat(b.price) || 0) - (parseFloat(b.paid) || 0));
-                let tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td><b>${b.name}</b></td>
-                    <td>${b.date}</td>
-                    <td><span class="badge nisah">${b.section}</span></td>
-                    <td>${b.price} ر.س</td>
-                    <td style="color: #c62828; font-weight: bold;">${rem} ر.س</td>
-                    <td><span class="badge ${b.status === 'مؤكد' ? 'success' : 'danger'}">${b.status}</span></td>
-                `;
-                recentBody.appendChild(tr);
-            });
+            if(bookings.length === 0) {
+                recentBody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: #a4b0be; padding: 15px;">لا توجد حجوزات مسجلة حالياً</td></tr>`;
+            } else {
+                bookings.slice(-4).reverse().forEach(b => {
+                    let rem = Math.max(0, (parseFloat(b.price) || 0) - (parseFloat(b.paid) || 0));
+                    let tr = document.createElement('tr');
+                    tr.innerHTML = `
+                        <td><b>${b.name}</b></td>
+                        <td>${b.date}</td>
+                        <td><span class="badge nisah">${b.section}</span></td>
+                        <td>${b.price} ر.س</td>
+                        <td style="color: #c62828; font-weight: bold;">${rem} ر.س</td>
+                        <td><span class="badge ${b.status === 'مؤكد' ? 'success' : 'danger'}">${b.status}</span></td>
+                    `;
+                    recentBody.appendChild(tr);
+                });
+            }
         }
 
         function renderBookingsTable() {
             let tbody = document.getElementById('bookings-table-body');
             tbody.innerHTML = '';
-            bookings.forEach((b, index) => {
+            
+            let selectedMonth = parseInt(document.getElementById('reservations-month-selector').value);
+            
+            let monthBookings = bookings.filter(b => {
+                if(!b.date) return false;
+                let bDateObj = new Date(b.date);
+                return !isNaN(bDateObj.getTime()) && bDateObj.getMonth() === selectedMonth;
+            });
+
+            if(monthBookings.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" style="text-align: center; color: #a4b0be; padding: 20px;">لا توجد حجوزات مسجلة في شهر ${monthNames[selectedMonth]}.</td></tr>`;
+                return;
+            }
+
+            monthBookings.forEach((b, index) => {
                 let rem = Math.max(0, (parseFloat(b.price) || 0) - (parseFloat(b.paid) || 0));
                 let displayPhone = b.phone.startsWith('966') ? '+' + b.phone : '+966' + b.phone;
                 let tr = document.createElement('tr');
@@ -1590,6 +1680,10 @@
         function renderExpensesTable() {
             let tbody = document.getElementById('expenses-table-body');
             tbody.innerHTML = '';
+            if(expenses.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align: center; color: #a4b0be; padding: 20px;">لا توجد مصروفات مسجلة</td></tr>`;
+                return;
+            }
             expenses.forEach(e => {
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -1727,7 +1821,7 @@
         function openReceipt(bInput) {
             let b = typeof bInput === 'string' ? JSON.parse(bInput) : bInput;
             activeReceipt = b;
-            let currentDateTimeStr = new Date().toLocaleString('ar-SA');
+            let currentDateTimeStr = new Date().toLocaleString('ar-SA', { timeZone: 'Asia/Riyadh' });
             let displayPhone = b.phone.startsWith('966') ? '+' + b.phone : '+966' + b.phone;
             
             document.getElementById('inv-id').innerText = '#' + b.id;
@@ -1820,7 +1914,8 @@
         }
 
         function generateReport() {
-            let now = new Date();
+            let saudiDateStr = new Date().toLocaleString('en-US', { timeZone: 'Asia/Riyadh' });
+            let now = new Date(saudiDateStr);
             let currentMonthIndex = now.getMonth();
             let currentYear = now.getFullYear();
             let currentMonthName = monthNames[currentMonthIndex];
@@ -1911,7 +2006,15 @@
         }
 
         async function exportToExcel() {
-            let currentMonthName = monthNames[currentCalendarMonth];
+            let selectedMonth = parseInt(document.getElementById('reservations-month-selector').value);
+            let currentMonthName = monthNames[selectedMonth];
+            
+            let monthBookings = bookings.filter(b => {
+                if(!b.date) return false;
+                let bDateObj = new Date(b.date);
+                return !isNaN(bDateObj.getTime()) && bDateObj.getMonth() === selectedMonth;
+            });
+
             let workbook = new ExcelJS.Workbook();
             let worksheet = workbook.addWorksheet(`حجوزات ${currentMonthName}`, { views: [{ rtl: true }] });
 
@@ -1959,12 +2062,12 @@
                 cell.border = headerBorder;
             });
 
-            for (let i = 0; i < Math.max(bookings.length, 1); i++) {
+            for (let i = 0; i < Math.max(monthBookings.length, 1); i++) {
                 let rowIdx = 5 + i;
                 let row = worksheet.getRow(rowIdx);
                 row.height = 20;
 
-                let b = bookings[i];
+                let b = monthBookings[i];
                 let valA = b ? b.status : "";
                 let valB = b ? { formula: `D${rowIdx}-C${rowIdx}` } : "";
                 let valC = b ? (parseFloat(b.paid) || 0) : "";
@@ -1991,7 +2094,7 @@
                 });
             }
 
-            let summaryRowIdx = 5 + Math.max(bookings.length, 1) + 1;
+            let summaryRowIdx = 5 + Math.max(monthBookings.length, 1) + 1;
             worksheet.mergeCells(`E${summaryRowIdx}:J${summaryRowIdx}`);
             let summaryLabelCell = worksheet.getCell(`E${summaryRowIdx}`);
             summaryLabelCell.value = "المجموع / الإجمالي النهائي";
@@ -2011,7 +2114,7 @@
                     right: { style: 'thin', color: { argb: 'CCCCCC' } }
                 };
 
-                let lastDataRow = 4 + Math.max(bookings.length, 1);
+                let lastDataRow = 4 + Math.max(monthBookings.length, 1);
                 if (colIdx === 2) {
                     cell.value = { formula: `SUM(B5:B${lastDataRow})` };
                     cell.font = { name: 'Calibri', size: 10, bold: true };
@@ -2029,7 +2132,7 @@
 
             let buffer = await workbook.xlsx.writeBuffer();
             let blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
-            saveAs(blob, 'سجل_حجوزات_شاليه_كروز.xlsx');
+            saveAs(blob, `سجل_حجوزات_شهر_${currentMonthName}_شاليه_كروز.xlsx`);
         }
 
         function importFromExcel(event) {
@@ -2051,11 +2154,14 @@
                         if (rawPhoneStr.startsWith('966')) rawPhoneStr = rawPhoneStr.substring(3);
                         if (rawPhoneStr.startsWith('0')) rawPhoneStr = rawPhoneStr.substring(1);
 
+                        let saudiDateStr = new Date().toLocaleString('en-US', { timeZone: 'Asia/Riyadh' });
+                        let defaultDate = new Date(saudiDateStr).toISOString().split('T')[0];
+
                         importedBookings.push({
                             id: Date.now() + idx,
                             name: String(row[1] || 'مستأجر').trim(),
                             phone: rawPhoneStr || '500000000',
-                            date: row[3] || new Date().toISOString().split('T')[0],
+                            date: row[3] || defaultDate,
                             period: row[4] || 'مساء',
                             section: row[5] || 'قسمين',
                             price: parseFloat(row[6]) || 0,
@@ -2130,6 +2236,34 @@
             if (document.getElementById('inv-bank-account')) document.getElementById('inv-bank-account').innerText = bankAccount;
             if (document.getElementById('inv-bank-iban')) document.getElementById('inv-bank-iban').innerText = bankIban;
         }
+function openReleaseNotesModal() {
+    document.getElementById('releaseNotesModal').style.display = 'flex';
+}
+
+function closeReleaseNotesModal() {
+    document.getElementById('releaseNotesModal').style.display = 'none';
+}
+let currentZoom = 1; // الحجم الطبيعي
+
+function zoomIn() {
+    if (currentZoom < 1.3) { // أقصى حد للتكبير 130%
+        currentZoom += 0.1;
+        document.body.style.zoom = currentZoom;
+    }
+}
+
+function zoomOut() {
+    if (currentZoom > 0.8) { // أقصى حد للتصغير 80% لتجنب صغر الخطوط لدرجة مزعجة
+        currentZoom -= 0.1;
+        document.body.style.zoom = currentZoom;
+    }
+}
+
+function resetZoom() {
+    currentZoom = 1;
+    document.body.style.zoom = currentZoom;
+}
+
     </script>
 </body>
 </html>
