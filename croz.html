@@ -1227,44 +1227,59 @@
                         4. إدارة الشاليه غير مسئولة نهائياً عن فقدان الأغراض الشخصية الثمينة غير المسلمة لإدارة الاستقبال.
                     </div>
 
-        <!-- تفاصيل الحساب البنكي وصورة الكود -->
-<div class="footer-box" style="display: flex; gap: 6px; border: 1px solid #e0e0e0; padding: 6px; border-radius: 3px; background-color: #ffffff; max-width: 450px; margin-left: auto; margin-top: 6px; box-sizing: border-box;">
+        <!-- تفاصيل الحساب البنكي وصورة الكود --><div class="footer-box" style="display: flex; gap: 6px; border: 1px solid #e0e0e0; padding: 6px; border-radius: 3px; background-color: #ffffff; max-width: 450px; margin-left: auto; margin-top: 6px; box-sizing: border-box; align-items: stretch;">
     
-    <!-- القسم الأيمن: بيانات الحساب (تم توسيعه ليحتمل النص الطويل) -->
-    <div style="flex: 1; box-sizing: border-box; min-width: 0;">
-        <h5 style="margin: 0 0 4px 0; font-size: 11px; color: #111; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 2px;">تفاصيل الحساب البنكي</h5>
-        
-        <div style="display: grid; grid-template-columns: 1fr; gap: 3px; margin-bottom: 3px;">
-            <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 3px 5px; border-radius: 2px;">
-                <span style="color: #777; font-size: 9px; display: block; margin-bottom: 1px;">البنك</span>
-                <strong id="inv-bank-name" style="color: #2c3e50; font-size: 11px; word-break: break-word;">مصرف الراجحي</strong>
+    <!-- القسم الأيمن: بيانات الحساب -->
+    <div style="flex: 1; box-sizing: border-box; min-width: 0; display: flex; flex-direction: column; justify-content: space-between;">
+        <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #eee; padding-bottom: 2px; margin-bottom: 4px;">
+                <h5 style="margin: 0; font-size: 11px; color: #111; font-weight: bold;">تفاصيل الحساب البنكي</h5>
+                <!-- أيقونة التحديثات والإصدار v2.0.1 -->
+                <span title="التحديثات الأخيرة v2.0.1 وحقوق المطور" style="cursor: pointer; font-size: 11px;" onclick="showVersionInfo();">📨</span>
             </div>
             
-            <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 3px 5px; border-radius: 2px; overflow: hidden;">
-                <span style="color: #777; font-size: 10px; display: inline-block; white-space: nowrap; margin-bottom: 1px; text-align: left;">المستفيد</span>
-                <br>
-                <strong id="inv-bank-beneficiary" style="color: #2c3e50; font-size: 12px; display: inline-block; white-space: nowrap; text-align: left; direction: ltr; max-width: 100%;">الاسم الثلاثي مع رقم الأيبان هنا</strong>
+            <div style="display: grid; grid-template-columns: 1fr; gap: 3px; margin-bottom: 3px;">
+                <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 3px 5px; border-radius: 2px;">
+                    <span style="color: #777; font-size: 9px; display: block; margin-bottom: 1px;">البنك</span>
+                    <strong id="inv-bank-name" style="color: #2c3e50; font-size: 11px; word-break: break-word;">مصرف الراجحي</strong>
+                </div>
+                
+                <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 3px 5px; border-radius: 2px; overflow: hidden;">
+                    <span style="color: #777; font-size: 10px; display: inline-block; white-space: nowrap; margin-bottom: 1px; text-align: left;">المستفيد</span>
+                    <br>
+                    <strong id="inv-bank-beneficiary" style="color: #2c3e50; font-size: 11px; display: inline-block; white-space: nowrap; text-align: left; direction: ltr; max-width: 100%;">الاسم الثلاثي مع رقم الأيبان هنا</strong>
+                </div>
+            </div>
+
+            <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 3px 5px; border-radius: 2px; margin-bottom: 3px;">
+                <span style="color: #777; font-size: 9px; display: block; margin-bottom: 1px;">رقم الحساب</span>
+                <strong id="inv-bank-account" style="color: #2c3e50; font-family: monospace; font-size: 11px; word-break: break-all; display: block;">123456789012345</strong>
             </div>
         </div>
 
-        <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 3px 5px; border-radius: 2px; margin-bottom: 3px;">
-            <span style="color: #777; font-size: 9px; display: block; margin-bottom: 1px;">رقم الحساب</span>
-            <strong id="inv-bank-account" style="color: #2c3e50; font-family: monospace; font-size: 11px; word-break: break-all; display: block;">123456789012345</strong>
-        </div>
-
-        <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 3px 5px; border-radius: 2px; overflow: hidden;">
+        <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 3px 5px; border-radius: 2px;">
             <span style="color: #777; font-size: 10px; display: inline-block; white-space: nowrap; margin-bottom: 1px; text-align: left;">الآيبان (IBAN)</span>
             <br>
-            <strong id="inv-bank-iban" style="color: #2c3e50; font-family: monospace; font-size: 12px; direction: ltr; display: inline-block; white-space: nowrap; text-align: left; max-width: 100%;">SA0380000001234567890123</strong>
+            <strong id="inv-bank-iban" style="color: #2c3e50; font-family: monospace; font-size: 11px; direction: ltr; display: inline-block; white-space: nowrap; text-align: left; max-width: 100%;">SA0380000001234567890123</strong>
         </div>
     </div>
 
-    <!-- القسم الأيسر: الصورة (QR Code) -->
-    <div style="width: 100px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #fafafa; border: 1px solid #eaeded; border-radius: 2px; padding: 4px; box-sizing: border-box;">
-        <img src="https://pwwoowowowwo.github.io/croz.1/Aigonh.png.PNG" alt="QR Code" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 2px;">
+    <!-- القسم الأيسر: الصورة (QR Code) مع أزرار التحكم -->
+    <div style="width: 95px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-between; background: #fafafa; border: 1px solid #eaeded; border-radius: 2px; padding: 4px; box-sizing: border-box;">
+        
+        <!-- أزرار التحكم بالحجم -->
+        <div style="display: flex; gap: 2px; width: 100%; justify-content: center; margin-bottom: 2px;">
+            <button onclick="zoomElement(0.1)" title="تكبير" style="background:#fff; border:1px solid #ccc; font-size:8px; cursor:pointer; padding:1px 4px; border-radius:2px;">+</button>
+            <button onclick="zoomElement(-0.1)" title="تصغير" style="background:#fff; border:1px solid #ccc; font-size:8px; cursor:pointer; padding:1px 4px; border-radius:2px;">-</button>
+            <button onclick="resetZoom()" title="إعادة تعيين" style="background:#fff; border:1px solid #ccc; font-size:8px; cursor:pointer; padding:1px 4px; border-radius:2px;">↺</button>
+        </div>
+
+        <!-- حاوية الصورة -->
+        <div style="flex: 1; display: flex; align-items: center; justify-content: center; width: 100%; overflow: hidden;">
+            <img id="zoomable-qr" src="https://pwwoowowowwo.github.io/croz.1/Aigonh.png.PNG" alt="QR Code" style="max-width: 100%; max-height: 85px; object-fit: contain; border-radius: 2px; transition: transform 0.2s ease;">
+        </div>
     </div>
 </div>
-
                     </div>
 
                     <div class="signature-section" style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 10px; border-top: 1px dashed #cbd5e1; font-size: 11px;">
@@ -2266,6 +2281,23 @@ function zoomOut() {
 function resetZoom() {
     currentZoom = 1;
     document.body.style.zoom = currentZoom;
+}
+let currentScale = 1;
+
+function zoomElement(amount) {
+    currentScale = Math.max(0.7, Math.min(1.3, currentScale + amount));
+    const img = document.getElementById('zoomable-qr');
+    if (img) {
+        img.style.transform = `scale(${currentScale})`;
+    }
+}
+
+function resetZoom() {
+    currentScale = 1;
+    const img = document.getElementById('zoomable-qr');
+    if (img) {
+        img.style.transform = `scale(1)`;
+    }
 }
 
     </script>
