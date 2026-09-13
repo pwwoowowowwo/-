@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جدول الشفتات الشهري - عرض العام</title>
+    
+    <!-- الخطوط والأيقونات -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    
+    <!-- مكتبة تحويل HTML إلى PDF مباشر -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255, 255, 255, 0.15);
+            --text-main: #f8fafc;
+            --text-accent: #38bdf8;
+
+            /* ألوان مميزة لكل مجموعة */
+            --grp-1: #0284c7; /* الأولى - أزرق */
+            --grp-2: #d97706; /* الثانية - برتقالي */
+            --grp-3: #7c3aed; /* الثالثة - بنفسجي */
+            --grp-4: #059669; /* الرابعة - أخضر */
+            --grp-5: #e11d48; /* الخامسة - أحمر */
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Cairo', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e1b4b);
+            color: var(--text-main);
+            padding: 20px 10px;
+            direction: rtl;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            color: #ffffff;
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+
+        .month-card {
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            border-radius: 18px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .month-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--text-accent);
+        }
+
+        .month-title {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-accent);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .btn-pdf {
+            background: linear-gradient(135deg, #e11d48, #be123c);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-pdf:hover {
+            transform: translateY(-2px);
+        }
+
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            font-size: 0.88rem;
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        th, td {
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 10px 6px;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #0b132b;
+            color: var(--text-accent);
+            font-weight: 800;
+            font-size: 0.9rem;
+        }
+
+        .th-time {
+            font-size: 0.78rem;
+            color: #94a3b8;
+            display: block;
+            font-weight: 600;
+        }
+
+        .date-cell {
+            background: rgba(255, 255, 255, 0.03);
+            line-height: 1.4;
+        }
+
+        .day-name {
+            font-weight: 800;
+            color: #ffffff;
+            display: block;
+        }
+
+        .hijri-date {
+            color: var(--text-accent);
+            font-weight: 700;
+            font-size: 0.82rem;
+            display: block;
+        }
+
+        .greg-date {
+            color: #94a3b8;
+            font-size: 0.75rem;
+            display: block;
+        }
+
+        /* شارات المجموعات بداخل الخلايا */
+        .group-pill {
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-weight: 800;
+            color: #ffffff;
+            display: inline-block;
+            font-size: 0.85rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            width: 85%;
+        }
+
+        .g-1 { background-color: var(--grp-1); }
+        .g-2 { background-color: var(--grp-2); }
+        .g-3 { background-color: var(--grp-3); }
+        .g-4 { background-color: var(--grp-4); }
+        .g-5 { background-color: var(--grp-5); }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        /* تنسيقات حصرية لتوليد ملف الـ PDF */
+        .pdf-export-mode {
+            background: #ffffff !important;
+            color: #000000 !important;
+            padding: 15px !important;
+        }
+
+        .pdf-export-mode .month-card {
+            background: #ffffff !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+        }
+
+        .pdf-export-mode .month-header {
+            border-bottom: 2px solid #0284c7 !important;
+        }
+
+        .pdf-export-mode .month-title {
+            color: #0f172a !important;
+        }
+
+        .pdf-export-mode .btn-pdf {
+            display: none !important;
+        }
+
+        .pdf-export-mode table {
+            background: #ffffff !important;
+            border: 1px solid #000000 !important;
+        }
+
+        .pdf-export-mode th {
+            background: #0f172a !important;
+            color: #ffffff !important;
+            border: 1px solid #000000 !important;
+            -webkit-print-color-adjust: exact;
+        }
+
+        .pdf-export-mode td {
+            border: 1px solid #cbd5e1 !important;
+            color: #000000 !important;
+        }
+
+        .pdf-export-mode .day-name { color: #0f172a !important; }
+        .pdf-export-mode .hijri-date { color: #0284c7 !important; }
+        .pdf-export-mode .greg-date { color: #475569 !important; }
+
+        .pdf-export-mode .group-pill {
+            -webkit-print-color-adjust: exact;
+            color: #ffffff !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1><i class="fa-solid fa-calendar-check" style="color: var(--text-accent);"></i> جدول توزيع الشفتات الشهري</h1>
+    </div>
+
+    <!-- حاوية الجداول -->
+    <div id="scheduleContainer"></div>
+
+    <footer>
+        <p>جميع الحقوق محفوظة © 2026 | تصميم <span style="color: var(--text-accent); font-weight:800;">أبو مرزوق</span></p>
+    </footer>
+</div>
+
+<script>
+    const daysOfWeek = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
+    const hijriMonths = ["محرم", "صفر", "ربيع الأول", "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
+
+    // قائمة المجموعات مع ألوانها وأسمائها
+    const groups = [
+        { name: 'المجموعة الأولى', cssClass: 'g-1', index: 0 },
+        { name: 'المجموعة الثانية', cssClass: 'g-2', index: 4 },
+        { name: 'المجموعة الثالثة', cssClass: 'g-3', index: 3 },
+        { name: 'المجموعة الرابعة', cssClass: 'g-4', index: 2 },
+        { name: 'المجموعة الخامسة', cssClass: 'g-5', index: 1 }
+    ];
+
+    function getHijriDetails(dateObj) {
+        const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { day: 'numeric', month: 'numeric', year: 'numeric' });
+        const parts = formatter.formatToParts(dateObj);
+        let d, m, y;
+        parts.forEach(item => {
+            if (item.type === 'day') d = parseInt(item.value, 10);
+            if (item.type === 'month') m = parseInt(item.value, 10);
+            if (item.type === 'year') y = parseInt(item.value, 10);
+        });
+        return { day: d, monthIndex: m - 1, monthName: hijriMonths[m - 1] || "", year: y };
+    }
+
+    // معرفة نوع الشفت بناءً على يوم الدورة (25 يوماً)
+    function getShiftType(cycleDay) {
+        if (cycleDay < 5) return 'MORNING';    // 6:00 ص - 2:00 ظ
+        if (cycleDay < 8) return 'OFF';
+        if (cycleDay < 13) return 'AFTERNOON'; // 2:00 ظ - 10:00 م
+        if (cycleDay < 16) return 'OFF';
+        if (cycleDay < 21) return 'NIGHT';     // 10:00 م - 6:00 ص
+        return 'OFF';
+    }
+
+    // تحديد أطراف العمل في اليوم المعني
+    function getWorkingGroupsForDay(dayDiff) {
+        let shifts = { MORNING: null, AFTERNOON: null, NIGHT: null };
+
+        groups.forEach(g => {
+            const groupOffset = g.index * 5;
+            const cycleDay = ((dayDiff - groupOffset) % 25 + 25) % 25;
+            const shiftType = getShiftType(cycleDay);
+
+            if (shiftType !== 'OFF') {
+                shifts[shiftType] = g;
+            }
+        });
+
+        return shifts;
+    }
+
+    function formatDateToISO(d) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    }
+
+    function generateViewSchedule() {
+        // تاريخ البداية المعتمد
+        const savedStartDate = localStorage.getItem('abumarzook_5group_order_a_h_d_g_b') || formatDateToISO(new Date());
+        const startParts = savedStartDate.split('-');
+        const startDate = new Date(startParts[0], startParts[1] - 1, startParts[2]);
+
+        const container = document.getElementById('scheduleContainer');
+        container.innerHTML = '';
+
+        const totalDays = 125; // عرض حوالي 4 أشهر
+        let monthsMap = new Map();
+
+        for (let i = 0; i < totalDays; i++) {
+            const currentDate = new Date(startDate);
+            currentDate.setDate(startDate.getDate() + i);
+
+            const hInfo = getHijriDetails(currentDate);
+            const monthKey = `${hInfo.year}-${hInfo.monthIndex}`;
+
+            if (!monthsMap.has(monthKey)) {
+                monthsMap.set(monthKey, { monthName: hInfo.monthName, year: hInfo.year, days: [] });
+            }
+
+            monthsMap.get(monthKey).days.push({ dayIndex: i, dateObj: currentDate });
+        }
+
+        monthsMap.forEach((monthData, monthKey) => {
+            const card = document.createElement('div');
+            card.className = 'month-card';
+            card.id = `card-${monthKey}`;
+
+            card.innerHTML = `
+                <div class="month-header">
+                    <div class="month-title">
+                        <i class="fa-solid fa-calendar-days"></i> جدول شهر ${monthData.monthName} ${monthData.year} هـ
+                    </div>
+                    <button class="btn-pdf" onclick="downloadPDF('${monthKey}', '${monthData.monthName} ${monthData.year}')">
+                        <i class="fa-solid fa-file-pdf"></i> تنزيل PDF
+                    </button>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 25%;">الأيام والتواريخ</th>
+                                <th style="width: 25%;">الصباح <span class="th-time">06:00 ص - 02:00 ظ</span></th>
+                                <th style="width: 25%;">الظهر <span class="th-time">02:00 ظ - 10:00 م</span></th>
+                                <th style="width: 25%;">الليل <span class="th-time">10:00 م - 06:00 ص</span></th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            `;
+
+            const tbody = card.querySelector('tbody');
+            let rowsHTML = '';
+
+            monthData.days.forEach(item => {
+                const dateObj = item.dateObj;
+                const dayName = daysOfWeek[dateObj.getDay()];
+                const hDetails = getHijriDetails(dateObj);
+                const gregStr = formatDateToISO(dateObj);
+
+                const workingGroups = getWorkingGroupsForDay(item.dayIndex);
+
+                const morningHtml = workingGroups.MORNING ? `<span class="group-pill ${workingGroups.MORNING.cssClass}">${workingGroups.MORNING.name}</span>` : '-';
+                const afternoonHtml = workingGroups.AFTERNOON ? `<span class="group-pill ${workingGroups.AFTERNOON.cssClass}">${workingGroups.AFTERNOON.name}</span>` : '-';
+                const nightHtml = workingGroups.NIGHT ? `<span class="group-pill ${workingGroups.NIGHT.cssClass}">${workingGroups.NIGHT.name}</span>` : '-';
+
+                rowsHTML += `
+                    <tr>
+                        <td class="date-cell">
+                            <span class="day-name">${dayName}</span>
+                            <span class="hijri-date">${hDetails.day} ${hDetails.monthName} ${hDetails.year} هـ</span>
+                            <span class="greg-date">${gregStr} م</span>
+                        </td>
+                        <td>${morningHtml}</td>
+                        <td>${afternoonHtml}</td>
+                        <td>${nightHtml}</td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = rowsHTML;
+            container.appendChild(card);
+        });
+    }
+
+    // الدالة المسؤولة عن تصدير الـ PDF المباشر
+    function downloadPDF(monthKey, monthTitleStr) {
+        const element = document.getElementById(`card-${monthKey}`);
+        
+        // إضافة كلاس تحسين مظهر التصدير
+        element.classList.add('pdf-export-mode');
+
+        const opt = {
+            margin:       [8, 8, 8, 8],
+            filename:     `جدول_شفتات_شهر_${monthTitleStr}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            element.classList.remove('pdf-export-mode');
+        });
+    }
+
+    window.onload = generateViewSchedule;
+</script>
+
