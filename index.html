@@ -158,7 +158,7 @@
 
         .theme-btn:active { transform: scale(0.9); }
 
-        /* Banner Install App (شريط التثبيت التفاعلي المباشر) */
+        /* Banner Install App */
         .install-banner {
             background: linear-gradient(90deg, #16a34a, #22c55e);
             color: white;
@@ -305,7 +305,7 @@
         }
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 
-        /* السطر السفلي الخاص بالحقوق والمطور */
+        /* حقوق المطور */
         .about-footer-line {
             display: flex;
             align-items: center;
@@ -356,17 +356,16 @@
     <div class="progress-bar"><div class="progress-fill" id="progress"></div></div>
 </div>
 
-<!-- Modal: Developer Message & About App (يغلق عند الضغط في أي مكان بالشاشة) -->
+<!-- Modal: Developer Message & About App -->
 <div id="popup" class="modal-overlay" onclick="closePopup()">
     <div class="popup-content" onclick="event.stopPropagation()">
         <i class="fa-solid fa-heart" style="color: #ef4444; font-size: 2.8rem; margin-bottom: 12px;"></i>
         <h2 style="color:var(--primary); margin-top: 0;">عن التطبيق</h2>
         <p style="line-height: 1.6; color: var(--text-main); font-size: 0.95rem; margin-bottom: 15px;">
-            "إلى زملائي الأعزاء، شكراً لكم على دعمكم المستمر. هذا النظام اجتهاد شخصي تم تطويره بناءً على رغبت بعض الزملاء، وهو برنامج يسهل عليك حسبت دوامك ومعرفة أيام الاستلام وأيام التسليم ليسهل عليك أمورك، ونعتذر عن التقصير."<br><br>
+            "إلى زملائي الأعزاء، شكراً لكم على دعمكم المستمر. هذا النظام اجتهاد شخصي تم تطويره بناءً على رغبة بعض الزملاء، وهو برنامج يسهل عليك حسبة دوامك ومعرفة أيام الاستلام وأيام التسليم ليسهل عليك أمورك، ونعتذر عن التقصير."<br><br>
             <strong>- أخوكم فهد المخلفي</strong>
         </p>
 
-        <!-- السطر السفلي المدمج: المطور فهد مرزوق | جميع الحقوق محفوظة © 2026 -->
         <div class="about-footer-line">
             <span>المطور فهد مرزوق</span>
             <span class="vertical-separator"></span>
@@ -457,19 +456,20 @@
 </nav>
 
 <script>
+    // تفعيل وتأكيد مسارات المجموعات الـ 5
     const groups = [
-        { title: 'المجموعة الأولى', desc: 'الوردية الأولى', icon: 'fa-users', link: 'group1.html' },
-        { title: 'المجموعة الثانية', desc: 'الوردية الثانية', icon: 'fa-users', link: 'group2.html' },
-        { title: 'المجموعة الثالثة', desc: 'الوردية الثالثة', icon: 'fa-users', link: 'group3.html' },
-        { title: 'المجموعة الرابعة', desc: 'الوردية الرابعة (تحت الصيانة)', icon: 'fa-users', link: 'group4.html', type: 'maintenance' },
-        { title: 'المجموعة الخامسة', desc: 'الوردية الخامسة (تحت الصيانة)', icon: 'fa-users', link: 'group5.html', type: 'maintenance' },
+        { title: 'المجموعة الأولى', desc: 'جدول الوردية الأولى', icon: 'fa-users', link: 'group1.html' },
+        { title: 'المجموعة الثانية', desc: 'جدول الوردية الثانية', icon: 'fa-users', link: 'group2.html' },
+        { title: 'المجموعة الثالثة', desc: 'جدول الوردية الثالثة', icon: 'fa-users', link: 'group3.html' },
+        { title: 'المجموعة الرابعة', desc: 'جدول الوردية الرابعة', icon: 'fa-users', link: 'group4.html' },
+        { title: 'المجموعة الخامسة', desc: 'جدول الوردية الخامسة', icon: 'fa-users', link: 'group5.html' },
         { title: 'مناوب التموين', desc: 'تحت الصيانة الدورية', icon: 'fa-boxes-packing', type: 'maintenance' },
         { title: 'الشؤون الإدارية', desc: 'تحت الصيانة والتحديث', icon: 'fa-briefcase', type: 'maintenance' }
     ];
 
     let deferredPrompt = null;
 
-    // التقاط حدث التثبيت بضغطة زر
+    // التقاط حدث التثبيت الـ PWA
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
@@ -510,7 +510,6 @@
             splash.style.opacity = '0'; 
             setTimeout(() => { 
                 splash.style.display = 'none'; 
-                // إظهار النافذة في أول زيارة فقط تلقائياً
                 if (!localStorage.getItem('has_seen_about_dialog_2026')) {
                     openPopup();
                 }
@@ -528,7 +527,7 @@
         }
 
         container.innerHTML = data.map(g => `
-            <div class="group-card" onclick="${g.type ? "alert('هذا القسم تحت الصيانة حالياً')" : "window.location.href='" + g.link + "'"}">
+            <div class="group-card" onclick="${g.type === 'maintenance' ? "alert('هذا القسم تحت الصيانة حالياً')" : "window.location.href='" + g.link + "'"}">
                 <div class="group-card-left">
                     <div class="icon-box"><i class="fa-solid ${g.icon}"></i></div>
                     <div>
@@ -559,7 +558,6 @@
         renderGroups(filtered);
     }
 
-    // التحكم بالرسالة المنبثقة وحفظ رؤيتها
     function openPopup() { document.getElementById('popup').style.display = 'flex'; }
     function closePopup() { 
         document.getElementById('popup').style.display = 'none'; 
@@ -569,7 +567,6 @@
     function openInstallModal() { document.getElementById('installModal').style.display = 'flex'; }
     function closeInstallModal() { document.getElementById('installModal').style.display = 'none'; }
 
-    // زر التثبيت السريع
     function triggerPWAInstall() {
         if (deferredPrompt) {
             deferredPrompt.prompt();
@@ -585,7 +582,6 @@
         }
     }
 
-    // Dark Mode Toggle
     function toggleTheme() {
         const isDark = document.body.getAttribute('data-theme') === 'dark';
         const icon = document.getElementById('themeIcon');
