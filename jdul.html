@@ -39,13 +39,13 @@
         body {
             background-color: var(--bg-light);
             color: var(--text-main);
-            padding: 20px 10px;
+            padding: 15px 10px;
             direction: rtl;
             min-height: 100vh;
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 950px;
             margin: 0 auto;
         }
 
@@ -53,9 +53,9 @@
         .app-header {
             background: #ffffff;
             border: 2px solid var(--primary-blue);
-            border-radius: 16px;
-            padding: 15px 25px;
-            margin-bottom: 25px;
+            border-radius: 12px;
+            padding: 10px 20px;
+            margin-bottom: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -65,23 +65,23 @@
         .header-brand {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 12px;
         }
 
         .header-brand .logo-icon {
-            font-size: 2.2rem;
+            font-size: 1.8rem;
             color: var(--primary-blue);
         }
 
         .header-brand h1 {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             font-weight: 800;
             color: var(--text-main);
             line-height: 1.2;
         }
 
         .header-brand p {
-            font-size: 0.82rem;
+            font-size: 0.78rem;
             color: var(--text-muted);
             font-weight: 600;
         }
@@ -90,9 +90,9 @@
             background: #f0f9ff;
             color: var(--primary-blue);
             border: 1px solid #bae6fd;
-            padding: 6px 14px;
+            padding: 5px 12px;
             border-radius: 20px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 700;
         }
 
@@ -100,10 +100,10 @@
         .month-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 18px;
-            margin-bottom: 30px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
             page-break-after: always;
             page-break-inside: avoid;
         }
@@ -112,13 +112,13 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
-            padding-bottom: 8px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
             border-bottom: 2px solid var(--primary-blue);
         }
 
         .month-title {
-            font-size: 1.15rem;
+            font-size: 1.05rem;
             font-weight: 800;
             color: var(--text-main);
             display: flex;
@@ -130,15 +130,15 @@
             background: var(--primary-blue);
             color: white;
             border: none;
-            padding: 7px 15px;
-            border-radius: 8px;
-            font-size: 0.85rem;
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 0.8rem;
             font-weight: 700;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            box-shadow: 0 2px 8px rgba(2, 132, 199, 0.25);
+            box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
             transition: background 0.2s;
         }
 
@@ -149,7 +149,7 @@
         /* الجدول المحدد بوضوح */
         .table-wrapper {
             overflow-x: auto;
-            border-radius: 8px;
+            border-radius: 6px;
             border: 1.5px solid #0f172a;
         }
 
@@ -157,13 +157,13 @@
             width: 100%;
             border-collapse: collapse;
             text-align: center;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             background: #ffffff;
         }
 
         th, td {
             border: 1px solid #94a3b8;
-            padding: 4px 3px;
+            padding: 2px 2px;
             vertical-align: middle;
         }
 
@@ -171,12 +171,12 @@
             background: #0f172a;
             color: #ffffff;
             font-weight: 800;
-            font-size: 0.82rem;
-            padding: 6px 3px;
+            font-size: 0.78rem;
+            padding: 4px 2px;
         }
 
         .th-time {
-            font-size: 0.72rem;
+            font-size: 0.68rem;
             color: #38bdf8;
             display: block;
             font-weight: 600;
@@ -184,38 +184,39 @@
 
         .date-cell {
             background: #f1f5f9;
-            line-height: 1.25;
+            line-height: 1.15;
+            padding: 2px 4px;
         }
 
         .day-name {
             font-weight: 800;
             color: #0f172a;
             display: block;
-            font-size: 0.82rem;
+            font-size: 0.75rem;
         }
 
         .hijri-date {
             color: var(--primary-blue);
             font-weight: 700;
-            font-size: 0.78rem;
+            font-size: 0.72rem;
             display: block;
         }
 
         .greg-date {
             color: #64748b;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             display: block;
         }
 
         /* شارات المجموعات بداخل الخلايا */
         .group-pill {
-            padding: 3px 8px;
-            border-radius: 6px;
+            padding: 2px 4px;
+            border-radius: 4px;
             font-weight: 800;
             color: #ffffff;
             display: inline-block;
-            font-size: 0.78rem;
-            width: 90%;
+            font-size: 0.72rem;
+            width: 92%;
         }
 
         .g-1 { background-color: var(--grp-1); }
@@ -226,18 +227,20 @@
 
         footer {
             text-align: center;
-            padding: 15px;
+            padding: 12px;
             color: #64748b;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             font-weight: 700;
-            margin-top: 10px;
+            margin-top: 5px;
         }
 
-        /* تنسيقات حصرية ومضبوطة لإنشاء ملف الـ PDF ليكون صفحة واحدة A4 */
+        /* ==========================================
+           تنسيقات مشددة لضمان احتواء الـ PDF في صفحة واحدة A4
+           ========================================== */
         .pdf-export-mode {
             background: #ffffff !important;
-            padding: 10px !important;
-            width: 700px !important;
+            padding: 0 !important;
+            width: 100% !important;
             margin: 0 auto !important;
         }
 
@@ -248,40 +251,60 @@
             margin: 0 !important;
         }
 
+        .pdf-export-mode .month-header {
+            margin-bottom: 4px !important;
+            padding-bottom: 2px !important;
+            border-bottom: 1.5px solid #0284c7 !important;
+        }
+
+        .pdf-export-mode .month-title {
+            font-size: 0.9rem !important;
+        }
+
         .pdf-export-mode .btn-pdf {
             display: none !important;
         }
 
         .pdf-export-mode table {
-            border: 1.5px solid #000000 !important;
+            border: 1px solid #000000 !important;
         }
 
         .pdf-export-mode th {
             background: #0f172a !important;
             color: #ffffff !important;
             border: 1px solid #000000 !important;
-            padding: 4px 2px !important;
-            font-size: 0.78rem !important;
+            padding: 2px 1px !important;
+            font-size: 0.7rem !important;
             -webkit-print-color-adjust: exact;
+        }
+
+        .pdf-export-mode .th-time {
+            font-size: 0.6rem !important;
         }
 
         .pdf-export-mode td {
             border: 1px solid #64748b !important;
-            padding: 3px 2px !important;
+            padding: 1px 1px !important;
+            height: 18px !important;
         }
+
+        .pdf-export-mode .day-name { font-size: 0.68rem !important; }
+        .pdf-export-mode .hijri-date { font-size: 0.65rem !important; }
+        .pdf-export-mode .greg-date { font-size: 0.58rem !important; }
 
         .pdf-export-mode .group-pill {
             -webkit-print-color-adjust: exact;
-            font-size: 0.75rem !important;
-            padding: 2px 4px !important;
+            font-size: 0.65rem !important;
+            padding: 1px 2px !important;
+            line-height: 1.2 !important;
         }
 
         .pdf-footer {
             display: none;
             text-align: center;
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             color: #475569;
-            margin-top: 8px;
+            margin-top: 4px;
             font-weight: 700;
         }
 
@@ -374,7 +397,6 @@
     }
 
     function generateViewSchedule() {
-        // الاعتماد على نفس التاريخ المخزن أو تاريخ اليوم
         const savedStartDate = localStorage.getItem('abumarzook_5group_order_a_h_d_g_b') || formatDateToISO(new Date());
         const startParts = savedStartDate.split('-');
         const startDate = new Date(startParts[0], startParts[1] - 1, startParts[2]);
@@ -465,14 +487,14 @@
         });
     }
 
-    // دالة تصدير PDF بصفحة واحدة دقيقة
+    // دالة تصدير PDF بضغطة واحدة وبإعدادات ضغط مساحات A4 دقيقة
     function downloadPDF(monthKey, monthTitleStr) {
         const element = document.getElementById(`card-${monthKey}`);
         
         element.classList.add('pdf-export-mode');
 
         const opt = {
-            margin:       [5, 5, 5, 5],
+            margin:       [4, 4, 4, 4],
             filename:     `جدول_شفتات_${monthTitleStr.replace(/\s+/g, '_')}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { scale: 2, useCORS: true, logging: false },
