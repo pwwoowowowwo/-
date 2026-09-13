@@ -283,8 +283,8 @@
            ========================================== */
         .pdf-export-mode {
             background: #ffffff !important;
-            padding: 0 !important;
-            width: 100% !important;
+            padding: 5px !important;
+            width: 750px !important;
             margin: 0 auto !important;
         }
 
@@ -302,7 +302,7 @@
         }
 
         .pdf-export-mode .month-title {
-            font-size: 0.9rem !important;
+            font-size: 0.85rem !important;
         }
 
         .pdf-export-mode .btn-pdf {
@@ -318,37 +318,37 @@
             color: #ffffff !important;
             border: 1px solid #000000 !important;
             padding: 2px 1px !important;
-            font-size: 0.7rem !important;
+            font-size: 0.68rem !important;
             -webkit-print-color-adjust: exact;
         }
 
         .pdf-export-mode .th-time {
-            font-size: 0.6rem !important;
+            font-size: 0.58rem !important;
         }
 
         .pdf-export-mode td {
             border: 1px solid #64748b !important;
             padding: 1px 1px !important;
-            height: 20px !important;
+            height: 18px !important;
         }
 
-        .pdf-export-mode .day-cell { font-size: 0.68rem !important; }
-        .pdf-export-mode .hijri-date { font-size: 0.65rem !important; }
-        .pdf-export-mode .greg-date { font-size: 0.6rem !important; }
+        .pdf-export-mode .day-cell { font-size: 0.65rem !important; }
+        .pdf-export-mode .hijri-date { font-size: 0.62rem !important; }
+        .pdf-export-mode .greg-date { font-size: 0.58rem !important; }
 
         .pdf-export-mode .group-pill {
             -webkit-print-color-adjust: exact;
-            font-size: 0.68rem !important;
-            padding: 2px 2px !important;
-            line-height: 1.2 !important;
+            font-size: 0.65rem !important;
+            padding: 1px 2px !important;
+            line-height: 1.1 !important;
         }
 
         .pdf-footer {
             display: none;
             text-align: center;
-            font-size: 0.65rem;
+            font-size: 0.6rem;
             color: #475569;
-            margin-top: 4px;
+            margin-top: 3px;
             font-weight: 700;
         }
 
@@ -394,7 +394,6 @@
 </div>
 
 <script>
-    const daysOfWeek = ['الأحد', 'الإثنين', 'الثلاثاء', 'الخميس', 'الجمعة', 'السبت']; // تصحيح قائمة الأيام
     const fullDaysOfWeek = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
     const hijriMonths = ["محرم", "صفر", "ربيع الأول", "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
 
@@ -581,21 +580,30 @@
         generateViewSchedule();
     });
 
-    // دالة تصدير PDF بضغطة واحدة وبإعدادات ضغط مساحات A4 دقيقة
+    // دالة تصدير PDF محدثة تضمن تحويل العنصر بالكامل بدون اقتطاع
     function downloadPDF(monthKey, monthTitleStr) {
         const element = document.getElementById(`card-${monthKey}`);
         
         element.classList.add('pdf-export-mode');
 
         const opt = {
-            margin:       [4, 4, 4, 4],
+            margin:       [3, 3, 3, 3],
             filename:     `جدول_شفتات_${monthTitleStr.replace(/\s+/g, '_')}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            html2canvas:  { 
+                scale: 2, 
+                useCORS: true, 
+                logging: false,
+                scrollX: 0,
+                scrollY: 0
+            },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
         html2pdf().set(opt).from(element).save().then(() => {
+            element.classList.remove('pdf-export-mode');
+        }).catch(err => {
+            console.error("PDF Export Error:", err);
             element.classList.remove('pdf-export-mode');
         });
     }
