@@ -96,6 +96,48 @@
             font-weight: 700;
         }
 
+        /* لوحة التحكم بالتاريخ */
+        .date-control-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 20px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            flex-wrap: wrap;
+        }
+
+        .date-control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-control-group label {
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .date-control-group input[type="date"] {
+            padding: 6px 12px;
+            border: 1.5px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 0.88rem;
+            font-family: 'Cairo', sans-serif;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .date-control-group input[type="date"]:focus {
+            border-color: var(--primary-blue);
+        }
+
         /* كارت الشهر */
         .month-card {
             background: var(--card-bg);
@@ -331,6 +373,15 @@
         </div>
     </div>
 
+    <!-- كارت التحكم بتاريخ بداية صباح المجموعة الأولى -->
+    <div class="date-control-card">
+        <div class="date-control-group">
+            <i class="fa-solid fa-calendar-day" style="color: var(--primary-blue);"></i>
+            <label for="startDateInput">تاريخ بداية (صباح) المجموعة الأولى:</label>
+            <input type="date" id="startDateInput">
+        </div>
+    </div>
+
     <!-- حاوية الجداول -->
     <div id="scheduleContainer"></div>
 
@@ -396,8 +447,24 @@
         return `${year}-${month}-${day}`;
     }
 
+    function getTomorrowISO() {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return formatDateToISO(tomorrow);
+    }
+
     function generateViewSchedule() {
-        const savedStartDate = localStorage.getItem('abumarzook_5group_order_a_h_d_g_b') || formatDateToISO(new Date());
+        const startDateInput = document.getElementById('startDateInput');
+        
+        // التحقق من الحفظ السابق، وإن لم يوجد يتم اعتماد تاريخ الغد افتراضياً
+        let savedStartDate = localStorage.getItem('abumarzook_5group_order_a_h_d_g_b');
+        if (!savedStartDate) {
+            savedStartDate = getTomorrowISO();
+            localStorage.setItem('abumarzook_5group_order_a_h_d_g_b', savedStartDate);
+        }
+
+        startDateInput.value = savedStartDate;
+
         const startParts = savedStartDate.split('-');
         const startDate = new Date(startParts[0], startParts[1] - 1, startParts[2]);
 
@@ -487,6 +554,20 @@
         });
     }
 
+    // إعداد حدث التغيير لمدخل التاريخ لإعادة التحديث والحفظ تلقائياً
+    document.addEventListener('DOMContentLoaded', () => {
+        const startDateInput = document.getElementById('startDateInput');
+        
+        startDateInput.addEventListener('change', (e) => {
+            if (e.target.value) {
+                localStorage.setItem('abumarzook_5group_order_a_h_d_g_b', e.target.value);
+                generateViewSchedule();
+            }
+        });
+
+        generateViewSchedule();
+    });
+
     // دالة تصدير PDF بضغطة واحدة وبإعدادات ضغط مساحات A4 دقيقة
     function downloadPDF(monthKey, monthTitleStr) {
         const element = document.getElementById(`card-${monthKey}`);
@@ -505,9 +586,6 @@
             element.classList.remove('pdf-export-mode');
         });
     }
-
-    window.onload = generateViewSchedule;
 </script>
-
 </body>
 </html>
