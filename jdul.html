@@ -456,7 +456,6 @@
     function generateViewSchedule() {
         const startDateInput = document.getElementById('startDateInput');
         
-        // التحقق من الحفظ السابق، وإن لم يوجد يتم اعتماد تاريخ الغد افتراضياً
         let savedStartDate = localStorage.getItem('abumarzook_5group_order_a_h_d_g_b');
         if (!savedStartDate) {
             savedStartDate = getTomorrowISO();
@@ -466,29 +465,32 @@
         startDateInput.value = savedStartDate;
 
         const startParts = savedStartDate.split('-');
-        const startDate = new Date(startParts[0], startParts[1] - 1, startParts[2]);
+        const baseStartDate = new Date(startParts[0], startParts[1] - 1, startParts[2]);
 
         const container = document.getElementById('scheduleContainer');
         container.innerHTML = '';
 
-        const totalDays = 125; 
-        let monthsMap = new Map();
+        // معرفة الشهر الهجري الحالي والمستقبلي للـ 6 أشهر القادمة
+        const today = new Date();
+        const currentHijri = getHijriDetails(today);
+        let targetMonths = [];
 
-        for (let i = 0; i < totalDays; i++) {
-            const currentDate = new Date(startDate);
-            currentDate.setDate(startDate.getDate() + i);
+        let currentHYear = currentHijri.year;
+        let currentHMonth = currentHijri.monthIndex;
 
-            const hInfo = getHijriDetails(currentDate);
-            const monthKey = `${hInfo.year}-${hInfo.monthIndex}`;
-
-            if (!monthsMap.has(monthKey)) {
-                monthsMap.set(monthKey, { monthName: hInfo.monthName, year: hInfo.year, days: [] });
+        for (let m = 0; m < 6; m++) {
+            targetMonths.push({ year: currentHYear, monthIndex: currentHMonth, monthName: hijriMonths[currentHMonth] });
+            currentHMonth++;
+            if (currentHMonth > 11) {
+                currentHMonth = 0;
+                currentHYear++;
             }
-
-            monthsMap.get(monthKey).days.push({ dayIndex: i, dateObj: currentDate });
         }
 
-        monthsMap.forEach((monthData, monthKey) => {
+        // توليد جدول لكل شهر من الأشهر الـ 6 المستهدفة
+        targetMonths.forEach(tMonth => {
+            const monthKey = `${tMonth.year}-${tMonth.monthIndex}`;
+            
             const card = document.createElement('div');
             card.className = 'month-card';
             card.id = `card-${monthKey}`;
@@ -496,9 +498,9 @@
             card.innerHTML = `
                 <div class="month-header">
                     <div class="month-title">
-                        <i class="fa-solid fa-calendar-days" style="color: var(--primary-blue);"></i> جدول شهر ${monthData.monthName} ${monthData.year} هـ
+                        <i class="fa-solid fa-calendar-days" style="color: var(--primary-blue);"></i> جدول شهر ${tMonth.monthName} ${tMonth.year} هـ
                     </div>
-                    <button class="btn-pdf" onclick="downloadPDF('${monthKey}', '${monthData.monthName} ${monthData.year}')">
+                    <button class="btn-pdf" onclick="downloadPDF('${monthKey}', '${tMonth.monthName} ${tMonth.year}')">
                         <i class="fa-solid fa-file-pdf"></i> تنزيل PDF
                     </button>
                 </div>
@@ -523,38 +525,46 @@
             const tbody = card.querySelector('tbody');
             let rowsHTML = '';
 
-            monthData.days.forEach(item => {
-                const dateObj = item.dateObj;
-                const dayName = daysOfWeek[dateObj.getDay()];
-                const hDetails = getHijriDetails(dateObj);
-                const gregStr = formatDateToISO(dateObj);
+            // البحث عن الأيام التي تنتمي لهذا الشهر الهجري وحساب شفتاتها
+            let loopDate = new Date(baseStartDate);
+            // ضبط البداية من قبل أو بعد بنطاق مناسب لضمان تغطية التاريخ
+            loopDate.setDate(loopDate.getDate() - 365);
 
-                const workingGroups = getWorkingGroupsForDay(item.dayIndex);
+            for (let i = -365; i <= 730; i++) {
+                const currentDate = new Date(baseStartDate);
+                currentDate.setDate(baseStartDate.getDate() + i);
 
-                const morningHtml = workingGroups.MORNING ? `<span class="group-pill ${workingGroups.MORNING.cssClass}">${workingGroups.MORNING.name}</span>` : '-';
-                const afternoonHtml = workingGroups.AFTERNOON ? `<span class="group-pill ${workingGroups.AFTERNOON.cssClass}">${workingGroups.AFTERNOON.name}</span>` : '-';
-                const nightHtml = workingGroups.NIGHT ? `<span class="group-pill ${workingGroups.NIGHT.cssClass}">${workingGroups.NIGHT.name}</span>` : '-';
+                const hDetails = getHijriDetails(currentDate);
 
-                rowsHTML += `
-                    <tr>
-                        <td class="date-cell">
-                            <span class="day-name">${dayName}</span>
-                            <span class="hijri-date">${hDetails.day} ${hDetails.monthName} ${hDetails.year} هـ</span>
-                            <span class="greg-date">${gregStr} م</span>
-                        </td>
-                        <td>${morningHtml}</td>
-                        <td>${afternoonHtml}</td>
-                        <td>${nightHtml}</td>
-                    </tr>
-                `;
-            });
+                if (hDetails.year === tMonth.year && hDetails.monthIndex === tMonth.monthIndex) {
+                    const dayName = daysOfWeek[currentDate.getDay()];
+                    const gregStr = formatDateToISO(currentDate);
+                    const workingGroups = getWorkingGroupsForDay(i);
+
+                    const morningHtml = workingGroups.MORNING ? `<span class="group-pill ${workingGroups.MORNING.cssClass}">${workingGroups.MORNING.name}</span>` : '-';
+                    const afternoonHtml = workingGroups.AFTERNOON ? `<span class="group-pill ${workingGroups.AFTERNOON.cssClass}">${workingGroups.AFTERNOON.name}</span>` : '-';
+                    const nightHtml = workingGroups.NIGHT ? `<span class="group-pill ${workingGroups.NIGHT.cssClass}">${workingGroups.NIGHT.name}</span>` : '-';
+
+                    rowsHTML += `
+                        <tr>
+                            <td class="date-cell">
+                                <span class="day-name">${dayName}</span>
+                                <span class="hijri-date">${hDetails.day} ${hDetails.monthName} ${hDetails.year} هـ</span>
+                                <span class="greg-date">${gregStr} م</span>
+                            </td>
+                            <td>${morningHtml}</td>
+                            <td>${afternoonHtml}</td>
+                            <td>${nightHtml}</td>
+                        </tr>
+                    `;
+                }
+            }
 
             tbody.innerHTML = rowsHTML;
             container.appendChild(card);
         });
     }
 
-    // إعداد حدث التغيير لمدخل التاريخ لإعادة التحديث والحفظ تلقائياً
     document.addEventListener('DOMContentLoaded', () => {
         const startDateInput = document.getElementById('startDateInput');
         
