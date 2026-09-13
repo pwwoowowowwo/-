@@ -11,6 +11,9 @@
     
     <!-- مكتبة تحويل HTML إلى PDF مباشر -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    
+    <!-- مكتبة تصدير Excel -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
         :root {
@@ -20,8 +23,9 @@
             --text-main: #0f172a;
             --text-muted: #475569;
             --primary-blue: #0284c7;
+            --excel-green: #16a34a;
 
-            /* ألوان مميزة للمجموعات متناسقة مع الخلفية الفاتحة */
+            /* ألوان مميزة للمجموعات */
             --grp-1: #0284c7; /* الأولى - أزرق */
             --grp-2: #d97706; /* الثانية - برتقالي */
             --grp-3: #7c3aed; /* الثالثة - بنفسجي */
@@ -49,7 +53,6 @@
             margin: 0 auto;
         }
 
-        /* ترويسة الصفحة والبرنامج */
         .app-header {
             background: #ffffff;
             border: 2px solid var(--primary-blue);
@@ -96,7 +99,6 @@
             font-weight: 700;
         }
 
-        /* لوحة التحكم بالتاريخ */
         .date-control-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -138,7 +140,6 @@
             border-color: var(--primary-blue);
         }
 
-        /* كارت الشهر */
         .month-card {
             background: var(--card-bg);
             border: 1px solid var(--border-color);
@@ -168,8 +169,12 @@
             gap: 8px;
         }
 
-        .btn-pdf {
-            background: var(--primary-blue);
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-action {
             color: white;
             border: none;
             padding: 5px 12px;
@@ -180,15 +185,23 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
+            transition: opacity 0.2s;
+        }
+
+        .btn-pdf {
+            background: var(--primary-blue);
             box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
-            transition: background 0.2s;
         }
 
-        .btn-pdf:hover {
-            background: #0369a1;
+        .btn-excel {
+            background: var(--excel-green);
+            box-shadow: 0 2px 6px rgba(22, 163, 74, 0.25);
         }
 
-        /* الجدول وتصميم الخلايا */
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+
         .table-wrapper {
             overflow-x: auto;
             border-radius: 6px;
@@ -252,7 +265,6 @@
             display: block;
         }
 
-        /* شارات المجموعات بداخل الخلايا */
         .group-pill {
             padding: 6px 8px;
             border-radius: 6px;
@@ -279,11 +291,11 @@
         }
 
         /* ==========================================
-           تنسيقات مشددة لضمان احتواء الـ PDF في صفحة واحدة A4
+           تنسيقات مشددة ومحدثة لملء صفحة الـ PDF (A4)
            ========================================== */
         .pdf-export-mode {
             background: #ffffff !important;
-            padding: 5px !important;
+            padding: 2px !important;
             width: 750px !important;
             margin: 0 auto !important;
         }
@@ -296,7 +308,7 @@
         }
 
         .pdf-export-mode .month-header {
-            margin-bottom: 4px !important;
+            margin-bottom: 2px !important;
             padding-bottom: 2px !important;
             border-bottom: 1.5px solid #0284c7 !important;
         }
@@ -305,7 +317,7 @@
             font-size: 0.85rem !important;
         }
 
-        .pdf-export-mode .btn-pdf {
+        .pdf-export-mode .action-btns {
             display: none !important;
         }
 
@@ -317,7 +329,7 @@
             background: #0f172a !important;
             color: #ffffff !important;
             border: 1px solid #000000 !important;
-            padding: 2px 1px !important;
+            padding: 3px 1px !important;
             font-size: 0.68rem !important;
             -webkit-print-color-adjust: exact;
         }
@@ -326,21 +338,22 @@
             font-size: 0.58rem !important;
         }
 
+        /* زيادة ارتفاع الصفوف في PDF لملء الصفحة بنجاح */
         .pdf-export-mode td {
             border: 1px solid #64748b !important;
-            padding: 1px 1px !important;
-            height: 18px !important;
+            padding: 3px 1px !important;
+            height: 24px !important;
         }
 
-        .pdf-export-mode .day-cell { font-size: 0.65rem !important; }
-        .pdf-export-mode .hijri-date { font-size: 0.62rem !important; }
-        .pdf-export-mode .greg-date { font-size: 0.58rem !important; }
+        .pdf-export-mode .day-cell { font-size: 0.68rem !important; }
+        .pdf-export-mode .hijri-date { font-size: 0.64rem !important; }
+        .pdf-export-mode .greg-date { font-size: 0.60rem !important; }
 
         .pdf-export-mode .group-pill {
             -webkit-print-color-adjust: exact;
-            font-size: 0.65rem !important;
-            padding: 1px 2px !important;
-            line-height: 1.1 !important;
+            font-size: 0.68rem !important;
+            padding: 2px 2px !important;
+            line-height: 1.2 !important;
         }
 
         .pdf-footer {
@@ -348,7 +361,7 @@
             text-align: center;
             font-size: 0.6rem;
             color: #475569;
-            margin-top: 3px;
+            margin-top: 2px;
             font-weight: 700;
         }
 
@@ -361,7 +374,6 @@
 
 <div class="container">
     
-    <!-- ترويسة البرنامج الرسمية -->
     <div class="app-header">
         <div class="header-brand">
             <i class="fa-solid fa-calendar-check logo-icon"></i>
@@ -375,7 +387,6 @@
         </div>
     </div>
 
-    <!-- كارت التحكم بتاريخ بداية صباح المجموعة الأولى -->
     <div class="date-control-card">
         <div class="date-control-group">
             <i class="fa-solid fa-calendar-day" style="color: var(--primary-blue);"></i>
@@ -384,7 +395,6 @@
         </div>
     </div>
 
-    <!-- حاوية الجداول -->
     <div id="scheduleContainer"></div>
 
     <footer>
@@ -418,11 +428,11 @@
     }
 
     function getShiftType(cycleDay) {
-        if (cycleDay < 5) return 'MORNING';    // 6:00 ص - 2:00 ظ
+        if (cycleDay < 5) return 'MORNING';    
         if (cycleDay < 8) return 'OFF';
-        if (cycleDay < 13) return 'AFTERNOON'; // 2:00 ظ - 10:00 م
+        if (cycleDay < 13) return 'AFTERNOON'; 
         if (cycleDay < 16) return 'OFF';
-        if (cycleDay < 21) return 'NIGHT';     // 10:00 م - 6:00 ص
+        if (cycleDay < 21) return 'NIGHT';     
         return 'OFF';
     }
 
@@ -472,7 +482,6 @@
         const container = document.getElementById('scheduleContainer');
         container.innerHTML = '';
 
-        // معرفة الشهر الهجري الحالي والمستقبلي للـ 6 أشهر القادمة
         const today = new Date();
         const currentHijri = getHijriDetails(today);
         let targetMonths = [];
@@ -489,7 +498,6 @@
             }
         }
 
-        // توليد جدول لكل شهر
         targetMonths.forEach(tMonth => {
             const monthKey = `${tMonth.year}-${tMonth.monthIndex}`;
             
@@ -502,9 +510,14 @@
                     <div class="month-title">
                         <i class="fa-solid fa-calendar-days" style="color: var(--primary-blue);"></i> جدول شهر ${tMonth.monthName} ${tMonth.year} هـ
                     </div>
-                    <button class="btn-pdf" onclick="downloadPDF('${monthKey}', '${tMonth.monthName} ${tMonth.year}')">
-                        <i class="fa-solid fa-file-pdf"></i> تنزيل PDF
-                    </button>
+                    <div class="action-btns">
+                        <button class="btn-action btn-pdf" onclick="downloadPDF('${monthKey}', '${tMonth.monthName} ${tMonth.year}')">
+                            <i class="fa-solid fa-file-pdf"></i> تنزيل PDF
+                        </button>
+                        <button class="btn-action btn-excel" onclick="downloadExcel('${monthKey}', '${tMonth.monthName} ${tMonth.year}')">
+                            <i class="fa-solid fa-file-excel"></i> تنزيل Excel
+                        </button>
+                    </div>
                 </div>
                 <div class="table-wrapper">
                     <table>
@@ -537,7 +550,6 @@
                 if (hDetails.year === tMonth.year && hDetails.monthIndex === tMonth.monthIndex) {
                     const dayName = fullDaysOfWeek[currentDate.getDay()];
                     
-                    // تنسيق التواريخ الرقمية فقط
                     const hijriStr = `${hDetails.day} / ${hDetails.monthIndex + 1} / ${hDetails.year} هـ`;
                     const gregStr = `${currentDate.getDate()} / ${currentDate.getMonth() + 1} / ${currentDate.getFullYear()} م`;
 
@@ -580,14 +592,14 @@
         generateViewSchedule();
     });
 
-    // دالة تصدير PDF محدثة تضمن تحويل العنصر بالكامل بدون اقتطاع
+    // دالة التصدير إلى PDF
     function downloadPDF(monthKey, monthTitleStr) {
         const element = document.getElementById(`card-${monthKey}`);
         
         element.classList.add('pdf-export-mode');
 
         const opt = {
-            margin:       [3, 3, 3, 3],
+            margin:       [2, 2, 2, 2],
             filename:     `جدول_شفتات_${monthTitleStr.replace(/\s+/g, '_')}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
             html2canvas:  { 
@@ -606,6 +618,50 @@
             console.error("PDF Export Error:", err);
             element.classList.remove('pdf-export-mode');
         });
+    }
+
+    // دالة التصدير إلى Excel مع المحافظة على التنسيق والاتجاه
+    function downloadExcel(monthKey, monthTitleStr) {
+        const card = document.getElementById(`card-${monthKey}`);
+        const table = card.querySelector('table');
+        
+        // استخراج البيانات وتنسيقها للـ Excel
+        let excelData = [];
+        excelData.push([`جدول شهر ${monthTitleStr} هـ`]);
+        excelData.push([]); // سطر فارغ
+        excelData.push(["اليوم", "التاريخ الهجري", "التاريخ الميلادي", "الصباح (06:00 ص - 02:00 ظ)", "الظهر (02:00 ظ - 10:00 م)", "الليل (10:00 م - 06:00 ص)"]);
+
+        const rows = table.querySelectorAll('tbody tr');
+        rows.forEach(row => {
+            const day = row.cells[0].innerText.trim();
+            const hijri = row.cells[1].querySelector('.hijri-date').innerText.trim();
+            const greg = row.cells[1].querySelector('.greg-date').innerText.trim();
+            const morning = row.cells[2].innerText.trim();
+            const afternoon = row.cells[3].innerText.trim();
+            const night = row.cells[4].innerText.trim();
+
+            excelData.push([day, hijri, greg, morning, afternoon, night]);
+        });
+
+        const wb = XLSX.utils.book_new();
+        const ws = XLSX.utils.aoa_to_sheet(excelData);
+
+        // ضبط إتجاه الورقة من اليمين إلى اليسار
+        if (!ws['!views']) ws['!views'] = [];
+        ws['!views'].push({ RTL: true });
+
+        // تحديد عرض الأعمدة
+        ws['!cols'] = [
+            { wch: 12 }, // اليوم
+            { wch: 18 }, // الهجري
+            { wch: 18 }, // الميلادي
+            { wch: 28 }, // الصباح
+            { wch: 28 }, // الظهر
+            { wch: 28 }  // الليل
+        ];
+
+        XLSX.utils.book_append_sheet(wb, ws, "الشفتات الشهري");
+        XLSX.writeFile(wb, `جدول_شفتات_${monthTitleStr.replace(/\s+/g, '_')}.xlsx`);
     }
 </script>
 </body>
