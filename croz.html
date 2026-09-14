@@ -718,7 +718,27 @@
                 display: none !important;
             }
         }
-    </style>
+    
+  /* تنسيقات الطباعة والتصدير لـ PDF */
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    #invoice-printable-area, #invoice-printable-area * {
+      visibility: visible;
+    }
+    #invoice-printable-area {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      box-shadow: none !important;
+      border: none !important;
+    }
+  }
+</style>
 </head>
 <body>
 
@@ -1260,30 +1280,6 @@
 
                 <div id="invoice-printable-area" class="invoice-print-container" style="font-family: system-ui, -apple-system, sans-serif; direction: rtl; max-width: 800px; margin: 0 auto; padding: 15px; color: #2d3436;">
     
-    <style>
-  /* تنسيقات خاصة عند الطباعة فقط */
-  @media print {
-    body * {
-      visibility: hidden;
-    }
-    #invoice-printable-area, #invoice-printable-area * {
-      visibility: visible;
-    }
-    #invoice-printable-area {
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      padding: 0;
-      margin: 0;
-      box-shadow: none !important;
-      border: none !important;
-    }
-    .no-print {
-      display: none !important;
-    }
-  }
-</style>
 
 <div id="invoice-printable-area" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl; max-width: 750px; margin: 0 auto; padding: 20px; color: #1e293b; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
     
@@ -1298,7 +1294,7 @@
         </div>
     </div>
 
-    <!-- معلومات السند الفائقة الوضوح -->
+    <!-- معلومات السند -->
     <div style="display: flex; justify-content: space-between; font-size: 11px; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 12px;">
         <div>رقم السند: <strong id="inv-id" style="color: #0f172a;">#-----</strong></div>
         <div>تاريخ الإصدار: <strong id="inv-print-date" style="color: #0f172a;">--</strong></div>
@@ -1406,6 +1402,8 @@
     </div>
 
 </div>
+
+
 
                 <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
                     <button onclick="quickMarkAsPaidModal()" class="btn btn-success" style="font-size: 12px;"><i class="fa-solid fa-check"></i> تأكيد الحجز (دفع كامل)</button>
@@ -2520,6 +2518,15 @@ function calcRemaining() {
     document.getElementById('b-rem').value = remaining >= 0 ? remaining : 0;
 }
 
+
+<!-- سكريبت توليد رقم السند العشوائي (5 أرقام) -->
+  document.addEventListener("DOMContentLoaded", function() {
+    const invIdElement = document.getElementById("inv-id");
+    if (invIdElement) {
+      const random5Digits = Math.floor(10000 + Math.random() * 90000);
+      invIdElement.textContent = "#" + random5Digits;
+    }
+  });
 
 
     </script>
