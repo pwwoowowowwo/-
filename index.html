@@ -2,15 +2,15 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     
-    <!-- إعدادات تطبيق الجوال والعمل أوفلاين (PWA) -->
+    <!-- إعدادات PWA والجوال -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="نظام شفتك">
     <meta name="theme-color" content="#0284c7">
     
-    <!-- ربط إعدادات التطبيق المدمجة (Manifest) -->
+    <!-- PWA Manifest -->
     <link rel="manifest" href="data:application/manifest+json;utf8,{\"name\":\"نظام شفتك المطور\",\"short_name\":\"شفتك\",\"start_url\":\".\",\"display\":\"standalone\",\"background_color\":\"#0284c7\",\"theme_color\":\"#0284c7\",\"orientation\":\"portrait\",\"icons\":[{\"src\":\"https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/svgs/solid/calendar-check.svg\",\"sizes\":\"192x192\",\"type\":\"image/svg+xml\"}]}">
 
     <title>نظام شفتك المطور</title>
@@ -48,23 +48,41 @@
             --card-shadow-active: 0 8px 20px -4px rgba(56, 189, 248, 0.25);
         }
 
-        * { box-sizing: border-box; transition: all 0.25s ease-in-out; }
-        body { background: var(--bg); color: var(--text-main); font-family: 'Cairo', sans-serif; margin: 0; padding-bottom: 90px; user-select: none; }
+        * { 
+            box-sizing: border-box; 
+            transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s ease, box-shadow 0.2s ease; 
+        }
+
+        body { 
+            background: var(--bg); 
+            color: var(--text-main); 
+            font-family: 'Cairo', sans-serif; 
+            margin: 0; 
+            padding-bottom: 90px; 
+            user-select: none;
+            min-height: 100dvh;
+        }
         
         /* Splash Screen */
         #splashScreen { 
-            position: fixed; inset: 0; background: var(--primary); 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
-            z-index: 9999; transition: opacity 0.5s ease, visibility 0.5s; 
+            position: fixed; 
+            inset: 0; 
+            background: var(--primary); 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 9999; 
+            transition: opacity 0.4s ease, visibility 0.4s; 
         }
         .splash-text { color: white; font-size: 1.6rem; font-weight: 800; margin-bottom: 20px; }
         .progress-bar { width: 220px; height: 5px; background: rgba(255,255,255,0.3); border-radius: 3px; overflow: hidden; }
-        .progress-fill { height: 100%; background: white; width: 0%; transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .progress-fill { height: 100%; background: white; width: 0%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
 
         /* App Container */
         .container { max-width: 600px; margin: 0 auto; padding: 20px 16px; }
         
-        /* Header Redesign */
+        /* Header Card */
         .header-card { 
             background: linear-gradient(135deg, #0284c7 0%, #0369a1 50%, #075985 100%); 
             color: white; 
@@ -153,12 +171,11 @@
             display: flex; 
             align-items: center; 
             justify-content: center;
-            transition: all 0.2s ease;
         }
 
         .theme-btn:active { transform: scale(0.9); }
 
-        /* Banner Install App */
+        /* Install Banner */
         .install-banner {
             background: linear-gradient(90deg, #16a34a, #22c55e);
             color: white;
@@ -198,6 +215,61 @@
         }
 
         .install-btn-action:active { transform: scale(0.95); }
+
+        /* زر جدول الورديات الشهري المطور */
+        .monthly-schedule-btn {
+            background: linear-gradient(135deg, #0284c7 0%, #0f766e 100%);
+            color: white;
+            border-radius: 18px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 18px;
+            box-shadow: 0 6px 18px -3px rgba(2, 132, 199, 0.3);
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .monthly-schedule-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 22px -4px rgba(2, 132, 199, 0.4);
+        }
+
+        .monthly-schedule-btn:active {
+            transform: scale(0.98);
+        }
+
+        .monthly-btn-content {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .monthly-btn-icon {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.3rem;
+            backdrop-filter: blur(4px);
+        }
+
+        .monthly-btn-text h3 {
+            margin: 0;
+            font-size: 1.05rem;
+            font-weight: 800;
+        }
+
+        .monthly-btn-text span {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            display: block;
+            margin-top: 2px;
+        }
 
         /* Search & Info */
         .search-box { position: relative; margin-bottom: 15px; }
@@ -342,9 +414,10 @@
             position: fixed; bottom: 0; width: 100%; height: 70px; 
             background: var(--surface); border-top: 1px solid var(--border); 
             display: flex; justify-content: space-around; align-items: center; z-index: 1000;
+            padding-bottom: env(safe-area-inset-bottom);
         }
-        .nav-item { color: var(--text-sub); text-align: center; font-size: 0.75rem; cursor: pointer; flex: 1; padding: 10px 0; }
-        .nav-item i { font-size: 1.2rem; margin-bottom: 4px; }
+        .nav-item { color: var(--text-sub); text-align: center; font-size: 0.72rem; cursor: pointer; flex: 1; padding: 8px 0; }
+        .nav-item i { font-size: 1.15rem; margin-bottom: 3px; }
         .nav-item.active { color: var(--primary); font-weight: 700; }
     </style>
 </head>
@@ -408,7 +481,7 @@
 <div class="container">
     <!-- Header -->
     <div class="header-card">
-        <button class="theme-btn" onclick="toggleTheme()" title="تبديل المظهر">
+        <button class="theme-btn" onclick="toggleTheme()" title="تبديل المظهر" aria-label="تبديل الوضع الليلي والنهاري">
             <i class="fa-solid fa-moon" id="themeIcon"></i>
         </button>
 
@@ -434,6 +507,7 @@
         <button class="install-btn-action" onclick="triggerPWAInstall()">تثبيت</button>
     </div>
 
+
     <!-- Search Box -->
     <div class="search-box">
         <i class="fa-solid fa-magnifying-glass"></i>
@@ -451,25 +525,32 @@
 <!-- Bottom Navigation -->
 <nav class="bottom-nav">
     <div class="nav-item active"><i class="fa-solid fa-house"></i><br>الرئيسية</div>
+    <div class="nav-item" onclick="openMonthlySchedule()"><i class="fa-solid fa-calendar-days"></i><br>الجدول الشهري</div>
     <div class="nav-item" onclick="openInstallModal()"><i class="fa-solid fa-circle-plus"></i><br>إضافة للشاشة</div>
     <div class="nav-item" onclick="openPopup()"><i class="fa-solid fa-envelope-open-text"></i><br>عن التطبيق</div>
 </nav>
 
 <script>
-    // تفعيل وتأكيد مسارات المجموعات الـ 5
     const groups = [
         { title: 'المجموعة الأولى', desc: 'جدول الوردية الأولى', icon: 'fa-users', link: 'group1.html' },
         { title: 'المجموعة الثانية', desc: 'جدول الوردية الثانية', icon: 'fa-users', link: 'group2.html' },
         { title: 'المجموعة الثالثة', desc: 'جدول الوردية الثالثة', icon: 'fa-users', link: 'group3.html' },
         { title: 'المجموعة الرابعة', desc: 'جدول الوردية الرابعة', icon: 'fa-users', link: 'group4.html' },
         { title: 'المجموعة الخامسة', desc: 'جدول الوردية الخامسة', icon: 'fa-users', link: 'group5.html' },
+        { title: 'جدول الاستلامات', desc: 'جدول الورديات الشهري', icon: '⁠fa-solid fa-calendar', link: 'jdul.html' },
+
         { title: 'مناوب التموين', desc: 'تحت الصيانة الدورية', icon: 'fa-boxes-packing', type: 'maintenance' },
         { title: 'الشؤون الإدارية', desc: 'تحت الصيانة والتحديث', icon: 'fa-briefcase', type: 'maintenance' }
     ];
 
     let deferredPrompt = null;
 
-    // التقاط حدث التثبيت الـ PWA
+    // فتح صفحة الجدول الشهري
+    function openMonthlySchedule() {
+        window.location.href = 'monthly_schedule.html';
+    }
+
+    // التقاط حدث التثبيت PWA
     window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         deferredPrompt = e;
@@ -481,29 +562,45 @@
         if(autoSec) autoSec.style.display = 'block';
     });
 
-    // تفعيل وضع الأوفلاين الشامل (Service Worker)
+    // تسجيل Service Worker محسّن لدعم التصفح الأوفلاين الكامل
     if ('serviceWorker' in navigator) {
         const swCode = `
-            const CACHE_NAME = 'shiftak-v2';
+            const CACHE_NAME = 'shiftak-v2.1';
+            const ASSETS = ['./', 'https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap', 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'];
+            
             self.addEventListener('install', (e) => {
-                e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(['./'])));
+                e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS)).then(() => self.skipWaiting()));
             });
+
+            self.addEventListener('activate', (e) => {
+                e.waitUntil(caches.keys().then(keys => Promise.all(keys.map(k => k !== CACHE_NAME ? caches.delete(k) : null))).then(() => self.clients.claim()));
+            });
+
             self.addEventListener('fetch', (e) => {
-                e.respondWith(caches.match(e.request).then(res => res || fetch(e.request)));
+                e.respondWith(
+                    caches.match(e.request).then(cached => cached || fetch(e.request).then(res => {
+                        return caches.open(CACHE_NAME).then(cache => {
+                            if (e.request.method === 'GET' && e.request.url.startsWith('http')) {
+                                cache.put(e.request, res.clone());
+                            }
+                            return res;
+                        });
+                    }))
+                );
             });
         `;
         const blob = new Blob([swCode], { type: 'application/javascript' });
         navigator.serviceWorker.register(URL.createObjectURL(blob)).catch(() => {});
     }
 
-    window.onload = () => {
+    window.addEventListener('DOMContentLoaded', () => {
         if (localStorage.getItem('theme') === 'dark') {
             document.body.setAttribute('data-theme', 'dark');
             document.getElementById('themeIcon').className = 'fa-solid fa-sun';
         }
 
         const progress = document.getElementById('progress');
-        setTimeout(() => { progress.style.width = '100%'; }, 100);
+        setTimeout(() => { progress.style.width = '100%'; }, 50);
         
         setTimeout(() => { 
             const splash = document.getElementById('splashScreen');
@@ -513,11 +610,11 @@
                 if (!localStorage.getItem('has_seen_about_dialog_2026')) {
                     openPopup();
                 }
-            }, 500); 
-        }, 1300);
+            }, 400); 
+        }, 1100);
 
         renderGroups(groups);
-    };
+    });
 
     function renderGroups(data) {
         const container = document.getElementById('groupsContainer');
@@ -546,7 +643,12 @@
     }
 
     function normalizeArabic(text) {
-        return text.replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي');
+        return text
+            .replace(/[\u064B-\u065F]/g, '')
+            .replace(/[أإآ]/g, 'ا')
+            .replace(/ة/g, 'ه')
+            .replace(/ى/g, 'ي')
+            .trim();
     }
 
     function filterGroups() {
