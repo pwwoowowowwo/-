@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>نظام متابعة الشفتات الشهري - جدول العرض</title>
+    <title>نظام حاسبة جدول الوديات الشهري - جدول العرض</title>
     
     <!-- الخطوط والأيقونات -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -12,8 +12,8 @@
     <!-- مكتبة تحويل HTML إلى PDF مباشر -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     
-    <!-- مكتبة تصدير Excel -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <!-- مكتبة تصدير Excel المحسنة بدعم التنسيقات والألوان -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 
     <style>
         :root {
@@ -161,9 +161,9 @@
         }
 
         .month-title {
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             font-weight: 800;
-            color: var(--text-main);
+            color: var(--primary-blue);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -205,7 +205,7 @@
         .table-wrapper {
             overflow-x: auto;
             border-radius: 6px;
-            border: 1.5px solid #0f172a;
+            border: 1.5px solid #334155;
         }
 
         table {
@@ -224,7 +224,7 @@
         }
 
         th {
-            background: #0f172a;
+            background: #334155;
             color: #ffffff;
             font-weight: 800;
             font-size: 0.85rem;
@@ -235,7 +235,7 @@
             font-size: 0.72rem;
             color: #38bdf8;
             display: block;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .day-cell {
@@ -285,14 +285,12 @@
             text-align: center;
             padding: 12px;
             color: #64748b;
-            font-size: 0.8rem;
-            font-weight: 700;
+            font-size: 0.7rem;
+            font-weight: 600;
             margin-top: 5px;
         }
 
-        /* ==========================================
-           تنسيقات مشددة ومحدثة لملء صفحة الـ PDF (A4)
-           ========================================== */
+        /* تنسيقات PDF */
         .pdf-export-mode {
             background: #ffffff !important;
             padding: 2px !important;
@@ -308,13 +306,20 @@
         }
 
         .pdf-export-mode .month-header {
-            margin-bottom: 2px !important;
-            padding-bottom: 2px !important;
+            margin-bottom: 6px !important;
+            padding-bottom: 4px !important;
             border-bottom: 1.5px solid #0284c7 !important;
+            justify-content: center !important;
+            text-align: center !important;
         }
 
         .pdf-export-mode .month-title {
-            font-size: 0.85rem !important;
+            font-size: 0.95rem !important; 
+            font-weight: 800 !important;
+            color: #0284c7 !important;
+            width: 100% !important;
+            justify-content: center !important;
+            text-align: center !important;
         }
 
         .pdf-export-mode .action-btns {
@@ -322,23 +327,23 @@
         }
 
         .pdf-export-mode table {
-            border: 1px solid #000000 !important;
+            border: 1px solid #334155 !important;
         }
 
         .pdf-export-mode th {
-            background: #0f172a !important;
+            background-color: #334155 !important;
             color: #ffffff !important;
-            border: 1px solid #000000 !important;
-            padding: 3px 1px !important;
-            font-size: 0.68rem !important;
+            border: 1px solid #1e293b !important;
+            padding: 4px 1px !important;
+            font-size: 0.72rem !important;
             -webkit-print-color-adjust: exact;
         }
 
         .pdf-export-mode .th-time {
-            font-size: 0.58rem !important;
+            font-size: 0.62rem !important;
+            color: #38bdf8 !important;
         }
 
-        /* زيادة ارتفاع الصفوف في PDF لملء الصفحة بنجاح */
         .pdf-export-mode td {
             border: 1px solid #64748b !important;
             padding: 3px 1px !important;
@@ -359,9 +364,9 @@
         .pdf-footer {
             display: none;
             text-align: center;
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             color: #475569;
-            margin-top: 2px;
+            margin-top: 6px;
             font-weight: 700;
         }
 
@@ -398,26 +403,31 @@
     <div id="scheduleContainer"></div>
 
     <footer>
-        <p>جميع الحقوق محفوظة © 2026 | تصميم <span style="color: var(--primary-blue);">أبو مرزوق</span></p>
+        <p>جميع الحقوق محفوظة © 2026 | إعداد فهد المخلفي</p>
     </footer>
 
 </div>
 
 <script>
+    const DEFAULT_START_DATE = '2026-09-14'; // الاثنين 14 سبتمبر 2026
+
     const fullDaysOfWeek = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
     const hijriMonths = ["محرم", "صفر", "ربيع الأول", "ربيع الثاني", "جمادى الأولى", "جمادى الآخرة", "رجب", "شعبان", "رمضان", "شوال", "ذو القعدة", "ذو الحجة"];
 
     const groups = [
-        { name: 'الأولى', cssClass: 'g-1', index: 0 },
-        { name: 'الثانية', cssClass: 'g-2', index: 4 },
-        { name: 'الثالثة', cssClass: 'g-3', index: 3 },
-        { name: 'الرابعة', cssClass: 'g-4', index: 2 },
-        { name: 'الخامسة', cssClass: 'g-5', index: 1 }
+        { name: 'الأولى', cssClass: 'g-1', hexColor: '0284C7', index: 0 },
+        { name: 'الثانية', cssClass: 'g-2', hexColor: 'D97706', index: 4 },
+        { name: 'الثالثة', cssClass: 'g-3', hexColor: '7C3AED', index: 3 },
+        { name: 'الرابعة', cssClass: 'g-4', hexColor: '059669', index: 2 },
+        { name: 'الخامسة', cssClass: 'g-5', hexColor: 'DC2626', index: 1 }
     ];
 
     function getHijriDetails(dateObj) {
+        const tempDate = new Date(dateObj.getTime());
+        tempDate.setHours(12, 0, 0, 0);
+
         const formatter = new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { day: 'numeric', month: 'numeric', year: 'numeric' });
-        const parts = formatter.formatToParts(dateObj);
+        const parts = formatter.formatToParts(tempDate);
         let d, m, y;
         parts.forEach(item => {
             if (item.type === 'day') d = parseInt(item.value, 10);
@@ -452,37 +462,25 @@
         return shifts;
     }
 
-    function formatDateToISO(d) {
-        const year = d.getFullYear();
-        const month = String(d.getMonth() + 1).padStart(2, '0');
-        const day = String(d.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
-    function getTomorrowISO() {
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        return formatDateToISO(tomorrow);
-    }
-
     function generateViewSchedule() {
         const startDateInput = document.getElementById('startDateInput');
         
         let savedStartDate = localStorage.getItem('abumarzook_5group_order_a_h_d_g_b');
         if (!savedStartDate) {
-            savedStartDate = getTomorrowISO();
+            savedStartDate = DEFAULT_START_DATE;
             localStorage.setItem('abumarzook_5group_order_a_h_d_g_b', savedStartDate);
         }
 
         startDateInput.value = savedStartDate;
 
         const startParts = savedStartDate.split('-');
-        const baseStartDate = new Date(startParts[0], startParts[1] - 1, startParts[2]);
+        const baseStartDate = new Date(startParts[0], startParts[1] - 1, startParts[2], 12, 0, 0, 0);
 
         const container = document.getElementById('scheduleContainer');
         container.innerHTML = '';
 
         const today = new Date();
+        today.setHours(12, 0, 0, 0);
         const currentHijri = getHijriDetails(today);
         let targetMonths = [];
 
@@ -508,7 +506,7 @@
             card.innerHTML = `
                 <div class="month-header">
                     <div class="month-title">
-                        <i class="fa-solid fa-calendar-days" style="color: var(--primary-blue);"></i> جدول شهر ${tMonth.monthName} ${tMonth.year} هـ
+                        <i class="fa-solid fa-calendar-days" style="color: var(--primary-blue);"></i> جدول ورديات شهر ${tMonth.monthName} ${tMonth.year} هـ
                     </div>
                     <div class="action-btns">
                         <button class="btn-action btn-pdf" onclick="downloadPDF('${monthKey}', '${tMonth.monthName} ${tMonth.year}')">
@@ -534,15 +532,15 @@
                     </table>
                 </div>
                 <div class="pdf-footer">
-                    جميع الحقوق محفوظة © 2026 | تصميم أبو مرزوق
+                    جميع الحقوق محفوظة © 2026 | إعداد فهد المخلفي
                 </div>
             `;
 
             const tbody = card.querySelector('tbody');
             let rowsHTML = '';
 
-            for (let i = -365; i <= 730; i++) {
-                const currentDate = new Date(baseStartDate);
+            for (let i = -400; i <= 800; i++) {
+                const currentDate = new Date(baseStartDate.getTime());
                 currentDate.setDate(baseStartDate.getDate() + i);
 
                 const hDetails = getHijriDetails(currentDate);
@@ -592,23 +590,15 @@
         generateViewSchedule();
     });
 
-    // دالة التصدير إلى PDF
     function downloadPDF(monthKey, monthTitleStr) {
         const element = document.getElementById(`card-${monthKey}`);
-        
         element.classList.add('pdf-export-mode');
 
         const opt = {
             margin:       [2, 2, 2, 2],
-            filename:     `جدول_شفتات_${monthTitleStr.replace(/\s+/g, '_')}.pdf`,
+            filename:     `جدول_ورديات_${monthTitleStr.replace(/\s+/g, '_')}.pdf`,
             image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { 
-                scale: 2, 
-                useCORS: true, 
-                logging: false,
-                scrollX: 0,
-                scrollY: 0
-            },
+            html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0 },
             jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
@@ -620,16 +610,57 @@
         });
     }
 
-    // دالة التصدير إلى Excel مع المحافظة على التنسيق والاتجاه
     function downloadExcel(monthKey, monthTitleStr) {
         const card = document.getElementById(`card-${monthKey}`);
         const table = card.querySelector('table');
         
-        // استخراج البيانات وتنسيقها للـ Excel
-        let excelData = [];
-        excelData.push([`جدول شهر ${monthTitleStr} هـ`]);
-        excelData.push([]); // سطر فارغ
-        excelData.push(["اليوم", "التاريخ الهجري", "التاريخ الميلادي", "الصباح (06:00 ص - 02:00 ظ)", "الظهر (02:00 ظ - 10:00 م)", "الليل (10:00 م - 06:00 ص)"]);
+        const thinBorder = {
+            top: { style: "thin", color: { rgb: "94A3B8" } },
+            bottom: { style: "thin", color: { rgb: "94A3B8" } },
+            left: { style: "thin", color: { rgb: "94A3B8" } },
+            right: { style: "thin", color: { rgb: "94A3B8" } }
+        };
+
+        const titleStyle = {
+            font: { name: "Cairo", sz: 14, bold: true, color: { rgb: "0284C7" } },
+            alignment: { horizontal: "center", vertical: "center" }
+        };
+
+        const headerStyle = {
+            font: { name: "Cairo", sz: 11, bold: true, color: { rgb: "FFFFFF" } },
+            fill: { fgColor: { rgb: "334155" } },
+            alignment: { horizontal: "center", vertical: "center", wrapText: true },
+            border: thinBorder
+        };
+
+        const defaultCellStyle = {
+            font: { name: "Cairo", sz: 10 },
+            alignment: { horizontal: "center", vertical: "center" },
+            border: thinBorder
+        };
+
+        const dayCellStyle = {
+            font: { name: "Cairo", sz: 10, bold: true },
+            fill: { fgColor: { rgb: "F1F5F9" } },
+            alignment: { horizontal: "center", vertical: "center" },
+            border: thinBorder
+        };
+
+        let wsData = [];
+        
+        wsData.push([{ v: `جدول ورديات شهر ${monthTitleStr} هـ`, s: titleStyle }]);
+        wsData.push([]);
+
+        const headers = [
+            "اليوم",
+            "التاريخ الهجري",
+            "التاريخ الميلادي",
+            "الصباح\n(06:00 ص - 02:00 ظ)",
+            "الظهر\n(02:00 ظ - 10:00 م)",
+            "الليل\n(10:00 م - 06:00 ص)"
+        ];
+
+        wsData.push(headers.map(h => ({ v: h, s: headerStyle })));
 
         const rows = table.querySelectorAll('tbody tr');
         rows.forEach(row => {
@@ -640,29 +671,75 @@
             const afternoon = row.cells[3].innerText.trim();
             const night = row.cells[4].innerText.trim();
 
-            excelData.push([day, hijri, greg, morning, afternoon, night]);
+            function getGroupStyle(groupName) {
+                const grp = groups.find(g => g.name === groupName);
+                if (grp) {
+                    return {
+                        font: { name: "Cairo", sz: 10, bold: true, color: { rgb: "FFFFFF" } },
+                        fill: { fgColor: { rgb: grp.hexColor } },
+                        alignment: { horizontal: "center", vertical: "center" },
+                        border: thinBorder
+                    };
+                }
+                return defaultCellStyle;
+            }
+
+            wsData.push([
+                { v: day, s: dayCellStyle },
+                { v: hijri, s: defaultCellStyle },
+                { v: greg, s: defaultCellStyle },
+                { v: morning, s: getGroupStyle(morning) },
+                { v: afternoon, s: getGroupStyle(afternoon) },
+                { v: night, s: getGroupStyle(night) }
+            ]);
         });
 
-        const wb = XLSX.utils.book_new();
-        const ws = XLSX.utils.aoa_to_sheet(excelData);
+        const ws = XLSX.utils.aoa_to_sheet([]);
+        
+        wsData.forEach((row, rIdx) => {
+            row.forEach((cell, cIdx) => {
+                const cellRef = XLSX.utils.encode_cell({ r: rIdx, c: cIdx });
+                if (typeof cell === 'object') {
+                    ws[cellRef] = cell;
+                } else {
+                    ws[cellRef] = { v: cell, s: defaultCellStyle };
+                }
+            });
+        });
 
-        // ضبط إتجاه الورقة من اليمين إلى اليسار
+        ws['!ref'] = XLSX.utils.encode_range({
+            s: { r: 0, c: 0 },
+            e: { r: wsData.length - 1, c: 5 }
+        });
+
         if (!ws['!views']) ws['!views'] = [];
         ws['!views'].push({ RTL: true });
 
-        // تحديد عرض الأعمدة
         ws['!cols'] = [
-            { wch: 12 }, // اليوم
-            { wch: 18 }, // الهجري
-            { wch: 18 }, // الميلادي
-            { wch: 28 }, // الصباح
-            { wch: 28 }, // الظهر
-            { wch: 28 }  // الليل
+            { wch: 14 },
+            { wch: 20 },
+            { wch: 20 },
+            { wch: 26 },
+            { wch: 26 },
+            { wch: 26 }
         ];
 
+        ws['!rows'] = [
+            { hpt: 30 },
+            { hpt: 15 },
+            { hpt: 28 }
+        ];
+        for (let i = 3; i < wsData.length; i++) {
+            ws['!rows'].push({ hpt: 24 });
+        }
+
+        ws['!merges'] = [
+            { s: { r: 0, c: 0 }, e: { r: 0, c: 5 } }
+        ];
+
+        const wb = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(wb, ws, "الشفتات الشهري");
-        XLSX.writeFile(wb, `جدول_شفتات_${monthTitleStr.replace(/\s+/g, '_')}.xlsx`);
+        XLSX.writeFile(wb, `جدول_ورديات_${monthTitleStr.replace(/\s+/g, '_')}.xlsx`);
     }
 </script>
 </body>
-</html>
