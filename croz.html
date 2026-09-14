@@ -463,6 +463,31 @@
         .badge.success { background: #e1f5fe; color: #0288d1; }
         .badge.danger { background: #ffebee; color: #c62828; }
 
+        .zoom-panel {
+            display: flex;
+            gap: 4px;
+            background: #f1f2f6;
+            padding: 2px;
+            border-radius: 6px;
+            border: 1px solid #dcdde1;
+        }
+        .zoom-btn {
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+            color: #2f3640;
+            transition: all 0.2s;
+        }
+        .zoom-btn:hover {
+            background: #ff9f43;
+            color: white;
+            border-color: #ff9f43;
+        }
+
         .calendar-controls {
             display: flex;
             justify-content: space-between;
@@ -720,9 +745,11 @@
                     <li onclick="switchTab('reservations', this)"><i class="fa-solid fa-file-lines"></i> سجل الحجوزات</li>
                     <li onclick="switchTab('expenses', this)"><i class="fa-solid fa-coins"></i> المصروفات والصيانة</li>
                     <li onclick="switchTab('reports', this)"><i class="fa-solid fa-file-invoice-dollar"></i> التقرير المالي</li>
-                    <li onclick="switchTab('backup', this)"><i class="fa-solid fa-database"></i> النسخ الاحتياطي</li>
-                </ul>
-            </div>
+
+<li onclick="switchTab('backup', this)" style="cursor: pointer; display: flex; align-items: center; gap: 10px; padding: 10px 15px; color: #ff9f43;">
+    <i class="fa-solid fa-database" style="color: #ff9f43;"></i> النسخ الاحتياطي
+</li>
+
             <div style="padding: 12px; text-align: center; color: #a4b0be; font-size: 10px; flex-shrink: 0;">
                 إدارة مطورة | تطوير FAHAD ALMUKLFI 
                 <p style="margin-top: 2px; font-size: 9px; color: #57606f;">جميع الحقوق محفوظة 2026</p>
@@ -730,15 +757,16 @@
         </aside>
 
         <main>
+
             <div class="header-container">
                 <div class="main-header-banner">
                     <div>
                         <h2><i class="fa-solid fa-house-chimney-window"></i> شالية كروز </h2>
-<div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-    <p style="margin: 0;">نظام إدارة الحجوزات والماليات الشامل</p>
-    <span onclick="openReleaseNotesModal()" style="cursor: pointer; font-size: 14px; display: inline-block;" title="تعليمات التحديث الأخير">📨</span>
-    <span style="font-size: 11px; font-weight: bold; color: #4D4DFF;">v2.0.1</span>
-                     </div>
+                        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                            <p style="margin: 0;">نظام إدارة الحجوزات والماليات الشامل</p>
+                            <span onclick="openReleaseNotesModal()" style="cursor: pointer; font-size: 14px; display: inline-block;" title="تعليمات التحديث الأخير">📨</span>
+                            <span style="font-size: 11px; font-weight: bold; color: #4D4DFF;">v2.0.2</span>
+                        </div>
                     </div>
                 </div>
 
@@ -747,17 +775,11 @@
                         <i class="fa-solid fa-bars"></i>
                     </button>
                     <div style="display: flex; gap: 6px; align-items: center;">
-<div class="zoom-panel">
-    <button class="zoom-btn" onclick="zoomOut()" title="تصغير الشاشة">
-        <span>A-</span>
-    </button>
-    <button class="zoom-btn reset-btn" onclick="resetZoom()" title="الحجم الافتراضي">
-        <span>A</span>
-    </button>
-    <button class="zoom-btn" onclick="zoomIn()" title="تكبير الشاشة">
-        <span>A+</span>
-    </button>
-</div>
+                        <div class="zoom-panel">
+                            <button class="zoom-btn" onclick="zoomOut()" title="تصغير الشاشة"><span>A-</span></button>
+                            <button class="zoom-btn reset-btn" onclick="resetZoom()" title="الحجم الافتراضي"><span>A</span></button>
+                            <button class="zoom-btn" onclick="zoomIn()" title="تكبير الشاشة"><span>A+</span></button>
+                        </div>
 
                         <select id="period-selector" onchange="updateDashboard()" style="padding: 6px 10px; border-radius: 6px; border: 2px solid #dcdde1; font-weight: 700; font-size: 12px;">
                             <option value="all">جميع الأشهر</option>
@@ -844,78 +866,138 @@
             </div>
 
             <div id="new-booking" class="tab-content">
-                <div style="font-size: 15px; font-weight: 800; color: #2f3640; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
-                    <i class="fa-solid fa-chevron-left" style="font-size: 11px; color: #ff9f43;"></i> تسجيل حجز جديد
+    <!-- الهيدر مع زر الترس -->
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <div style="font-size: 15px; font-weight: 800; color: #2f3640; display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-chevron-left" style="font-size: 11px; color: #ff9f43;"></i> تسجيل حجز جديد
+        </div>
+        <!-- زر الترس لفتح وإغلاق الإعدادات -->
+        <button id="settings-toggle-btn" type="button" onclick="toggleSettings()" style="background: none; border: none; font-size: 18px; color: #57606f; cursor: pointer; padding: 5px;">
+            <i class="fa-solid fa-gear"></i>
+        </button>
+    </div>
+
+    <!-- لوحة الإعدادات (مخفية افتراضياً) -->
+    <div id="settings-panel" class="card-box" style="display: none; background: #fff8f0; border: 1px solid #ffeaa7; margin-bottom: 15px;">
+        <h4 style="margin-top: 0; color: #d35400; font-size: 14px; display: flex; align-items: center; gap: 6px;">
+            <i class="fa-solid fa-sliders"></i> إعدادات أسعار الأقسام الافتراضية
+        </h4>
+
+        <!-- أسعار وسط الأسبوع -->
+        <div style="font-size: 12px; font-weight: bold; color: #2f3640; margin-bottom: 8px;">
+            <i class="fa-regular fa-calendar"></i> أيام وسط الأسبوع (الأحد - الأربعاء):
+        </div>
+        <div class="form-grid" style="margin-bottom: 15px;">
+            <div class="form-group">
+                <label>نساء</label>
+                <input type="number" id="cfg-price-women" value="600" placeholder="600">
+            </div>
+            <div class="form-group">
+                <label>رجال</label>
+                <input type="number" id="cfg-price-men" value="500" placeholder="500">
+            </div>
+            <div class="form-group">
+                <label>قسمين</label>
+                <input type="number" id="cfg-price-both" value="1000" placeholder="1000">
+            </div>
+        </div>
+
+        <!-- أسعار نهاية الأسبوع -->
+        <div style="font-size: 12px; font-weight: bold; color: #e67e22; margin-bottom: 8px;">
+            <i class="fa-solid fa-star"></i> أسعار نهاية الأسبوع (الخميس، الجمعة، السبت):
+        </div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>نساء (ويك إند)</label>
+                <input type="number" id="cfg-weekend-women" value="800" placeholder="800">
+            </div>
+            <div class="form-group">
+                <label>رجال (ويك إند)</label>
+                <input type="number" id="cfg-weekend-men" value="700" placeholder="700">
+            </div>
+            <div class="form-group">
+                <label>قسمين (ويك إند)</label>
+                <input type="number" id="cfg-weekend-both" value="1300" placeholder="1300">
+            </div>
+        </div>
+
+        <button type="button" class="btn" onclick="saveSettings()" style="margin-top: 15px; background: #e67e22; border: none; width: 100%;">
+            <i class="fa-solid fa-floppy-disk"></i> حفظ الإعدادات
+        </button>
+    </div>
+
+    <!-- نموذج الحجز -->
+    <div class="card-box">
+        <h3 id="form-title-text"><i class="fa-solid fa-plus-circle" style="color: #ff9f43;"></i> حجز جديد للشاليه</h3>
+        <form id="quick-booking-form" onsubmit="saveBookingData(event)">
+            <input type="hidden" id="b-edit-id" value="">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>اسم المستأجر</label>
+                    <input type="text" id="b-name" required placeholder="مثال: تميم البدحاني">
                 </div>
-                <div class="card-box">
-                    <h3 id="form-title-text"><i class="fa-solid fa-plus-circle" style="color: #ff9f43;"></i> حجز جديد للشاليه</h3>
-                    <form id="quick-booking-form" onsubmit="saveBookingData(event)">
-                        <input type="hidden" id="b-edit-id" value="">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>اسم المستأجر</label>
-                                <input type="text" id="b-name" required placeholder="مثال: تميم البدحاني">
-                            </div>
-                            <div class="form-group">
-                                <label>رقم الجوال</label>
-                                <div class="phone-wrapper">
-                                    <span class="country-code">+966</span>
-                                    <input type="tel" id="b-phone" class="phone-input" placeholder="5xxxxxxxx" maxlength="9" oninput="formatPhoneNumber(this)" required>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label>تاريخ الحجز</label>
-                                <input type="date" id="b-date" required>
-                            </div>
-                            <div class="form-group">
-                                <label>الفترة</label>
-                                <select id="b-period">
-                                    <option>مساء</option>
-                                    <option>صباح</option>
-                                    <option>يوم كامل</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>القسم</label>
-                                <select id="b-section">
-                                    <option value="نساء">نساء</option>
-                                    <option value="رجال">رجال</option>
-                                    <option value="قسمين">قسمين (كامل الشاليه)</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>قيمة الإيجار الإجمالية</label>
-                                <input type="number" id="b-price" required placeholder="600" oninput="calcRemaining()">
-                            </div>
-                            <div class="form-group">
-                                <label>العربون / المدفوع</label>
-                                <input type="number" id="b-paid" required placeholder="100" oninput="calcRemaining()">
-                            </div>
-                            <div class="form-group">
-                                <label>المتبقي تلقائياً</label>
-                                <input type="text" id="b-rem" readonly style="background: #f1f2f6; font-weight: bold; color: #c62828;">
-                            </div>
-                            <div class="form-group">
-                                <label>طريقة الدفع</label>
-                                <select id="b-method">
-                                    <option>تحويل بنكي</option>
-                                    <option>كاش</option>
-                                    <option>شبكة</option>
-                                </select>
-                            </div>
-                            <div class="form-group">
-                                <label>حالة الحجز</label>
-                                <select id="b-status">
-                                    <option value="مؤكد">مؤكد بالكامل</option>
-                                    <option value="عربون">مدفوع عربون</option>
-                                    <option value="غير مؤكد">غير مؤكد / معلق</option>
-                                </select>
-                            </div>
-                        </div>
-                        <button type="submit" class="btn" style="margin-top: 10px;"><i class="fa-solid fa-check"></i> حفظ الحجز فوراً</button>
-                    </form>
+                <div class="form-group">
+                    <label>رقم الجوال</label>
+                    <div class="phone-wrapper">
+                        <span class="country-code">+966</span>
+                        <input type="tel" id="b-phone" class="phone-input" placeholder="5xxxxxxxx" maxlength="9" oninput="formatPhoneNumber(this)" required>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>تاريخ الحجز</label>
+                    <!-- يفحص اليوم تلقائياً عند تغيير التاريخ -->
+                    <input type="date" id="b-date" required onchange="updatePriceBySection()">
+                </div>
+                <div class="form-group">
+                    <label>الفترة</label>
+                    <select id="b-period">
+                        <option>مساء</option>
+                        <option>صباح</option>
+                        <option>يوم كامل</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>القسم</label>
+                    <select id="b-section" onchange="updatePriceBySection()">
+                        <option value="نساء">نساء</option>
+                        <option value="رجال">رجال</option>
+                        <option value="قسمين">قسمين (كامل الشاليه)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>قيمة الإيجار الإجمالية</label>
+                    <input type="number" id="b-price" required placeholder="600" oninput="calcRemaining()">
+                </div>
+                <div class="form-group">
+                    <label>العربون / المدفوع</label>
+                    <input type="number" id="b-paid" required placeholder="100" oninput="calcRemaining()">
+                </div>
+                <div class="form-group">
+                    <label>المتبقي تلقائياً</label>
+                    <input type="text" id="b-rem" readonly style="background: #f1f2f6; font-weight: bold; color: #c62828;">
+                </div>
+                <div class="form-group">
+                    <label>طريقة الدفع</label>
+                    <select id="b-method">
+                        <option>تحويل بنكي</option>
+                        <option>كاش</option>
+                        <option>شبكة</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>حالة الحجز</label>
+                    <select id="b-status">
+                        <option value="مؤكد">مؤكد بالكامل</option>
+                        <option value="عربون">مدفوع عربون</option>
+                        <option value="غير مؤكد">غير مؤكد / معلق</option>
+                    </select>
                 </div>
             </div>
+            <button type="submit" class="btn" style="margin-top: 10px;"><i class="fa-solid fa-check"></i> حفظ الحجز فوراً</button>
+        </form>
+    </div>
+</div>
+
 
             <div id="calendar" class="tab-content">
                 <div style="font-size: 15px; font-weight: 800; color: #2f3640; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
@@ -985,7 +1067,6 @@
                 </div>
                 <div class="card-box">
                     <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 14px;">
-                        <!-- قائمة الفلترة بالأشهر الخاصة بسجل الحجوزات -->
                         <div style="display: flex; gap: 8px; align-items: center;">
                             <label style="font-size: 12px; font-weight: 700; color: #2f3640; white-space: nowrap;">عرض شهر:</label>
                             <select id="reservations-month-selector" onchange="renderBookingsTable()" style="padding: 8px 12px; border-radius: 8px; border: 2px solid #dcdde1; font-weight: 700; font-size: 12px; width: 100%;">
@@ -1126,156 +1207,206 @@
         <!-- Modal السند المالي -->
         <div id="receipt-modal" class="modal" onclick="if(event.target === this) closeReceiptModal();">
             <div class="modal-content">
-                
-                <!-- قسم إعدادات وتعديل بيانات السند -->
-                <div class="no-print" style="background: #f1f2f6; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #dcdde1;">
+                <!-- زر إظهار/إخفاء قسم التعديلات على شكل أيقونة ترس -->
+<div class="no-print" style="text-align: left; margin-top: 30px; margin-bottom: 8px;">
+    <button onclick="toggleReceiptSettings()" title="إعدادات السند والشروط" style="background: #f1f2f6; border: 1px solid #dcdde1; border-radius: 6px; padding: 6px 10px; cursor: pointer; color: #2f3640; font-size: 14px;">
+        <i class="fa-solid fa-gear"></i>
+    </button>
+</div>
+
+
+                <!-- قسم تعديل بيانات السند والشروط (مخفي افتراضياً) -->
+                <div id="receipt-settings-section" class="no-print" style="display: none; background: #f1f2f6; padding: 12px; border-radius: 8px; margin-bottom: 15px; border: 1px solid #dcdde1;">
                     <h4 style="font-size: 13px; color: #2f3640; margin-bottom: 8px; display: flex; align-items: center; gap: 5px;">
                         <i class="fa-solid fa-gear" style="color: #ff9f43;"></i> قسم تعديل بيانات السند والشروط والتعليمات
                     </h4>
                     <div style="display: grid; grid-template-columns: 1fr; gap: 8px; font-size: 11px;">
                         <div>
                             <label style="font-weight: bold; color: #57606f; display: block; margin-bottom: 2px;">نص سياسة العربون والتأمين:</label>
-                            <textarea id="edit-policy-text" rows="3" oninput="updateReceiptLive()" style="width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px; font-family: 'Cairo', sans-serif;">• العربون المدفوع يُعد تأكيداً رسمياً للحجز ويتم خصمه من إجمالي الإيجار.
+                            <textarea id="edit-policy-text" rows="3" style="width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px; font-family: 'Cairo', sans-serif;">• العربون المدفوع يُعد تأكيداً رسمياً للحجز ويتم خصمه من إجمالي الإيجار.
 • بند التأمين: يُؤخذ مبلغ التأمين قبل الدخول ويُسترد بالكامل عند سلامة المكان.
 • في حال الإلغاء قبل الموعد بـ 48 ساعة أو أكثر يسترجع العربون كاملاً.</textarea>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                             <div>
                                 <label style="font-weight: bold; color: #57606f; display: block; margin-bottom: 2px;">اسم البنك:</label>
-                                <input type="text" id="edit-bank-name" value="مصرف الراجحي" oninput="updateReceiptLive()" style="width: 100%; padding: 5px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px;">
+                                <input type="text" id="edit-bank-name" value="مصرف الراجحي" style="width: 100%; padding: 5px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px;">
                             </div>
                             <div>
                                 <label style="font-weight: bold; color: #57606f; display: block; margin-bottom: 2px;">اسم المستفيد:</label>
-                                <input type="text" id="edit-bank-beneficiary" value="شاليه كروز" oninput="updateReceiptLive()" style="width: 100%; padding: 5px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px;">
+                                <input type="text" id="edit-bank-beneficiary" value="شاليه كروز" style="width: 100%; padding: 5px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px;">
                             </div>
                         </div>
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
                             <div>
                                 <label style="font-weight: bold; color: #57606f; display: block; margin-bottom: 2px;">رقم الحساب:</label>
-                                <input type="text" id="edit-bank-account" value="123456789012345" oninput="updateReceiptLive()" style="width: 100%; padding: 5px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px;">
+                                <input type="text" id="edit-bank-account" value="123456789012345" style="width: 100%; padding: 5px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px;">
                             </div>
                             <div>
                                 <label style="font-weight: bold; color: #57606f; display: block; margin-bottom: 2px;">رقم الآيبان (IBAN):</label>
-                                <input type="text" id="edit-bank-iban" value="SA0380000001234567890123" oninput="updateReceiptLive()" style="width: 100%; padding: 5px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px; direction: ltr; text-align: right;">
+                                <input type="text" id="edit-bank-iban" value="SA0380000001234567890123" style="width: 100%; padding: 5px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px; direction: ltr; text-align: right;">
                             </div>
                         </div>
                         <div>
                             <label style="font-weight: bold; color: #e84118; display: block; margin-bottom: 2px;"><i class="fa-solid fa-list-check"></i> صندوق التعليمات الإضافية:</label>
-                            <textarea id="edit-instructions-text" rows="2" oninput="updateReceiptLive()" placeholder="أدخل التعليمات هنا (مثلاً: أوقات الدخول والخروج، تعليمات النظافة...)" style="width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px; font-family: 'Cairo', sans-serif;">1. الحفاظ التام على نظافة المكان والمرافق العامة وإعادتها كما كانت عند التسليم.
+                            <textarea id="edit-instructions-text" rows="2" placeholder="أدخل التعليمات هنا..." style="width: 100%; padding: 6px; border-radius: 6px; border: 1px solid #cbd5e1; font-size: 11px; font-family: 'Cairo', sans-serif;">1. الحفاظ التام على نظافة المكان والمرافق العامة وإعادتها كما كانت عند التسليم.
 2. الالتزام بموعد الدخول والخروج المحدد بدقة لضمان راحة وخدمة جميع الضيوف.
 3. منع استخدام الألعاب النارية أو إحداث أي إزعاج بيئي داخل النطاق السكني.
 4. إدارة الشاليه غير مسئولة نهائياً عن فقدان الأغراض الشخصية الثمينة غير المسلمة لإدارة الاستقبال.</textarea>
                         </div>
+                        <button onclick="saveReceiptSettings()" class="btn btn-success" style="font-size: 12px; margin-top: 4px;"><i class="fa-solid fa-save"></i> حفظ التعديلات</button>
                     </div>
                 </div>
 
-                <div id="invoice-printable-area" class="invoice-print-container">
-                    <div class="invoice-header">
-                        <h2>شاليه كروز</h2>
-                        <p>سند تأكيد حجز رسمي وفاتورة تفصيلية</p>
-                        <p style="margin-top: 2px; font-size: 10px; color: #57606f;"> شارع الإمام مسلم | الجوال: 0555686540 </p>
-                    </div>
+                <div id="invoice-printable-area" class="invoice-print-container" style="font-family: system-ui, -apple-system, sans-serif; direction: rtl; max-width: 800px; margin: 0 auto; padding: 15px; color: #2d3436;">
+    
+    <style>
+  /* تنسيقات خاصة عند الطباعة فقط */
+  @media print {
+    body * {
+      visibility: hidden;
+    }
+    #invoice-printable-area, #invoice-printable-area * {
+      visibility: visible;
+    }
+    #invoice-printable-area {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      padding: 0;
+      margin: 0;
+      box-shadow: none !important;
+      border: none !important;
+    }
+    .no-print {
+      display: none !important;
+    }
+  }
+</style>
 
-                    <div class="invoice-meta">
-                        <div>رقم السند: <span id="inv-id">#-----</span></div>
-                        <div>تاريخ الإصدار: <span id="inv-print-date">--</span></div>
-                    </div>
+<div id="invoice-printable-area" style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; direction: rtl; max-width: 750px; margin: 0 auto; padding: 20px; color: #1e293b; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+    
+    <!-- الهيدر الرئيسي -->
+    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #2563eb; padding-bottom: 12px; margin-bottom: 12px;">
+        <div>
+            <h2 style="margin: 0; font-size: 22px; color: #1e293b; font-weight: 800;">شاليه كروز</h2>
+            <p style="margin: 3px 0 0 0; font-size: 11px; color: #64748b;">شارع الإمام مسلم | الجوال: 0555686540</p>
+        </div>
+        <div style="text-align: left;">
+            <span style="background: #eff6ff; color: #2563eb; font-size: 11px; font-weight: bold; padding: 4px 10px; border-radius: 20px; border: 1px solid #bfdbfe;">سند تأكيد حجز رسمي</span>
+        </div>
+    </div>
 
-                    <div class="client-info-box" style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 10px;">
-                        <h4 style="margin: 0 0 8px 0; font-size: 13px; color: #333; border-bottom: 1px solid #e9ecef; padding-bottom: 4px;">بيانات العميل</h4>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; font-size: 11px; line-height: 1.4;">
-                            <div style="background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #eee;">اسم المستأجر : <b id="inv-client-name">--</b></div>
-                            <div style="background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #eee;">رقم الجوال : <b id="inv-client-phone">--</b></div>
-                            <div style="background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #eee;">تاريخ الحجز : <b id="inv-booking-date">--</b></div>
-                            <div style="background: #fff; padding: 6px; border-radius: 4px; border: 1px solid #eee;">الفترة: <b id="inv-booking-period">--</b></div>
-                        </div>
-                    </div>
+    <!-- معلومات السند الفائقة الوضوح -->
+    <div style="display: flex; justify-content: space-between; font-size: 11px; background: #f8fafc; padding: 8px 12px; border-radius: 6px; border: 1px solid #e2e8f0; margin-bottom: 12px;">
+        <div>رقم السند: <strong id="inv-id" style="color: #0f172a;">#-----</strong></div>
+        <div>تاريخ الإصدار: <strong id="inv-print-date" style="color: #0f172a;">--</strong></div>
+        <div>طريقة الدفع: <strong id="inv-pay-method" style="color: #0f172a;">تحويل بنكي / شبكة</strong></div>
+    </div>
 
-                    <table class="invoice-table">
-                        <thead>
-                            <tr>
-                                <th>القسم</th>
-                                <th>المبلغ</th>
-                                <th>الواصل</th>
-                                <th>المتبقي</th>
-                                <th>الحالة</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td id="inv-section">--</td>
-                                <td id="inv-price">-- ر.س</td>
-                                <td id="inv-paid" style="color: #10ac84; font-weight: bold;">-- ر.س</td>
-                                <td id="inv-rem" style="color: #c62828; font-weight: bold;">-- ر.س</td>
-                                <td><span id="inv-status-badge" class="badge success">--</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+    <!-- بيانات العميل -->
+    <div style="border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; margin-bottom: 12px; background: #fafafa;">
+        <h4 style="margin: 0 0 8px 0; font-size: 11px; color: #334155; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; display: flex; align-items: center; gap: 4px;">
+            <span>👤</span> بيانات المستأجر
+        </h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px; font-size: 11px;">
+            <div style="background: #fff; padding: 5px 8px; border-radius: 4px; border: 1px solid #f1f5f9;">اسم المستأجر: <b id="inv-client-name" style="color: #0f172a;">--</b></div>
+            <div style="background: #fff; padding: 5px 8px; border-radius: 4px; border: 1px solid #f1f5f9;">رقم الجوال: <b id="inv-client-phone" style="color: #0f172a;">--</b></div>
+            <div style="background: #fff; padding: 5px 8px; border-radius: 4px; border: 1px solid #f1f5f9;">تاريخ الحجز: <b id="inv-booking-date" style="color: #0f172a;">--</b></div>
+            <div style="background: #fff; padding: 5px 8px; border-radius: 4px; border: 1px solid #f1f5f9;">الفترة: <b id="inv-booking-period" style="color: #0f172a;">--</b></div>
+        </div>
+    </div>
 
-                    <div class="deposit-policy-box">
-                        <h5><i class="fa-solid fa-circle-info"></i> سياسة العربون والتأمين والشروط:</h5>
-                        • العربون المدفوع يُعد تأكيداً رسمياً للحجز ويتم خصمه من إجمالي الإيجار.<br>     
-                        • <b>بند التأمين:</b> يُؤخذ مبلغ التأمين قبل الدخول ويُسترد بالكامل عند سلامة المكان.<br>
-                        • في حال الإلغاء قبل الموعد بـ 48 ساعة أو أكثر يسترجع العربون كاملاً.
-                    </div>
+    <!-- جدول الحسابات -->
+    <table style="width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 11px; text-align: center;">
+        <thead>
+            <tr style="background-color: #0f172a; color: #ffffff;">
+                <th style="padding: 6px; border: 1px solid #0f172a; border-top-right-radius: 4px;">القسم</th>
+                <th style="padding: 6px; border: 1px solid #0f172a;">المبلغ الإجمالي</th>
+                <th style="padding: 6px; border: 1px solid #0f172a;">العربون (الواصل)</th>
+                <th style="padding: 6px; border: 1px solid #0f172a;">المتبقي</th>
+                <th style="padding: 6px; border: 1px solid #0f172a; border-top-left-radius: 4px;">الحالة</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr style="background-color: #fff;">
+                <td id="inv-section" style="padding: 8px; border: 1px solid #e2e8f0; font-weight: 600;">--</td>
+                <td id="inv-price" style="padding: 8px; border: 1px solid #e2e8f0;">-- ر.س</td>
+                <td id="inv-paid" style="padding: 8px; border: 1px solid #e2e8f0; color: #15803d; font-weight: bold;">-- ر.س</td>
+                <td id="inv-rem" style="padding: 8px; border: 1px solid #e2e8f0; color: #b91c1c; font-weight: bold;">-- ر.س</td>
+                <td style="padding: 8px; border: 1px solid #e2e8f0;"><span id="inv-status-badge" style="background: #dcfce7; color: #15803d; padding: 2px 8px; border-radius: 4px; font-weight: bold; font-size: 10px;">مؤكد</span></td>
+            </tr>
+        </tbody>
+    </table>
 
-                    <div class="invoice-notes" style="background: #fff3cd; border: 1px solid #ffeeba; color: #856404; padding: 6px 10px; border-radius: 6px; font-size: 7px; margin-top: 8px; line-height: 1.3;">
-                        <h5><i class="fa-solid fa-triangle-exclamation"></i> تنبيهات والشروط العامة لاستخدام الشاليه:</h5>
-                        1. الحفاظ التام على نظافة المكان والمرافق العامة وإعادتها كما كانت عند التسليم.<br>
-                        2. الالتزام بموعد الدخول والخروج المحدد بدقة لضمان راحة وخدمة جميع الضيوف.<br>
-                        3. منع استخدام الألعاب النارية أو إحداث أي إزعاج بيئي داخل النطاق السكني.<br>
-                        4. إدارة الشاليه غير مسئولة نهائياً عن فقدان الأغراض الشخصية الثمينة غير المسلمة لإدارة الاستقبال.
-                    </div>
+    <!-- سياسة العربون والتأمين -->
+    <div style="background: #f8fafc; border-right: 3px solid #0284c7; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0; border-left: 1px solid #e2e8f0; border-radius: 4px; padding: 6px 10px; margin-bottom: 8px; font-size: 10px; color: #334155;">
+        <h5 style="margin: 0 0 3px 0; font-size: 10px; color: #0369a1; font-weight: bold;">ℹ️ سياسة العربون والتأمين والشروط:</h5>
+        <span id="rendered-policy-text" style="line-height: 1.4; display: block;">
+            • العربون المدفوع يُعد تأكيداً رسمياً للحجز ويتم خصمه من إجمالي الإيجار.<br>     
+            • <b>بند التأمين:</b> يُؤخذ مبلغ التأمين قبل الدخول ويُسترد بالكامل عند سلامة المكان.<br>
+            • في حال الإلغاء قبل الموعد بـ 48 ساعة أو أكثر يسترجع العربون كاملاً.
+        </span>
+    </div>
 
-                    <!-- تفاصيل الحساب البنكي والصورة بنسبة 50/50 (تم تعديل الحاوية ومنع التفاف النصوص لتكون بسطر واحد وبنفس المستوى) -->
-                    <div class="footer-box" style="display: flex; gap: 4px; border: 1px solid #e0e0e0; padding: 4px; border-radius: 3px; background-color: #ffffff; max-width: 300px; margin-left: auto; margin-top: 6px; box-sizing: border-box; align-items: stretch;">
-                        
-                        <!-- القسم الأيمن: بيانات الحساب (50%) -->
-                        <div style="flex: 0 0 50%; max-width: 50%; box-sizing: border-box; display: flex; flex-direction: column; justify-content: space-between;">
-                            <h5 style="margin: 0 0 3px 0; font-size: 10px; color: #111; font-weight: bold; border-bottom: 1px solid #eee; padding-bottom: 2px;">تفاصيل الحساب البنكي</h5>
-                            
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-bottom: 2px;">
-                                <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 1px 3px; border-radius: 2px;">
-                                    <span style="color: #777; font-size: 5px; display: block; margin-bottom: -1px;">البنك</span>
-                                    <strong id="inv-bank-name" style="color: #2c3e50; font-size: 6px; white-space: nowrap; display: block;">مصرف الراجحي</strong>
-                                </div>
-                                <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 1px 3px; border-radius: 2px;">
-                                    <span style="color: #777; font-size: 5px; display: block; margin-bottom: -1px;">المستفيد</span>
-                                    <strong id="inv-bank-beneficiary" style="color: #2c3e50; font-size: 6px; white-space: nowrap; display: block;">شاليه كروز</strong>
-                                </div>
-                            </div>
+    <!-- الملاحظات والتنبيهات العامة -->
+    <div style="background: #fffbeb; border-right: 3px solid #d97706; border-top: 1px solid #fef3c7; border-bottom: 1px solid #fef3c7; border-left: 1px solid #fef3c7; color: #92400e; padding: 6px 10px; border-radius: 4px; font-size: 9.5px; margin-bottom: 12px; line-height: 1.4;">
+        <h5 style="margin: 0 0 3px 0; font-size: 10px; color: #b45309; font-weight: bold;">⚠️ تنبيهات والشروط العامة لاستخدام الشاليه:</h5>
+        <span id="rendered-instructions-text" style="display: block;">
+            1. الحفاظ التام على نظافة المكان والمرافق العامة وإعادتها كما كانت عند التسليم.<br>
+            2. الالتزام بموعد الدخول والخروج المحدد بدقة لضمان راحة وخدمة جميع الضيوف.<br>
+            3. منع استخدام الألعاب النارية أو إحداث أي إزعاج بيئي داخل النطاق السكني.<br>
+            4. إدارة الشاليه غير مسئولة نهائياً عن فقدان الأغراض الشخصية الثمينة غير المسلمة للإدارة.
+        </span>
+    </div>
 
-                            <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 1px 3px; border-radius: 2px; margin-bottom: 2px;">
-                                <span style="color: #777; font-size: 5px; display: block; margin-bottom: -1px;">رقم الحساب</span>
-                                <strong id="inv-bank-account" style="color: #2c3e50; font-family: monospace; font-size: 7px; white-space: nowrap; display: block;">123456789012345</strong>
-                            </div>
-
-                            <div style="background: #f8f9fa; border: 1px solid #eaeded; padding: 1px 3px; border-radius: 2px;">
-                                <span style="color: #777; font-size: 5px; display: block; margin-bottom: -1px;">الآيبان (IBAN)</span>
-                                <strong id="inv-bank-iban" style="color: #2c3e50; font-family: monospace; font-size: 7px; direction: ltr; display: block; text-align: left; white-space: nowrap;">SA0380000001234567890123</strong>
-                            </div>
-                        </div>
-
-                        <!-- القسم الأيسر: الصورة (50%) -->
-                        <div style="flex: 0 0 50%; max-width: 50%; display: flex; align-items: center; justify-content: center; background: #fafafa; border: 1px solid #eaeded; border-radius: 2px; padding: 2px; box-sizing: border-box;">
-                            <img src="https://pwwoowowowwo.github.io/croz.1/Aigonh.png.PNG" alt="QR Code" style="max-width: 100%; max-height: 100%; object-fit: contain; border-radius: 2px;">
-                        </div>
-
-                    </div>
-
-                    <div class="signature-section" style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 10px; border-top: 1px dashed #cbd5e1; font-size: 11px;">
-                        <div style="text-align: center; width: 45%;">
-                            <p style="margin-bottom: 20px; font-weight: bold; color: #1e272e;">توقيع المستأجر</p>
-                            <p style="border-bottom: 1px solid #718093; width: 120px; margin: 0 auto;"></p>
-                        </div>
-                        <div style="text-align: center; width: 45%;">
-                            <p style="margin-bottom: 4px; font-weight: bold; color: #1e272e;">ختم الإدارة</p>
-                            <div style="width: 80px; height: 40px; border: 1px dashed #a4b0be; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #a4b0be; border-radius: 4px;">الختم</div>
-                        </div>
-                    </div>
+    <!-- معلومات البنك والـ QR -->
+    <div style="display: flex; gap: 8px; border: 1px solid #e2e8f0; padding: 8px; border-radius: 6px; background-color: #fafafa; max-width: 400px; margin-left: auto; box-sizing: border-box; align-items: center;">
+        <div style="flex: 1; font-size: 9px;">
+            <h5 style="margin: 0 0 4px 0; font-size: 10px; color: #0f172a; font-weight: bold; border-bottom: 1px solid #e2e8f0; padding-bottom: 2px;">تفاصيل الحساب البنكي</h5>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 3px; margin-bottom: 3px;">
+                <div style="background: #fff; border: 1px solid #e2e8f0; padding: 2px 4px; border-radius: 3px;">
+                    <span style="color: #64748b; font-size: 7.5px; display: block;">البنك</span>
+                    <strong id="inv-bank-name" style="color: #0f172a;">مصرف الراجحي</strong>
                 </div>
+                <div style="background: #fff; border: 1px solid #e2e8f0; padding: 2px 4px; border-radius: 3px;">
+                    <span style="color: #64748b; font-size: 7.5px; display: block;">المستفيد</span>
+                    <strong id="inv-bank-beneficiary" style="color: #0f172a;">شاليه كروز</strong>
+                </div>
+            </div>
 
-                <!-- أزرار الإجراءات داخل نافذة السند المفتوحة عند الضغط على اسم العميل -->
+            <div style="background: #fff; border: 1px solid #e2e8f0; padding: 2px 4px; border-radius: 3px; margin-bottom: 3px;">
+                <span style="color: #64748b; font-size: 7.5px; display: block;">رقم الحساب</span>
+                <strong id="inv-bank-account" style="color: #0f172a; font-family: monospace;">123456789012345</strong>
+            </div>
+
+            <div style="background: #fff; border: 1px solid #e2e8f0; padding: 2px 4px; border-radius: 3px;">
+                <span style="color: #64748b; font-size: 7.5px; display: block;">الآيبان (IBAN)</span>
+                <strong id="inv-bank-iban" style="color: #0f172a; font-family: monospace; font-size: 8px; direction: ltr; display: block; text-align: left;">SA0380000001234567890123</strong>
+            </div>
+        </div>
+
+        <div style="width: 85px; height: 85px; text-align: center; background: #fff; border: 1px solid #e2e8f0; border-radius: 4px; padding: 3px; display: flex; align-items: center; justify-content: center;">
+            <img src="https://pwwoowowowwo.github.io/croz.1/QR.png" alt="QR Code" style="max-width: 100%; max-height: 100%; object-fit: contain;">
+        </div>
+    </div>
+
+    <!-- التواقيع والختم -->
+    <div style="display: flex; justify-content: space-between; margin-top: 15px; padding-top: 10px; border-top: 1px dashed #cbd5e1; font-size: 10px;">
+        <div style="text-align: center; width: 40%;">
+            <p style="margin: 0 0 20px 0; font-weight: bold; color: #334155;">توقيع المستأجر</p>
+            <p style="border-bottom: 1px solid #94a3b8; width: 110px; margin: 0 auto;"></p>
+        </div>
+        <div style="text-align: center; width: 40%;">
+            <p style="margin: 0 0 5px 0; font-weight: bold; color: #334155;">ختم وتوقيع الإدارة</p>
+            <div style="width: 75px; height: 35px; border: 1px dashed #94a3b8; margin: 0 auto; display: flex; align-items: center; justify-content: center; font-size: 9px; color: #94a3b8; border-radius: 4px;">الختم الرسمى</div>
+        </div>
+    </div>
+
+</div>
+
                 <div style="display: flex; flex-direction: column; gap: 8px; margin-top: 15px;">
                     <button onclick="quickMarkAsPaidModal()" class="btn btn-success" style="font-size: 12px;"><i class="fa-solid fa-check"></i> تأكيد الحجز (دفع كامل)</button>
                     <button onclick="editBookingFromModal()" class="btn btn-secondary" style="font-size: 12px; background: #54a0ff;"><i class="fa-solid fa-pen"></i> تعديل الحجز</button>
@@ -1287,41 +1418,33 @@
             </div>
         </div>
     </div>
-<!-- نافذة تعليمات التحديث الأخير وحقوق المطور -->
-<div id="releaseNotesModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
-    <div style="background:#fff; padding:22px; border-radius:12px; width:90%; max-width:380px; box-shadow: 0 6px 15px rgba(0,0,0,0.25); text-align: right; direction: rtl; font-family: Tahoma, sans-serif;">
-        
-        <!-- عنوان النافذة -->
-        <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #edf2f7; padding-bottom: 10px; margin-bottom: 12px;">
-            <h3 style="margin:0; font-size:16px; color:#2d3748;">📌 تعليمات التحديث الأخير</h3>
-            <span style="font-size: 11px; background: #edf2f7; color: #4a5568; padding: 2px 6px; border-radius: 4px; font-weight: bold;">v2.0.1</span>
-        </div>
 
-        <!-- النقاط بخط صغير ومرتب -->
-        <div style="font-size: 12px; color: #4a5568; line-height: 1.8; max-height: 220px; overflow-y: auto; margin-bottom: 15px;">
-            <p style="margin: 0 0 6px 0; font-weight: bold; color: #2b6cb0;">✨ تفاصيل الإصدار الجديد:</p>
-            <ul style="margin: 0; padding-right: 18px;">
-                <li style="margin-bottom: 5px;">تم ترتيب الواجهة وتحسين الأداء العام للنظام لتصبح أسرع.</li>
-                <li style="margin-bottom: 5px;">إضافة ميزة عرض رقم النسخة والاطلاع على التحديثات بسهولة.</li>
-                <li style="margin-bottom: 5px;">نقل ازرار الستند وطباعة pdf بالظغط على اسم المستاجر.</li>
-                <li style="margin-bottom: 5px;">اضافة امكانية تعديل على السند بالتعليمات والتنبيهات الخاصة بالشاليةوعلى بيانات البنكية.</li>
-            </ul>
-        </div>
+    <!-- نافذة تعليمات التحديث الأخير وحقوق المطور -->
+    <div id="releaseNotesModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:9999; justify-content:center; align-items:center;">
+        <div style="background:#fff; padding:22px; border-radius:12px; width:90%; max-width:380px; box-shadow: 0 6px 15px rgba(0,0,0,0.25); text-align: right; direction: rtl; font-family: Tahoma, sans-serif;">
+            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #edf2f7; padding-bottom: 10px; margin-bottom: 12px;">
+                <h3 style="margin:0; font-size:16px; color:#2d3748;">📌 تعليمات التحديث الأخير</h3>
+                <span style="font-size: 11px; background: #edf2f7; color: #4a5568; padding: 2px 6px; border-radius: 4px; font-weight: bold;">v2.0.1</span>
+            </div>
 
-        <!-- حقوق المطور بالانجليزي -->
-        <div style="border-top: 1px solid #edf2f7; padding-top: 10px; margin-bottom: 15px; text-align: center;">
-            <p style="margin: 0; font-size: 11px; color: #718096; direction: ltr; font-family: Arial, sans-serif;">
-                © 2026 جميع الحقوق محفوظه• Fahad Al-Mikhlafi
-            </p>
-        </div>
+            <div style="font-size: 12px; color: #4a5568; line-height: 1.8; max-height: 220px; overflow-y: auto; margin-bottom: 15px;">
+                <p style="margin: 0 0 6px 0; font-weight: bold; color: #2b6cb0;">✨ تفاصيل الإصدار الجديد:</p>
+                <ul style="margin: 0; padding-right: 18px;">
+                    <li style="margin-bottom: 5px;">التحديث: تم إضافة لوحة إعدادات الأسعار الافتراضية مع دعم التمييز التلقائي لأسعار نهايات الأسبوع والأيام العادية.</li>
+                  </ul>
+            </div>
 
-        <!-- زر الإغلاق -->
-        <div style="text-align: center;">
-            <button onclick="closeReleaseNotesModal()" style="padding: 6px 20px; background:#3182ce; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size: 12px; width: 100%;">فهمت، شكراً</button>
-        </div>
+            <div style="border-top: 1px solid #edf2f7; padding-top: 10px; margin-bottom: 15px; text-align: center;">
+                <p style="margin: 0; font-size: 11px; color: #718096; direction: ltr; font-family: Arial, sans-serif;">
+                    © 2026 جميع الحقوق محفوظه• Fahad Al-Mikhlafi
+                </p>
+            </div>
 
+            <div style="text-align: center;">
+                <button onclick="closeReleaseNotesModal()" style="padding: 6px 20px; background:#3182ce; color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:bold; font-size: 12px; width: 100%;">فهمت، شكراً</button>
+            </div>
+        </div>
     </div>
-</div>
 
     <!-- عنصر مخفي لطباعة التقرير المالي الشامل PDF -->
     <div id="financial-report-print-container" style="display:none; background: #fff; color: #2f3640; font-family: 'Cairo', sans-serif; text-align: right; padding: 20px;">
@@ -1350,7 +1473,6 @@
                 }
             }, 500);
             
-            // استخدام توقيت السعودية (GMT+3)
             let saudiDateStr = new Date().toLocaleString('en-US', { timeZone: 'Asia/Riyadh' });
             let saudiDate = new Date(saudiDateStr);
             let today = saudiDate.toISOString().split('T')[0];
@@ -1359,18 +1481,28 @@
             document.getElementById('e-date').value = today;
             document.getElementById('calendar-search-date').value = today;
             
-            // ضبط الافتراضي على الشهر الحالي
             document.getElementById('cal-month-select').value = saudiDate.getMonth();
             document.getElementById('reservations-month-selector').value = saudiDate.getMonth();
             currentCalendarMonth = saudiDate.getMonth();
             currentCalendarYear = saudiDate.getFullYear();
 
+            loadSavedReceiptSettings();
             saveAndRefresh();
         });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') closeReceiptModal();
         });
+
+        // دالة لإظهار/إخفاء قسم إعدادات السند عبر أيقونة الترس
+        function toggleReceiptSettings() {
+            let section = document.getElementById('receipt-settings-section');
+            if (section.style.display === 'none' || section.style.display === '') {
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        }
 
         function formatPhoneNumber(input) {
             let value = input.value.replace(/\D/g, '');
@@ -1840,6 +1972,9 @@
             badgeEl.innerText = b.status;
             badgeEl.className = 'badge ' + (b.status === 'مؤكد' ? 'success' : 'danger');
 
+            // إخفاء قسم التعديلات افتراضياً عند فتح أي سند جديد
+            document.getElementById('receipt-settings-section').style.display = 'none';
+
             document.getElementById('receipt-modal').style.display = 'flex';
         }
 
@@ -2211,59 +2346,180 @@
             reader.readAsText(file);
         }
 
-        function updateReceiptLive() {
-            const policyInput = document.getElementById('edit-policy-text');
-            const policyBox = document.querySelector('.deposit-policy-box');
-            if (policyInput && policyBox) {
-                policyBox.innerHTML = '<h5><i class="fa-solid fa-circle-info"></i> سياسة العربون والتأمين والشروط:</h5>' + 
-                                      policyInput.value.replace(/\n/g, '<br>');
-            }
+        function saveReceiptSettings() {
+            const policyText = document.getElementById('edit-policy-text').value;
+            const bankName = document.getElementById('edit-bank-name').value;
+            const bankBeneficiary = document.getElementById('edit-bank-beneficiary').value;
+            const bankAccount = document.getElementById('edit-bank-account').value;
+            const bankIban = document.getElementById('edit-bank-iban').value;
+            const instructionsText = document.getElementById('edit-instructions-text').value;
 
-            const instructionsInput = document.getElementById('edit-instructions-text');
-            const instructionsBox = document.querySelector('.invoice-notes');
-            if (instructionsInput && instructionsBox) {
-                instructionsBox.innerHTML = '<h5><i class="fa-solid fa-triangle-exclamation"></i> تنبيهات والشروط العامة لاستخدام الشاليه:</h5>' + 
-                                          instructionsInput.value.replace(/\n/g, '<br>');
-            }
+            let receiptSettings = {
+                policyText, bankName, bankBeneficiary, bankAccount, bankIban, instructionsText
+            };
 
-            const bankName = document.getElementById('edit-bank-name')?.value;
-            const bankBeneficiary = document.getElementById('edit-bank-beneficiary')?.value;
-            const bankAccount = document.getElementById('edit-bank-account')?.value;
-            const bankIban = document.getElementById('edit-bank-iban')?.value;
-
-            if (document.getElementById('inv-bank-name')) document.getElementById('inv-bank-name').innerText = bankName;
-            if (document.getElementById('inv-bank-beneficiary')) document.getElementById('inv-bank-beneficiary').innerText = bankBeneficiary;
-            if (document.getElementById('inv-bank-account')) document.getElementById('inv-bank-account').innerText = bankAccount;
-            if (document.getElementById('inv-bank-iban')) document.getElementById('inv-bank-iban').innerText = bankIban;
+            localStorage.setItem('cruise_receipt_settings', JSON.stringify(receiptSettings));
+            applyReceiptSettings(receiptSettings);
+            alert('تم حفظ إعدادات السند والتفاصيل البنكية في المتصفح بنجاح!');
         }
-function openReleaseNotesModal() {
-    document.getElementById('releaseNotesModal').style.display = 'flex';
-}
 
-function closeReleaseNotesModal() {
-    document.getElementById('releaseNotesModal').style.display = 'none';
-}
-let currentZoom = 1; // الحجم الطبيعي
+        function loadSavedReceiptSettings() {
+            let saved = localStorage.getItem('cruise_receipt_settings');
+            if (saved) {
+                try {
+                    let settings = JSON.parse(saved);
+                    if (settings.policyText) document.getElementById('edit-policy-text').value = settings.policyText;
+                    if (settings.bankName) document.getElementById('edit-bank-name').value = settings.bankName;
+                    if (settings.bankBeneficiary) document.getElementById('edit-bank-beneficiary').value = settings.bankBeneficiary;
+                    if (settings.bankAccount) document.getElementById('edit-bank-account').value = settings.bankAccount;
+                    if (settings.bankIban) document.getElementById('edit-bank-iban').value = settings.bankIban;
+                    if (settings.instructionsText) document.getElementById('edit-instructions-text').value = settings.instructionsText;
 
-function zoomIn() {
-    if (currentZoom < 1.3) { // أقصى حد للتكبير 100%
-        currentZoom += 0.1;
-        document.body.style.zoom = currentZoom;
+                    applyReceiptSettings(settings);
+                } catch(e) {}
+            }
+        }
+
+        function applyReceiptSettings(settings) {
+            const policyBox = document.getElementById('rendered-policy-text');
+            if (policyBox && settings.policyText) {
+                policyBox.innerHTML = settings.policyText.replace(/\n/g, '<br>');
+            }
+
+            const instructionsBox = document.getElementById('rendered-instructions-text');
+            if (instructionsBox && settings.instructionsText) {
+                instructionsBox.innerHTML = settings.instructionsText.replace(/\n/g, '<br>');
+            }
+
+            if (document.getElementById('inv-bank-name')) document.getElementById('inv-bank-name').innerText = settings.bankName;
+            if (document.getElementById('inv-bank-beneficiary')) document.getElementById('inv-bank-beneficiary').innerText = settings.bankBeneficiary;
+            if (document.getElementById('inv-bank-account')) document.getElementById('inv-bank-account').innerText = settings.bankAccount;
+            if (document.getElementById('inv-bank-iban')) document.getElementById('inv-bank-iban').innerText = settings.bankIban;
+        }
+
+        function openReleaseNotesModal() {
+            document.getElementById('releaseNotesModal').style.display = 'flex';
+        }
+
+        function closeReleaseNotesModal() {
+            document.getElementById('releaseNotesModal').style.display = 'none';
+        }
+
+        let currentZoom = 1;
+
+        function zoomIn() {
+            if (currentZoom < 1.3) {
+                currentZoom += 0.1;
+                document.body.style.zoom = currentZoom;
+            }
+        }
+
+        function zoomOut() {
+            if (currentZoom > 0.8) {
+                currentZoom -= 0.1;
+                document.body.style.zoom = currentZoom;
+            }
+        }
+
+        function resetZoom() {
+            currentZoom = 1;
+            document.body.style.zoom = currentZoom;
+        }
+        // هيكل الأسعار الافتراضية (عادي ونهاية أسبوع)
+let defaultPrices = {
+    regular: {
+        'نساء': 600,
+        'رجال': 500,
+        'قسمين': 1000
+    },
+    weekend: {
+        'نساء': 800,
+        'رجال': 700,
+        'قسمين': 1300
     }
+};
+
+// 1. إظهار وإخفاء لوحة الإعدادات
+function toggleSettings() {
+    const panel = document.getElementById('settings-panel');
+    panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
 }
 
-function zoomOut() {
-    if (currentZoom > 0.8) { // أقصى حد للتصغير 90% لتجنب صغر الخطوط لدرجة مزعجة
-        currentZoom -= 0.1;
-        document.body.style.zoom = currentZoom;
+// 2. تحميل البيانات عند بداية التشغيل
+document.addEventListener('DOMContentLoaded', () => {
+    const savedPrices = localStorage.getItem('chalet_prices');
+    if (savedPrices) {
+        defaultPrices = JSON.parse(savedPrices);
+        // تعبئة حقول العادي
+        document.getElementById('cfg-price-women').value = defaultPrices.regular['نساء'];
+        document.getElementById('cfg-price-men').value = defaultPrices.regular['رجال'];
+        document.getElementById('cfg-price-both').value = defaultPrices.regular['قسمين'];
+        
+        // تعبئة حقول الويك إند
+        document.getElementById('cfg-weekend-women').value = defaultPrices.weekend['نساء'];
+        document.getElementById('cfg-weekend-men').value = defaultPrices.weekend['رجال'];
+        document.getElementById('cfg-weekend-both').value = defaultPrices.weekend['قسمين'];
     }
+    
+    // ضبط تاريخ اليوم كافتراضي إذا كان فارغاً
+    const dateInput = document.getElementById('b-date');
+    if (!dateInput.value) {
+        dateInput.valueAsDate = new Date();
+    }
+    
+    updatePriceBySection();
+});
+
+// 3. حفظ الإعدادات الجديدة
+function saveSettings() {
+    defaultPrices.regular['نساء'] = parseFloat(document.getElementById('cfg-price-women').value) || 0;
+    defaultPrices.regular['رجال'] = parseFloat(document.getElementById('cfg-price-men').value) || 0;
+    defaultPrices.regular['قسمين'] = parseFloat(document.getElementById('cfg-price-both').value) || 0;
+
+    defaultPrices.weekend['نساء'] = parseFloat(document.getElementById('cfg-weekend-women').value) || 0;
+    defaultPrices.weekend['رجال'] = parseFloat(document.getElementById('cfg-weekend-men').value) || 0;
+    defaultPrices.weekend['قسمين'] = parseFloat(document.getElementById('cfg-weekend-both').value) || 0;
+
+    localStorage.setItem('chalet_prices', JSON.stringify(defaultPrices));
+    
+    updatePriceBySection();
+    toggleSettings();
+    alert('تم حفظ إعدادات الأسعار بنجاح!');
 }
 
-function resetZoom() {
-    currentZoom = 1;
-    document.body.style.zoom = currentZoom;
+// 4. تحديد إن كان التاريخ يقع في نهاية الأسبوع (الخميس 4، الجمعة 5، السبت 6)
+function isWeekend(dateString) {
+    if (!dateString) return false;
+    const date = new Date(dateString);
+    const day = date.getDay(); // 4: الخميس, 5: الجمعة, 6: السبت
+    return day === 4 || day === 5 || day === 6;
 }
+
+// 5. تطبيق السعر التلقائي حسب (القسم + التاريخ)
+function updatePriceBySection() {
+    const selectedSection = document.getElementById('b-section').value;
+    const selectedDate = document.getElementById('b-date').value;
+    const priceInput = document.getElementById('b-price');
+
+    // اختيار القائمة المناسبة (عادي أو ويك إند)
+    const priceList = isWeekend(selectedDate) ? defaultPrices.weekend : defaultPrices.regular;
+
+    if (priceList[selectedSection] !== undefined) {
+        priceInput.value = priceList[selectedSection];
+    }
+
+    calcRemaining();
+}
+
+// 6. حساب المتبقي تلقائياً
+function calcRemaining() {
+    const price = parseFloat(document.getElementById('b-price').value) || 0;
+    const paid = parseFloat(document.getElementById('b-paid').value) || 0;
+    const remaining = price - paid;
+    
+    document.getElementById('b-rem').value = remaining >= 0 ? remaining : 0;
+}
+
+
 
     </script>
-</body>
-</html>
