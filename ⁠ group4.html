@@ -302,12 +302,25 @@
     <script>
         const daysOfWeek = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
         const ordinalNames = ['', 'اليوم 1', 'اليوم 2', 'اليوم 3', 'اليوم 4', 'اليوم 5'];
-        const groupStartDate = '2026-08-05';
+        const groupStartDateStr = '2026-08-05';
+
+        // دالة موحدة لتحويل نص YYYY-MM-DD إلى كائن تاريخ منتصف الليل محلياً
+        function parseLocalDate(dateStr) {
+            const parts = dateStr.split('-');
+            return new Date(parts[0], parts[1] - 1, parts[2], 0, 0, 0, 0);
+        }
+
+        // دالة موحدة لحساب الفرق بالأيام بين تاريخين
+        function getDiffDays(targetDate, baseDate) {
+            const t = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
+            const b = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate());
+            return Math.round((t - b) / (1000 * 60 * 60 * 24));
+        }
 
         function initLoader() {
             let elapsed = 0;
             const fill = document.getElementById('progressFill');
-            const totalDuration = 2000;
+            const totalDuration = 1500;
             const intervalTime = 30;
             const timer = setInterval(() => {
                 elapsed += intervalTime;
@@ -362,13 +375,14 @@
         }
 
         function updateWidgetForDate(targetDate) {
-            const startParts = groupStartDate.split('-');
-            const startDate = new Date(startParts[0], startParts[1] - 1, startParts[2]);
-            const targetClean = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate());
-            const diffDays = Math.floor((targetClean - startDate) / (1000 * 60 * 60 * 24));
+            const startDate = parseLocalDate(groupStartDateStr);
+            const diffDays = getDiffDays(targetDate, startDate);
             const info = getShiftInfo(diffDays);
+            
+            const formattedDateStr = `${targetDate.getFullYear()}-${String(targetDate.getMonth()+1).padStart(2, '0')}-${String(targetDate.getDate()).padStart(2, '0')}`;
+            
             document.getElementById('heroCard').className = `ios-widget-card ${info.themeClass}`;
-            document.getElementById('liveDateBadge').innerText = `${daysOfWeek[targetClean.getDay()]} ${targetClean.toISOString().split('T')[0]}`;
+            document.getElementById('liveDateBadge').innerText = `${daysOfWeek[targetDate.getDay()]} ${formattedDateStr}`;
             document.getElementById('liveShiftIconBox').innerHTML = `<i class="fa-solid ${info.icon}"></i>`;
             document.getElementById('liveShiftTitle').innerText = info.title;
             document.getElementById('liveShiftSub').innerText = info.sub;
@@ -376,15 +390,21 @@
 
         window.onload = () => { 
             initLoader();
-            document.getElementById('queryDate').value = new Date().toISOString().split('T')[0]; 
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = String(today.getMonth() + 1).padStart(2, '0');
+            const day = String(today.getDate()).padStart(2, '0');
+            
+            document.getElementById('queryDate').value = `${year}-${month}-${day}`; 
             loadGroupData(); 
         };
 
         function loadGroupData() {
-            const startParts = groupStartDate.split('-');
-            const startDate = new Date(startParts[0], startParts[1] - 1, startParts[2]);
+            const startDate = parseLocalDate(groupStartDateStr);
             const todayClean = new Date(); todayClean.setHours(0,0,0,0);
-            renderIOSCalendar(todayClean); updateWidgetForDate(todayClean);
+            
+            renderIOSCalendar(todayClean); 
+            updateWidgetForDate(todayClean);
             
             const container = document.getElementById('printableTablesArea'); 
             container.innerHTML = '';
@@ -392,7 +412,8 @@
             
             for (let i = 0; i < 180; i++) {
                 const d = new Date(todayClean); d.setDate(todayClean.getDate() + i);
-                const info = getShiftInfo(Math.floor((d - startDate) / (1000 * 60 * 60 * 24)));
+                const diffDays = getDiffDays(d, startDate);
+                const info = getShiftInfo(diffDays);
                 const mName = getHijriMonthName(d);
                 if (!monthsMap[mName]) monthsMap[mName] = [];
                 monthsMap[mName].push({ d, info });
@@ -409,7 +430,8 @@
                 tHtml += `<table class="mobile-table"><thead><tr><th>اليوم</th><th>التاريخ</th><th>الدوام</th></tr></thead><tbody>`;
                 
                 monthsMap[mName].forEach(item => {
-                    tHtml += `<tr><td><b>${daysOfWeek[item.d.getDay()]}</b></td><td><span>${item.d.toISOString().split('T')[0].substring(5)}</span><br><span class="hijri-sub">${getHijriDetails(item.d)}</span></td><td><span class="pill-compact ${item.info.themeClass}"><i class="fa-solid ${item.info.icon}"></i> ${item.info.title}</span></td></tr>`;
+                    const dateFormatted = `${String(item.d.getMonth()+1).padStart(2, '0')}-${String(item.d.getDate()).padStart(2, '0')}`;
+                    tHtml += `<tr><td><b>${daysOfWeek[item.d.getDay()]}</b></td><td><span>${dateFormatted}</span><br><span class="hijri-sub">${getHijriDetails(item.d)}</span></td><td><span class="pill-compact ${item.info.themeClass}"><i class="fa-solid ${item.info.icon}"></i> ${item.info.title}</span></td></tr>`;
                 });
                 
                 scrollBox.innerHTML = tHtml + `</tbody></table>`;
@@ -420,13 +442,18 @@
         }
 
         function querySpecificDate() {
-            const startParts = groupStartDate.split('-');
-            const q = document.getElementById('queryDate').value; if (!q) return;
-            const qParts = q.split('-');
-            const diff = Math.floor((new Date(Date.UTC(qParts[0], qParts[1] - 1, qParts[2])) - new Date(Date.UTC(startParts[0], startParts[1]-1, startParts[2]))) / (1000 * 60 * 60 * 24));
+            const q = document.getElementById('queryDate').value; 
+            if (!q) return;
+            
+            const targetDate = parseLocalDate(q);
+            const startDate = parseLocalDate(groupStartDateStr);
+            const diff = getDiffDays(targetDate, startDate);
+            
             const info = getShiftInfo(diff);
-            const res = document.getElementById('queryResultCard'); res.style.display = 'block'; res.className = `query-result-card ${info.themeClass}`;
-            res.innerHTML = `<div>${q}</div><div style="margin-top:8px;"><i class="fa-solid ${info.icon}"></i> ${info.title} (${info.sub})</div>`;
+            const res = document.getElementById('queryResultCard'); 
+            res.style.display = 'block'; 
+            res.className = `query-result-card ${info.themeClass}`;
+            res.innerHTML = `<div>${daysOfWeek[targetDate.getDay()]} (${q})</div><div style="margin-top:8px;"><i class="fa-solid ${info.icon}"></i> ${info.title} (${info.sub})</div>`;
         }
     </script>
 </body>
